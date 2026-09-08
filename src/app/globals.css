@@ -1,0 +1,267 @@
+@import "tailwindcss";
+
+/* Roboto - Critical weight (400) uses swap, others use optional to avoid blocking */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url(/fonts/roboto/roboto-latin-400-normal.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url(/fonts/roboto/roboto-latin-500-normal.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url(/fonts/roboto/roboto-latin-700-normal.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 800;
+  src: url(/fonts/roboto/roboto-latin-800-normal.woff2) format('woff2');
+}
+
+/* Roboto Mono - optional display to prevent blocking paint */
+@font-face {
+  font-family: 'Roboto Mono';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 500;
+  src: url(/fonts/roboto-mono/roboto-mono-latin-500-normal.woff2) format('woff2');
+}
+
+/* Playfair Display - Hero H1 only, single weight covers 700-900 */
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url(/fonts/playfair-display/playfair-display-latin-700-normal.woff2) format('woff2');
+}
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 222.2 84% 4.9%;
+  --radius: 0.5rem;
+}
+
+/* Ported from the Remix app's tailwind.config.js (the historically-active
+   config — a sibling tailwind.config.ts also exists there but is not the one
+   PostCSS resolves) plus globals.css's shadcn-style CSS-variable palette. */
+@theme inline {
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-vintage-50: #fefdf8;
+  --color-vintage-100: #fdf9e7;
+  --color-vintage-200: #fbf1c4;
+  --color-vintage-300: #f8e596;
+  --color-vintage-400: #f4d967;
+  --color-vintage-fuchsia: #a21caf;
+  --color-vintage-lightBlue: #ECF4FA;
+  --color-vintage-lightGray: #f9fbfc;
+  --color-vintage-secondary500: #B6B7F5;
+  --color-vintage-secondary200: #674f99;
+  --color-vintage-secondary: #3d3e54;
+  --color-vintage-primary: #334d83;
+  --color-vintage-hover: #3D3E54;
+  --color-vintage-darkGray: #3D3E54;
+  --color-vintage-silverGray: #f8f9fc;
+
+  --font-sans: 'Roboto', system-ui, sans-serif;
+  --font-mono: 'Roboto Mono', monospace;
+  --font-playfair: 'Playfair Display', serif;
+
+  --animate-fade-in: fadeIn 0.5s ease-in-out;
+  --animate-slide-up: slideUp 0.3s ease-out;
+  --animate-scale-in: scaleIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes slideUp {
+  0% { transform: translateY(10px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes scaleIn {
+  0% { transform: scale(0.95); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes slide-in {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.directus-wrapper p {
+  margin: 10px 0;
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 500;
+}
+
+@layer components {
+  .container {
+    @apply max-w-[1600px] px-6 self-center;
+  }
+  .btn-primary {
+    @apply bg-vintage-primary hover:bg-amber-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200;
+  }
+  .btn-secondary {
+    @apply bg-gray-100 hover:bg-gray-200 text-gray-900 px-4 py-2 rounded-lg font-medium transition-colors duration-200;
+  }
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6;
+  }
+  .input-field {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200;
+  }
+  .filter-chip {
+    @apply px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-full cursor-pointer transition-colors duration-200;
+  }
+  .filter-chip-active {
+    @apply bg-vintage-primary text-white hover:bg-amber-700;
+  }
+}
+
+.vintage-shadow::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 90px;
+  bottom: 0;
+  z-index: 10;
+  background: linear-gradient(to bottom, rgba(249, 250, 251, 0) 0%, rgba(249, 250, 251, 0.01) 1%, rgb(249 251 252) 60%);
+}
+.roboto-vintage {
+  font-family: "Roboto", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
+}
+.roboto-mono-vintage {
+  font-family: "Roboto Mono", monospace;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Masonry layout support */
+.masonry-grid {
+  column-fill: balance;
+}
+.masonry-item {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}
+
+.directus-wrapper h2 {
+  font-size: 28px;
+  margin: 20px 0;
+}
+.directus-wrapper h3 {
+  margin: 15px 0;
+  font-size: 20px;
+}
+.directus-wrapper ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+.directus-wrapper ul li::after {
+  content: "-";
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.directus-wrapper ul li {
+  position: relative;
+  padding-left: 15px;
+}
+.directus-wrapper table {
+  width: 100%;
+  text-align: left;
+}
+.directus-wrapper a {
+  color: #264d8f;
+  font-weight: 500;
+}
