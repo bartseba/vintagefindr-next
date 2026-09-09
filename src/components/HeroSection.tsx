@@ -37,7 +37,7 @@ const sizeClasses: Record<ClothingItem['size'], string> = {
 
 export default function Hero({ gridImageSrc: _gridImageSrc = "/hero-fade.png" }: HeroProps) {
   return (
-    <section className="relative bg-vintage-silverGray max-h-[490px] overflow-hidden ">
+    <section className="relative bg-vintage-silverGray max-h-[490px] overflow-hidden border-b border-gray-50">
       <div className="xl:container mx-auto px-4 py-8">
         <div className="lg:grid items-center gap-10 md:grid-cols-[45%_auto] relative -top-px">
           {/* Left: Text */}

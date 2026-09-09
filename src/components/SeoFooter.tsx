@@ -21,7 +21,7 @@ export default function SeoFooter({
   category_list_text,
 }: SeoFooterProps) {
   return (
-    <div className="mt-4 px-4 pb-6 lg:px-4">
+    <div className="mt-4 px-4 pb-6 lg:px-4 ">
       <div className="xl:container mx-auto mt-6 xl:px-4">
             {category_list_text && (
               <h2

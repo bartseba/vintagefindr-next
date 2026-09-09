@@ -21,7 +21,7 @@ const categories = [
 
 export default function BrandLogoSection() {
     return (
-        <div className={`py-12 mt-12  mb-12 bg-white border-t border-b border-gray-50`}>
+        <div className={`py-12 mt-12  mb-12 bg-white`}>
             <div className={`xl:container mx-auto p-4 lg:p-8 `}>
                 {/* Grid */}
 

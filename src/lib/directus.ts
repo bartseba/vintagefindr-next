@@ -969,7 +969,7 @@ export async function getGuideCategories(): Promise<GuideCategory[]> {
 export interface HighlightCategoryItem {
   id: number
   name: string
-  subline: string | null
+  subline: Array<{ id: number; label: string; href: string }>
   iconUrl: string | null
   href: string
 }
@@ -977,14 +977,16 @@ export interface HighlightCategoryItem {
 interface RawHighlightCategory {
   id: number
   name: string
-  subline: string | null
   icon: { id: string; type: string | null } | null
-  href: string
+  hrefNav: { id: number; href: string } | null
+  sublineNav?: Array<{ navigations_items_id: { id: number; label: string; href: string } | null }>
 }
 
 /**
  * Startseiten-Kategorie-Kacheln ("Unsere Vintage Kategorien"), flache
  * sortierbare Liste ohne m2m-Verknüpfung (nur auf der Startseite genutzt).
+ * `hrefNav`/`sublineNav` sind Auswahlfelder aus `navigations_items` (m2o/m2m)
+ * statt Freitext, damit Redakteure keine URLs/Bezeichnungen selbst tippen.
  */
 export async function getHighlightCategories(): Promise<HighlightCategoryItem[]> {
   if (!directusUrl) return []
@@ -992,7 +994,11 @@ export async function getHighlightCategories(): Promise<HighlightCategoryItem[]>
   try {
     const response = await client.request<RawHighlightCategory[]>(
       readItems('HighlightCategory', {
-        fields: ['id', 'name', 'subline', { icon: ['id', 'type'] }, 'href'] as unknown as string[],
+        fields: [
+          'id', 'name', { icon: ['id', 'type'] },
+          { hrefNav: ['id', 'href'] },
+          { sublineNav: [{ navigations_items_id: ['id', 'label', 'href'] }] },
+        ] as unknown as string[],
         filter: { isPublic: { _eq: true } },
         sort: ['sort'],
         limit: -1,
@@ -1001,12 +1007,58 @@ export async function getHighlightCategories(): Promise<HighlightCategoryItem[]>
     return response.map((item) => ({
       id: item.id,
       name: item.name,
-      subline: item.subline,
+      subline: (item.sublineNav ?? [])
+        .map((junction) => junction.navigations_items_id)
+        .filter((nav): nav is { id: number; label: string; href: string } => nav !== null),
       iconUrl: buildDirectusImageUrl(item.icon, 'categories'),
-      href: item.href,
+      href: item.hrefNav?.href ?? '#',
     }))
   } catch (error) {
     console.error('Failed to fetch highlight categories:', error)
+    return []
+  }
+}
+
+export type HomepageSectionType =
+  | 'collections_grid'
+  | 'ratgeber_highlight'
+  | 'latest_products'
+  | 'algolia_filter_slider'
+  | 'categories'
+  | 'popular_products'
+  | 'brands'
+  | 'product_slider'
+
+export interface HomepageSectionItem {
+  id: number
+  type: HomepageSectionType
+  title: string | null
+  query: string | null
+  hasBackground: boolean
+}
+
+/**
+ * Sortierbare Liste der Startseiten-Sections (außer Hero/Footer) —
+ * steuert Sichtbarkeit, Reihenfolge und Hintergrund-Band pro Section aus
+ * Directus. `product_slider` ist der einzige frei konfigurierbare Typ
+ * (Titel + Algolia-Query), alle anderen Typen schalten bestehende, fest
+ * codierte JSX-Blöcke in `page.tsx` an/aus.
+ */
+export async function getHomepageSections(): Promise<HomepageSectionItem[]> {
+  if (!directusUrl) return []
+  const client = getDirectusClient()
+  try {
+    const sections = await client.request<HomepageSectionItem[]>(
+      readItems('HomepageSection', {
+        fields: ['id', 'type', 'title', 'query', 'hasBackground'],
+        filter: { isPublic: { _eq: true } },
+        sort: ['sort'],
+        limit: -1,
+      })
+    )
+    return sections
+  } catch (error) {
+    console.error('Failed to fetch homepage sections:', error)
     return []
   }
 }
