@@ -10,9 +10,6 @@ interface ShopifyConnectionProps {
   installedAt: string | null
   syncStatus: string | null
   syncedProducts: number
-  shopifyAppUrl: string
-  siteUrl: string
-  vendorId: string
 }
 
 export function ShopifyConnectionCard({
@@ -21,9 +18,6 @@ export function ShopifyConnectionCard({
   installedAt,
   syncStatus,
   syncedProducts,
-  shopifyAppUrl,
-  siteUrl,
-  vendorId,
 }: ShopifyConnectionProps) {
   const [isResyncing, setIsResyncing] = useState(false)
   const [isDisconnecting, setIsDisconnecting] = useState(false)
@@ -87,20 +81,24 @@ export function ShopifyConnectionCard({
           </div>
           <div className="flex-1">
             <h3 className="text-lg font-semibold text-gray-900 mb-1">Shopify Verbindung</h3>
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-sm text-gray-600 mb-2">
               Verbinde deinen Shopify Store, um Produkte automatisch zu synchronisieren.
               Nur Produkte mit dem Tag &quot;vintagefindr&quot; werden importiert.
             </p>
 
-            <a
-              href={`${shopifyAppUrl}/connect?vendor_id=${vendorId}&return_to=${encodeURIComponent(siteUrl + '/vendor/dashboard')}${shopDomain ? '&shop=' + encodeURIComponent(shopDomain) : ''}`}
-              className="inline-block"
-            >
-              <Button className="bg-[#96bf48] hover:bg-[#7fa83d] text-white">
-                <Link2 size={16} className="mr-2" />
-                Shopify verbinden
-              </Button>
-            </a>
+            <p className="text-sm text-gray-600">
+              Installiere VintageFindr direkt aus dem{' '}
+              <a
+                href="https://apps.shopify.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-700 font-medium"
+              >
+                Shopify App Store
+              </a>{' '}
+              — verwende dabei die E-Mail-Adresse deines VintageFindr-Accounts als
+              Shop-Kontakt-E-Mail, dann wird dein Shop automatisch zugeordnet.
+            </p>
           </div>
         </div>
       </div>

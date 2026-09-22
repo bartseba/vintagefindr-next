@@ -182,9 +182,6 @@ export default async function VendorDashboardPage() {
     pausedAt: vendor.paused_at,
   }
 
-  const shopifyAppUrl = process.env.SHOPIFY_APP_URL || ''
-  const siteUrl = process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || ''
-
   return (
     <>
       <div className="min-h-screen bg-white">
@@ -596,9 +593,6 @@ export default async function VendorDashboardPage() {
               installedAt={shopifyStatus.installedAt}
               syncStatus={shopifyStatus.syncStatus}
               syncedProducts={shopifyStatus.syncedProducts}
-              shopifyAppUrl={shopifyAppUrl}
-              siteUrl={siteUrl}
-              vendorId={vendor.id}
             />
           </div>
 
