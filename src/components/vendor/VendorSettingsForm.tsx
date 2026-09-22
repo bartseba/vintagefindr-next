@@ -348,17 +348,17 @@ export function VendorSettingsForm({ vendor }: VendorSettingsFormProps) {
 
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                 <p className="text-blue-800 text-sm font-medium mb-2">
-                  Wichtig: Verwenden Sie Ihre Shopify Domain
+                  Hinweis: Nur für den manuellen CSV-Import
                 </p>
                 <p className="text-blue-700 text-sm">
-                  Für die Shopify App Integration benötigen Sie Ihre originale Shopify Domain (z.B. ihr-shop.myshopify.com oder ihr-shop.shopifypreview.com für Testzwecke).
-                  Diese finden Sie in Ihrem Shopify Admin unter Einstellungen → Domains.
+                  Diese Domain wird ausschließlich verwendet, um Produkt-URLs für manuell per CSV importierte Produkte zu erzeugen.
+                  Sie hat keinen Einfluss auf die Shopify-App-Verbindung: Diese entsteht automatisch, sobald du VintageFindr direkt aus dem Shopify App Store installierst und dabei die E-Mail-Adresse dieses Accounts als Shop-Kontakt-E-Mail verwendest.
                 </p>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Shopify-Domain
+                  Shopify-Domain (nur für CSV-Import)
                 </label>
                 <div className="flex gap-3">
                   <div className="flex-1">
