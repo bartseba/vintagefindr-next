@@ -5,6 +5,7 @@ import { HubSection } from './HubSection'
 import { HubContentBlock } from './HubContentBlock'
 import { ProductSliderBlock } from './ProductSliderBlock'
 import { FaqBlockSection } from './FaqBlockSection'
+import { CollapsibleText } from './ui/CollapsibleText'
 import type { BreadcrumbSegment } from '@/lib/breadcrumb'
 
 interface HubContentPageViewProps {
@@ -26,48 +27,55 @@ interface HubContentPageViewProps {
  * here (this page isn't itself a filtered product listing).
  */
 export function HubContentPageView({ hubContentPage, breadcrumb = [] }: HubContentPageViewProps) {
-  const categoryTeaserItems = hubContentPage.categoryTeaserBlock.filter((item) => item.isPublic)
+  const categoryTeaserItems = hubContentPage.categoryTeaserBlock
+    .filter((item) => item.isPublic)
+    .sort((a, b) => (b.imageUrl ? 1 : 0) - (a.imageUrl ? 1 : 0))
   const productSliderItems = hubContentPage.productSliderBlock.filter((item) => item.isPublic)
 
   return (
     <div className="asdsad">
+      <div className="relative h-[260px] overflow-hidden border-b border-gray-50 bg-vintage-darkGray">
+        <div className="xl:container mx-auto px-4 py-8 flex items-center gap-2 justify-center relative h-[260px] flex-col">
+
+         
+          {hubContentPage.introHeadline && (
+                   <h1 className="font-playfair text-[44px] xl:text-[42px] max-w-[450px] size-auto text-white">
+                    {hubContentPage.introHeadline}
+                    </h1>
+                )}
+       
+ {hubContentPage.introText && (
+                  <div
+                    className="prose prose-sm mt-3 max-w-4xl text-white hover:prose-a:underline text-center"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHTML(hubContentPage.introText) }}
+                  />
+                )}
+        </div>
+      </div>
       <div className="xl:container mx-auto ">
-     
+
 
         {(hubContentPage.introHeadline || hubContentPage.introText) && (
           <div className={hubContentPage.imageUrl ? "md:flex md:items-start md:gap-8 justify-between" : ""}>
             <div className="px-4 mb-4 py-4">
-               {breadcrumb.length > 0 && (
-          <nav aria-label="Breadcrumb" className="mb-3 text-sm text-gray-400">
-            {breadcrumb.map((segment, index) => (
-              <span key={segment.href}>
-                {index > 0 && <span className="mx-2">›</span>}
-                {index === breadcrumb.length - 1 ? (
-                  <span className="text-gray-700">{segment.label}</span>
-                ) : (
-                  <Link href={segment.href} className="hover:text-vintage-primary">
-                    {segment.label}
-                  </Link>
-                )}
-              </span>
-            ))}
-          </nav>
-        )}
-            <div>
-              {hubContentPage.introHeadline && (
-                <h1 className="text-2xl font-bold text-gray-900 lg:text-3xl">
-                  {hubContentPage.introHeadline}
-                </h1>
-              )}
-              {hubContentPage.introText && (
-                <div
-                  className="prose prose-sm mt-3 max-w-4xl text-gray-600 prose-a:text-amber-600 prose-a:no-underline hover:prose-a:underline"
-                  dangerouslySetInnerHTML={{ __html: sanitizeHTML(hubContentPage.introText) }}
-                />
+              {breadcrumb.length > 0 && (
+                <nav aria-label="Breadcrumb" className="mb-3 text-sm text-gray-400">
+                  {breadcrumb.map((segment, index) => (
+                    <span key={segment.href}>
+                      {index > 0 && <span className="mx-2">›</span>}
+                      {index === breadcrumb.length - 1 ? (
+                        <span className="text-gray-700">{segment.label}</span>
+                      ) : (
+                        <Link href={segment.href} className="hover:text-vintage-primary">
+                          {segment.label}
+                        </Link>
+                      )}
+                    </span>
+                  ))}
+                </nav>
               )}
             </div>
-            </div>
-            {hubContentPage.imageUrl && (
+            {/*hubContentPage.imageUrl && (
               // eslint-disable-next-line @next/next/no-img-element -- external Directus/Bunny image hosts, next/image adoption deferred (see migration plan problem #7)
               <img
                 src={hubContentPage.imageUrl}
@@ -75,12 +83,12 @@ export function HubContentPageView({ hubContentPage, breadcrumb = [] }: HubConte
                 className="mt-4 md:mt-0 w-full md:max-w-[380px] shrink-0 object-cover"
                 loading="lazy"
               />
-            )}
+            ) */}
           </div>
         )}
       </div>
       {productSliderItems.length > 0 && (
-        <div className="xl:container mx-auto px-4 space-y-8 my-16">
+        <div className="xl:container mx-auto px-4 space-y-8 mb-16">
           {productSliderItems.slice(0, 1).map((item) => (
             <ProductSliderBlock key={item.id} title={item.title} query={item.query} />
           ))}
@@ -91,7 +99,7 @@ export function HubContentPageView({ hubContentPage, breadcrumb = [] }: HubConte
           <h2 className="xl:container mx-auto px-4 text-2xl font-semibold text-vintage-secondary uppercase tracking-widest mb-2">
             {hubContentPage.Headline}
           </h2>
-          <div className="xl:container mx-auto md:grid md:grid-cols-3 md:gap-6 bg-white p-4">
+          <div className="xl:container mx-auto grid gap-6 md:grid md:grid-cols-3 md:gap-6 bg-white p-4">
             {categoryTeaserItems.map((item, index) => (
               <HubSection
                 key={item.id}
@@ -100,7 +108,7 @@ export function HubContentPageView({ hubContentPage, breadcrumb = [] }: HubConte
                 filterQuery={item.filterQuery}
                 showAllLink={item.link?.href ?? ""}
                 links={item.links ?? undefined}
-                image={item.image}
+                imageUrl={item.imageUrl}
                 image_alt={item.image_alt}
                 isBrand={item.isBrand}
                 brand={hubContentPage.brand_list}
@@ -119,15 +127,26 @@ export function HubContentPageView({ hubContentPage, breadcrumb = [] }: HubConte
           ))}
         </div>
       )}
-      {hubContentPage.content_block.length > 0 && (
+      {(hubContentPage.content_block.length > 0 || hubContentPage.faqBlock) && (
         <div className="xl:container mx-auto px-4 mb-4">
-          {hubContentPage.content_block.map((item) => (
-            <HubContentBlock key={item.id} item={item} />
-          ))}
+          <div
+            className={
+              hubContentPage.content_block.length > 0 && hubContentPage.faqBlock
+                ? 'lg:grid lg:grid-cols-2 lg:gap-10 items-start'
+                : ''
+            }
+          >
+            {hubContentPage.content_block.length > 0 && (
+              <CollapsibleText collapsedHeight={480}>
+                {hubContentPage.content_block.map((item) => (
+                  <HubContentBlock key={item.id} item={item} />
+                ))}
+              </CollapsibleText>
+            )}
+            {hubContentPage.faqBlock && <FaqBlockSection block={hubContentPage.faqBlock} />}
+          </div>
         </div>
       )}
-      
-      {hubContentPage.faqBlock && <div className="xl:container mx-auto px-4 mb-4"><FaqBlockSection block={hubContentPage.faqBlock} /></div>}
     </div>
   )
 }

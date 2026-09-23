@@ -28,7 +28,7 @@ export default function HighlightCategories({ categories }: HighlightCategoriesP
                           src={`${category.iconUrl}`}
                           alt={`${category.name} Vintage Kleidung Icon`}
                           loading="lazy"
-                          className="max-h-full max-w-full object-contain rounded-xl"
+                          className=" max-w-full object-cover min-h-[200px] max-h-[200px]  rounded-xl"
                         />
                       )}
                     </figure>

@@ -12,6 +12,19 @@ export const metadata: Metadata = {
   },
 };
 
+/**
+ * Every page here is CMS/DB-driven (Directus, Supabase, Algolia — all
+ * fetched with `cache: 'no-store'`), so nothing should ever be statically
+ * prerendered anyway. More importantly: on Railway, env vars are only
+ * injected at container runtime, not during the `next build` step. Any
+ * route Next attempts to prerender at build time (routes with no dynamic
+ * segments) runs in that env-less build context — any component in its
+ * tree that eagerly touches `DIRECTUS_URL`/Algolia keys (e.g. `Header`)
+ * throws and fails the entire build. Forcing dynamic rendering at the
+ * root layout defers all of that to real request time for every route.
+ */
+export const dynamic = 'force-dynamic'
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="de" className="h-full">

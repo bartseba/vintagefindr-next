@@ -13,7 +13,7 @@ interface ContentBlockItem {
 export function HubContentBlock({ item }: { item: ContentBlockItem }) {
   return (
     <div className="mb-8">
-      <h2 className="text-xl font-semibold text-vintage-secondary uppercase tracking-widest mb-4">
+      <h2 className="text-2xl font-semibold text-vintage-secondary uppercase tracking-widest mb-4">
         {item.Headline}
       </h2>
       <div className="content-block" dangerouslySetInnerHTML={{ __html: sanitizeHTML(item.IntroText ?? '') }} />

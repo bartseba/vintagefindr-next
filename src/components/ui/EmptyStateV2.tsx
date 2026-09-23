@@ -47,7 +47,7 @@ export function EmptyStateV2({
           <p className="text-xs font-medium uppercase tracking-widest text-gray-400">
             Gerade ausverkauft
           </p>
-          <h2 className="mt-2 text-2xl font-bold text-vintage-secondary sm:text-3xl">
+          <h2 className="mt-2 text-2xl font-bold text-vintage-secondary ">
             Aktuell keine {displayTitle.includes('Vintage') ? displayTitle : `Vintage ${displayTitle}`} verfügbar
           </h2>
           <p className="mt-3 max-w-xl text-base leading-relaxed text-gray-600">
@@ -86,7 +86,7 @@ export function EmptyStateV2({
           <h3 className="text-lg font-bold text-vintage-secondary">
             Andere Vintage Kategorien entdecken
           </h3>
-          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-3">
             {categoryTiles.map((tile) => (
               <Link
                 key={tile.href}

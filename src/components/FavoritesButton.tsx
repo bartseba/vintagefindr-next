@@ -67,11 +67,11 @@ export function FavoritesButton({ initialFavorites = [], userId }: FavoritesButt
       <button
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
         aria-label={favoriteCount > 0 ? `Favoriten anzeigen (${favoriteCount} ${favoriteCount === 1 ? 'Artikel' : 'Artikel'})` : 'Favoriten anzeigen'}
-        className="group flex h-8 w-8 sm:h-[56px] sm:w-[56px] items-center justify-center rounded-md text-vintage-secondary hover:bg-transparent hover:bg-vintage-primary hover:text-white transition-colors"
+        className="group flex h-[56px] w-[56px] items-center justify-center rounded-md text-vintage-secondary hover:bg-transparent hover:bg-vintage-primary hover:text-white transition-colors"
       >
         <span className="relative block">
           <Heart
-            className={`${favoriteCount > 0 && 'fill-vintage-primary text-vintage-primary'} h-6 w-6 lg:h-[35px] lg:w-[35px] group-hover:fill-white group-hover:text-vintage-primary  rounded-md p-1 transition-all`}
+            className={`${favoriteCount > 0 && 'fill-vintage-primary text-vintage-primary'} h-[35px] w-[35px] group-hover:fill-white group-hover:text-vintage-primary  rounded-md p-1 transition-all`}
           />
           {favoriteCount > 0 && (
             <span className="absolute -top-2 -right-2 w-5 h-5 bg-vintage-primary text-white text-xs font-bold border-2 border-white rounded-full flex items-center justify-center">

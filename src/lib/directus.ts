@@ -160,7 +160,8 @@ export interface HubContentItem {
   title: string
   teaser: string
   filterQuery: string
-  image: string
+  image: string | null
+  imageUrl: string | null
   image_alt: string
   variant: "PRIMARY" | "SECONDARY"
   isBrand: "TRUE" | "FALSE"
@@ -227,7 +228,7 @@ const MIME_TO_EXT: Record<string, string> = {
   'image/svg+xml': 'svg',
 }
 
-function buildDirectusImageUrl(
+export function buildDirectusImageUrl(
   file: { id: string; type?: string | null } | null | undefined,
   imageClass: string
 ): string | null {
@@ -237,7 +238,8 @@ function buildDirectusImageUrl(
   return `${base}${file.id}.${ext}?class=${imageClass}`
 }
 
-type RawHubContentItem = Omit<HubContentItem, 'links'> & {
+type RawHubContentItem = Omit<HubContentItem, 'links' | 'image' | 'imageUrl'> & {
+  image: { id: string; type?: string | null } | null
   links?: Array<{ navigations_items_id: { id: number; label: string; href: string } | null }>
 }
 
@@ -289,7 +291,7 @@ export async function getHubContentPageById(id: number): Promise<HubContentPage 
           'image_alt',
           {
             CategoryTeaserBlock: [
-              { HubContent_id: ['id', 'title', 'teaser', 'filterQuery', 'image', 'variant', 'isBrand', 'isPublic', 'image_alt',
+              { HubContent_id: ['id', 'title', 'teaser', 'filterQuery', { image: ['id', 'type'] }, 'variant', 'isBrand', 'isPublic', 'image_alt',
                 { link: ['id', 'label', 'href'] },
                 { links: [{ navigations_items_id: ['id', 'label', 'href'] }] }
               ] }
@@ -317,6 +319,8 @@ export async function getHubContentPageById(id: number): Promise<HubContentPage 
       const item = junction.HubContent_id
       return {
         ...item,
+        image: item.image?.id ?? null,
+        imageUrl: buildDirectusImageUrl(item.image, 'categories'),
         links: (item.links ?? []).map((l) => l.navigations_items_id).filter((l): l is { id: number; label: string; href: string } => l !== null),
       }
     }

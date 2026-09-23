@@ -47,7 +47,7 @@ export default function Hero({ gridImageSrc: _gridImageSrc = "/hero-fade.png" }:
               Entdecke das besondere
             </p>
 
-            <h1 className="font-playfair uppercase text-[62px] xl:text-[62px] leading-[1.15] tracking-tight text-vintage-darkGray mb-4">
+            <h1 className="font-playfair uppercase text-[44px] xl:text-[62px] leading-[1.15] tracking-tight text-vintage-darkGray mb-4">
               Vintage Mode & <span className="lg:block">Second Hand.</span>
             </h1>
 

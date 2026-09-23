@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import type { UiState } from "instantsearch.js";
 import { Configure, useClearRefinements, useCurrentRefinements, useSearchBox, useStats } from "react-instantsearch";
 import { InstantSearchNext } from "react-instantsearch-nextjs";
-import { SlidersHorizontal, X } from "lucide-react";
+import { ArrowRight, SlidersHorizontal, X } from "lucide-react";
 import { searchClient } from "@/lib/algolia/client";
 import { buildConfigure } from "@/lib/algolia/filterConfig";
 import { useTextStore } from "@/hooks/useTextStore";
@@ -14,7 +14,7 @@ import Link from "next/link";
 import type { SidebarNavigationItem, PopularBrand } from "@/lib/directus";
 import type { FavoriteProduct } from "@/hooks/useFavoritesQuery";
 import { CustomHits } from "../CustomHits";
-import { CategoryHero, type BreadcrumbSegment } from "../CategoryHero";
+import { CategoryHero } from "../CategoryHero";
 import { VintageSidebar, findCurrentParent, buildChildHref } from "../VintageSidebar";
 import { SimpleSearchOverlay } from "../SimpleSearchOverlay";
 import { SortByDropdown } from "./SortByDropdown";
@@ -23,6 +23,7 @@ import { PriceRangeAccordion } from "./PriceRangeAccordion";
 import { PaginationWrapper } from "./PaginationWrapper";
 import { Button } from "../ui/Button";
 import { PILL_SMALL } from "../ui/Pill";
+import { BreadcrumbSegment } from "@/lib/breadcrumb";
 
 /**
  * Ported from `app/components/algolia/SearchClientSSR.tsx`'s `SearchSSR`.
@@ -303,7 +304,22 @@ function CategorySearchBody({
 
   return (
     <div>
-      <CategoryHero h1={h1} safeHtml={introSafeHtml} breadcrumb={breadcrumb ?? []} />
+      {breadcrumb && breadcrumb.length > 0 && (
+        <nav aria-label="Breadcrumb" className="text-[12px] uppercase tracking-wide text-gray-400 my-4">
+          {breadcrumb.map((segment, index) => (
+              <>
+              {index > 0 && <span className="mx-2 relative -top-px font-semibold">›</span>}
+              {index === breadcrumb.length - 1 ? (
+                <span className="text-vintage-secondary font-semibold relative -top-px">{segment.label}</span>
+              ) : (
+                <Link href={segment.href} className="hover:text-vintage-primary font-semibold ">
+                  {segment.label}
+                </Link>
+              )}
+       </>
+          ))}
+        </nav>
+      )}
 
       {!isEmptyCategory && (
         <>
@@ -416,37 +432,38 @@ function CategorySearchBody({
       </div>
       <div className="lg:grid lg:grid-cols-[300px_1fr] lg:gap-5 ">
         {isEmptyCategory ? (
-          <div className="hidden lg:block min-w-full h-fit gap-4 mb-6 p-4 bg-white rounded-md border border-gray-200">
-            <p className="text-md font-bold uppercase tracking-wide text-vintage-secondary">Filter</p>
-            <p className="mt-2 text-sm text-gray-500">
-              Filter sind verfügbar, sobald Produkte in dieser Kategorie gelistet sind.
-            </p>
-            <hr className="my-4 border-t border-gray-200" />
+          <div className="hidden lg:block min-w-full h-fit space-y-6 mb-6">
             {currentParent?.children && currentParent.children.length > 0 && (
-              <div className="mt-5">
-                <p className="text-md font-semibold uppercase tracking-wide text-vintage-secondary">
+              <div className="bg-white rounded-md border border-gray-200 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
                   {currentParent.label} nach Typ
                 </p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {currentParent.children.map((child) => (
-                    <Link
-                      key={child.id}
-                      href={buildChildHref(currentParent, brandSegment, child)}
-                      className={PILL_SMALL}
-                    >
-                      {child.label}
-                    </Link>
-                  ))}
+                <div className="mt-3 flex flex-col">
+                  {currentParent.children.map((child) => {
+                    const childHref = buildChildHref(currentParent, brandSegment, child)
+                    const isActive = pathname === childHref || pathname.startsWith(childHref + '/')
+                    return (
+                      <Link
+                        key={child.id}
+                        href={childHref}
+                        className={`flex items-center justify-between py-2 text-sm border-b border-gray-100 last:border-b-0 ${
+                          isActive ? 'text-vintage-primary underline' : 'text-gray-900 hover:text-vintage-primary'
+                        }`}
+                      >
+                        {child.label}
+                        <ArrowRight size={14} className="shrink-0" />
+                      </Link>
+                    )
+                  })}
                 </div>
               </div>
             )}
-            <hr className="my-4 border-t border-gray-200" />
             {popularBrands && popularBrands.length > 0 && (
-              <div className="mt-5">
-                <p className="text-md font-semibold uppercase tracking-wide text-vintage-secondary">
+              <div className="bg-white rounded-md border border-gray-200 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
                   Beliebte Marken
                 </p>
-                <div className="mt-2 flex flex-wrap gap-2">
+                <div className="mt-3 flex flex-wrap gap-2">
                   {popularBrands.map((popularBrand) => (
                     <Link
                       key={popularBrand.id}
@@ -472,6 +489,7 @@ function CategorySearchBody({
         )}
 
         <div>
+          <CategoryHero h1={h1} safeHtml={introSafeHtml} />
           {isFilteredToZero && (
             <div className="mb-4 flex items-center justify-between rounded-md border border-gray-200 bg-vintage-silverGray/40 px-4 py-3 text-sm text-gray-600">
               Keine Treffer für die aktuelle Filterauswahl.

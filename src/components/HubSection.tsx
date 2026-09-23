@@ -20,7 +20,7 @@ interface HubSectionProps {
   filterQuery: string
   showAllLink: string
   links?: NavLink[]
-  image?: string
+  imageUrl?: string | null
   image_alt?: string
   isPublic: boolean
   isBrand?: "TRUE" | "FALSE"
@@ -31,44 +31,45 @@ interface HubSectionProps {
 
 function CategoryLinks({ links, variant, isBrand, brandHref }: { isBrand: boolean, showAllLink: string; links?: NavLink[], brandHref?: string, variant: "PRIMARY" | "SECONDARY" }) {
   return (
-    <div className={`${variant === "PRIMARY" ? "" : "ml-6"}`}>
+     <>
       {links && links.length > 0 && (
         <>
-        <div className="flex flex-wrap gap-2">
+        <ul className="flex flex-wrap gap-2 justify-center">
           {links.map(item => (
-            <Link
-              key={item.id}
-              href={isBrand && brandHref ? item.href.replace('/vintage', brandHref) : item.href}
-              className={`${PILL_BASE_SMALL} ${PILL_INACTIVE}`}
-            >
-              {item.label}
-            </Link>
+            <li key={item.id}>
+              <Link
+                key={item.id}
+                href={isBrand && brandHref ? item.href.replace('/vintage', brandHref) : item.href}
+                className={`${PILL_BASE_SMALL} ${PILL_INACTIVE}`}
+              >
+                {item.label}
+              </Link>
+              </li>
           ))}
-        </div>
+      
+        </ul>
         </>
       )}
-    </div>
+</>
   )
 }
 
-export async function HubSection({ isBrand, brand, title, teaserHtml, filterQuery, showAllLink, links, image, variant = "PRIMARY", isPublic, image_alt, priority = false }: HubSectionProps) {
+export async function HubSection({ isBrand, brand, title, teaserHtml, filterQuery, showAllLink, links, imageUrl, variant = "PRIMARY", isPublic, image_alt, priority = false }: HubSectionProps) {
   const safeHTML = sanitizeHTML(teaserHtml)
   const hits = filterQuery ? await searchProducts(filterQuery, 12) : []
   return (
     <>
     {isPublic && (
       <section className="border  bg-vintage-silverGray border-gray-200 p-6">
-      <div className={isBrand?.toUpperCase() === "TRUE" ? "block" : variant === "PRIMARY" ? "md:flex md:flex-1" : "mb:flex mb:flex-1 mb:flex-row-reverse"}>
-        {false && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img className="aspect-[4_/_3] object-cover w-[400px]" alt={image_alt ?? title} loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : undefined} width="400" height="300" src={`${process.env.NEXT_PUBLIC_DIRECTUS_IMAGE_URL}${image}.jpg?class=contentpage`} />
+      <div className={"flex flex-col items-center"}>
+        {imageUrl && (
+        // eslint-disable-next-line @next/next/no-img-element -- external Directus/Bunny image hosts, next/image adoption deferred (see migration plan problem #7)
+        <img className="aspect-[4_/_3] object-cover w-[200px] h-[200px] rounded-full" alt={image_alt ?? title} loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : undefined} width="400" height="300" src={imageUrl} />
         )}
         <div className={`${false ? `${variant === "PRIMARY" ? "ml-6 mt-4" : "mr-6 mt-4"}`: ""}`}>
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-xl font-semibold text-gray-900">{title}</p>
-          </div>
-          <div
-            className="prose prose-sm text-gray-600 mb-4 max-w-none text-sm"
+            <p className="text-2xl font-semibold text-gray-900 text-center my-3">{title}</p>
+          <section
+            className="prose prose-sm text-gray-600 mb-4 max-w-none text-sm text-center"
             dangerouslySetInnerHTML={{ __html: safeHTML }}
           />
           <CategoryLinks variant="PRIMARY" showAllLink={showAllLink} links={links} isBrand={isBrand?.toUpperCase() === "TRUE"} brandHref={brand?.href ?? undefined} />

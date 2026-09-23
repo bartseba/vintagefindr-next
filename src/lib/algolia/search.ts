@@ -1,10 +1,22 @@
 import 'server-only'
 import { liteClient as algoliasearch } from 'algoliasearch/lite'
 
-const searchClient = algoliasearch(
-  process.env.ALGOLIA_APP_ID || process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
-  process.env.ALGOLIA_SEARCH_API_KEY || process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY!
-)
+/**
+ * Lazily constructed — must not run at module scope. `/` has no dynamic
+ * segments, so Next.js executes this module during `next build`'s static
+ * prerender attempt, where platform env vars (e.g. Railway) aren't
+ * injected yet; an eager `algoliasearch(...)` call there throws
+ * "`appId` is missing" and fails the whole build.
+ */
+let searchClient: ReturnType<typeof algoliasearch> | null = null
+
+function getSearchClient() {
+  const appId = process.env.ALGOLIA_APP_ID || process.env.NEXT_PUBLIC_ALGOLIA_APP_ID
+  const apiKey = process.env.ALGOLIA_SEARCH_API_KEY || process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY
+  if (!appId || !apiKey) return null
+  if (!searchClient) searchClient = algoliasearch(appId, apiKey)
+  return searchClient
+}
 
 export interface ProductHit {
   objectID: string
@@ -44,8 +56,10 @@ export interface ProductHit {
  */
 export async function searchProducts(filters: string, hitsPerPage = 12): Promise<ProductHit[]> {
   if (!filters) return []
+  const client = getSearchClient()
+  if (!client) return []
   try {
-    const { results } = await searchClient.searchForHits<ProductHit>({
+    const { results } = await client.searchForHits<ProductHit>({
       requests: [
         {
           indexName: 'products',

@@ -78,7 +78,7 @@ export function HeaderPrimary({ user, userFavorites, vendorProfile, navigationSe
           }}
           className="flex lg:hidden text-sm roboto-mono-vintage font-medium items-center justify-center bg-vintage-primary text-white hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-white/50 h-[50px] min-w-[110px] rounded-md px-4"
         >
-          Entdecken
+          Kleidung
           <ChevronDown className={isMegaOpen ? 'rotate-180 transition-transform ml-1' : 'transition-transform ml-1'} />
         </button>
 
@@ -106,7 +106,7 @@ export function HeaderPrimary({ user, userFavorites, vendorProfile, navigationSe
                 type="button"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 aria-label="Benutzerkonto"
-                className="w-[25px] h-[25px] lg:w-[50px] lg:h-[50px] grow bg-vintage-primary rounded-full flex items-center justify-center"
+                className="w-[35px] h-[35px] lg:w-[50px] lg:h-[50px] grow bg-vintage-primary rounded-full flex items-center justify-center"
               >
                 <span className="text-white font-medium text-xl">
                   {user.first_name?.charAt(0) || user.email?.charAt(0) || 'U'}
