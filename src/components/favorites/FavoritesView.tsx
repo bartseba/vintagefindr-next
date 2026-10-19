@@ -20,6 +20,7 @@ export interface FavoriteListItem {
   imageUrl?: string
   vendorName: string
   productUrl?: string
+  tags?: string | null
 }
 
 interface FavoritesViewProps {
@@ -109,6 +110,7 @@ export function FavoritesView({ favorites, userId, totalCount: initialTotalCount
                 imageUrl={product.imageUrl}
                 vendorName={product.vendorName}
                 productUrl={product.productUrl}
+                tags={product.tags}
                 userId={userId}
               />
               <button

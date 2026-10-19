@@ -10,17 +10,53 @@ interface GoRedirectClientProps {
   vendorName: string
 }
 
+/**
+ * Affiliate products' `product_url` already IS a complete Awin tracking
+ * deeplink (e.g. awin1.com/pclick.php?p=...&a=...&m=...), baked in at
+ * import time — see the vendor product feed. Awin's tracking cookie
+ * requires prior consent under § 25 TDDDG, so per Awin's own Consent
+ * Signals Framework (help.awin.com/developers/docs/consent-framework-for-partners,
+ * which explicitly covers product-feed deeplinks, not just cread.php) we
+ * append `&cons=1`/`&cons=0` to that existing URL — omitting it makes
+ * Awin *assume* consent was already obtained, so it must always be sent
+ * explicitly. `cons=1` lets Awin set its cookie and pass a click ID;
+ * `cons=0` still redirects the user through but without cookie/click ID.
+ * Non-Awin product URLs are passed through unchanged.
+ */
+function resolveRedirectUrl(targetUrl: string): string {
+  let url: URL
+  try {
+    url = new URL(targetUrl)
+  } catch {
+    return targetUrl
+  }
+  if (!url.hostname.endsWith('awin1.com')) return targetUrl
+
+  const hasConsent = localStorage.getItem('awin_consent') === 'accepted'
+  url.searchParams.set('cons', hasConsent ? '1' : '0')
+  return url.toString()
+}
+
 export function GoRedirectClient({ targetUrl, productTitle, vendorName }: GoRedirectClientProps) {
   const [countdown, setCountdown] = useState(3)
+  // Starts as targetUrl to match the server-rendered markup exactly, then
+  // resolved for real client-side (reads localStorage, so it must happen
+  // after mount to avoid a hydration mismatch).
+  const [redirectUrl, setRedirectUrl] = useState(targetUrl)
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- hydration-safe resolution, ported pattern from CookieConsent's `mounted` flag: reads localStorage, must run client-only after the SSR-matching initial render
+    setRedirectUrl(resolveRedirectUrl(targetUrl))
+  }, [targetUrl])
 
   useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 300)
       return () => clearTimeout(timer)
     } else {
-      window.location.href = targetUrl
+      window.location.href = redirectUrl
     }
-  }, [countdown, targetUrl])
+  }, [countdown, redirectUrl])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
@@ -57,7 +93,7 @@ export function GoRedirectClient({ targetUrl, productTitle, vendorName }: GoRedi
           </div>
 
           <a
-            href={targetUrl}
+            href={redirectUrl}
             rel="nofollow sponsored noopener"
             target="_blank"
             className="inline-block text-sm text-vintage-primary hover:text-vintage-secondary font-medium underline"

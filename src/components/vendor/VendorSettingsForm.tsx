@@ -52,6 +52,7 @@ export function VendorSettingsForm({ vendor }: VendorSettingsFormProps) {
   const [avatarUrl, setAvatarUrl] = useState(vendor.avatarUrl || '')
   const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false)
   const [showShopifyDomainModal, setShowShopifyDomainModal] = useState(false)
+  const [showShopifyEditWarning, setShowShopifyEditWarning] = useState(false)
   const [shopifyDomain, setShopifyDomain] = useState(vendor.shopifyDomain || '')
 
   const getInitials = () => {
@@ -360,25 +361,51 @@ export function VendorSettingsForm({ vendor }: VendorSettingsFormProps) {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Shopify-Domain (nur für CSV-Import)
                 </label>
-                <div className="flex gap-3">
-                  <div className="flex-1">
-                    <Input
-                      name="shopifyDomain"
-                      placeholder="ihr-shop.myshopify.com"
-                      value={shopifyDomain}
-                      onChange={(e) => setShopifyDomain(e.target.value)}
-                      error={state.errors?.shopifyDomain}
-                      hint="Format: ihr-shop.myshopify.com (ohne https://)"
-                    />
+                <input type="hidden" name="shopifyDomain" value={shopifyDomain} />
+                <div className="flex gap-3 items-center">
+                  <div className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg">
+                    {shopifyDomain ? (
+                      <span className="font-mono text-sm text-gray-900">{shopifyDomain}</span>
+                    ) : (
+                      <span className="text-sm text-gray-400 italic">Keine Domain hinterlegt</span>
+                    )}
                   </div>
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => setShowShopifyDomainModal(true)}
+                    onClick={() => setShowShopifyEditWarning(true)}
                   >
                     Bearbeiten
                   </Button>
                 </div>
+                {state.errors?.shopifyDomain && (
+                  <p className="mt-1 text-sm text-red-600">{state.errors.shopifyDomain}</p>
+                )}
+                {showShopifyEditWarning && (
+                  <div className="mt-3 bg-amber-50 border border-amber-300 rounded-lg p-4">
+                    <p className="text-sm font-medium text-amber-900 mb-1">Achtung: Domain ändern bricht bestehende Produktlinks</p>
+                    <p className="text-sm text-amber-800 mb-3">
+                      Eine Änderung der Domain bricht URLs aller per CSV importierten Produkte. Stelle sicher, dass du die richtige Domain eingibst.
+                    </p>
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowShopifyEditWarning(false)}
+                      >
+                        Abbrechen
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={() => { setShowShopifyEditWarning(false); setShowShopifyDomainModal(true) }}
+                      >
+                        Trotzdem bearbeiten
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

@@ -78,6 +78,7 @@ function CarouselHitItem({ item, user, handleClickout }: { item: Hit; user?: { i
       vendorName={item.vendor_name || 'Unknown'}
       productUrl={item.product_url}
       checkoutUrl={item.checkout_url}
+      tags={item.tags}
       userId={user?.id}
       onProductClick={() => handleClickout(item)}
       shipping_cost={item.shipping_cost}

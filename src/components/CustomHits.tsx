@@ -22,6 +22,7 @@ interface Hit {
   vendor_id?: string
   product_url?: string
   checkout_url?: string
+  tags?: string
 }
 
 type CustomHitsProps = UseHitsProps<Hit> & {
@@ -51,6 +52,7 @@ function HitItem({ item, user, onProductClick }: { item: Hit; user?: { id?: stri
       vendorName={item.vendor_name || 'Unknown'}
       productUrl={item.product_url}
       checkoutUrl={item.checkout_url}
+      tags={item.tags}
       userId={user?.id}
       onProductClick={() => onProductClick?.(item.id)}
     />

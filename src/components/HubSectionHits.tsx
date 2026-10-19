@@ -63,6 +63,7 @@ export function HubSectionHits({ hits, title }: { hits: ProductHit[]; title: str
           vendorName={item.vendor_name || 'Unknown'}
           productUrl={item.product_url}
           checkoutUrl={item.checkout_url}
+          tags={item.tags}
           onProductClick={() => handleClickout(item)}
           shipping_cost={item.shipping_cost}
           free_shipping_threshold={item.free_shipping_threshold}

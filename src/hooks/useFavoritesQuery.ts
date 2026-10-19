@@ -13,6 +13,7 @@ export interface FavoriteProduct {
   imageUrl?: string
   vendorName: string
   productUrl?: string
+  tags?: string | null
 }
 
 interface FavoritesResponse {

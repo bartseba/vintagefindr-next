@@ -33,6 +33,7 @@ export interface ProductHit {
   vendor_id?: string
   product_url?: string
   checkout_url?: string
+  tags?: string
   shipping_cost?: number
   free_shipping_threshold?: number
   delivery_time_min_days?: number

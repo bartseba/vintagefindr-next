@@ -115,20 +115,33 @@ export default async function VendorDashboardPage() {
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   const weekStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
   const monthStart = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+  const twoMonthsStart = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000)
+
+  const yesterdayStart = new Date(todayStart.getTime() - 24 * 60 * 60 * 1000)
+  const prevWeekStart = new Date(weekStart.getTime() - 7 * 24 * 60 * 60 * 1000)
+  const prevMonthStart = new Date(monthStart.getTime() - 30 * 24 * 60 * 60 * 1000)
 
   const { data: allClicksData } = await supabase
     .from('product_clicks')
     .select('id, clicked_at, product_id, products(title, price, condition)')
     .eq('vendor_id', vendor.id)
-    .gte('clicked_at', monthStart.toISOString())
+    .gte('clicked_at', twoMonthsStart.toISOString())
 
   const clicksData = (allClicksData || []) as unknown as ProductClickRow[]
 
   const todayStartTime = todayStart.getTime()
   const weekStartTime = weekStart.getTime()
+  const monthStartTime = monthStart.getTime()
+  const yesterdayStartTime = yesterdayStart.getTime()
+  const prevWeekStartTime = prevWeekStart.getTime()
+  const prevMonthStartTime = prevMonthStart.getTime()
 
   let todayClicks = 0
   let weeklyClicks = 0
+  let monthlyClicks = 0
+  let yesterdayClicks = 0
+  let prevWeekClicks = 0
+  let prevMonthClicks = 0
   const productClickCounts = new Map<string, { name: string; clicks: number; price: number; condition: string }>()
 
   clicksData.forEach((click) => {
@@ -136,6 +149,10 @@ export default async function VendorDashboardPage() {
 
     if (clickTime >= todayStartTime) todayClicks++
     if (clickTime >= weekStartTime) weeklyClicks++
+    if (clickTime >= monthStartTime) monthlyClicks++
+    if (clickTime >= yesterdayStartTime && clickTime < todayStartTime) yesterdayClicks++
+    if (clickTime >= prevWeekStartTime && clickTime < weekStartTime) prevWeekClicks++
+    if (clickTime >= prevMonthStartTime && clickTime < monthStartTime) prevMonthClicks++
 
     const productTitle = click.products?.title || 'Unknown'
     const existing = productClickCounts.get(productTitle)
@@ -161,12 +178,24 @@ export default async function VendorDashboardPage() {
     time: new Date(product.created_at).toLocaleDateString('de-DE'),
   }))
 
+  const pctChange = (current: number, previous: number): number | null => {
+    if (previous === 0) return null
+    return Math.round(((current - previous) / previous) * 100)
+  }
+
+  const todayChange = pctChange(todayClicks, yesterdayClicks)
+  const weekChange = pctChange(weeklyClicks, prevWeekClicks)
+  const monthChange = pctChange(monthlyClicks, prevMonthClicks)
+
   const stats = {
     totalProducts,
     publishedProducts,
     todayClicks,
     weeklyClicks,
-    monthlyClicks: clicksData.length,
+    monthlyClicks,
+    todayChange,
+    weekChange,
+    monthChange,
     topProducts,
     recentActivity,
   }
@@ -561,21 +590,21 @@ export default async function VendorDashboardPage() {
             <KPICard
               title="Heute"
               value={stats.todayClicks}
-              change={{ value: 12, period: 'vs gestern' }}
+              change={stats.todayChange !== null ? { value: stats.todayChange, period: 'vs gestern' } : undefined}
               icon={<Eye className="w-6 h-6 text-amber-600" />}
             />
 
             <KPICard
               title="7 Tage"
               value={stats.weeklyClicks}
-              change={{ value: 8, period: 'vs letzte Woche' }}
+              change={stats.weekChange !== null ? { value: stats.weekChange, period: 'vs letzte Woche' } : undefined}
               icon={<MousePointerClick className="w-6 h-6 text-blue-600" />}
             />
 
             <KPICard
               title="30 Tage"
               value={stats.monthlyClicks}
-              change={{ value: -3, period: 'vs letzter Monat' }}
+              change={stats.monthChange !== null ? { value: stats.monthChange, period: 'vs letzter Monat' } : undefined}
               icon={<TrendingUp className="w-6 h-6 text-green-600" />}
             />
             <KPICard

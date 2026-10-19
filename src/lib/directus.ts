@@ -1574,7 +1574,7 @@ interface RawNavigationSectionWithSynonyms {
     label: string
     href?: string
     synonyme?: Array<{ name: string | null }>
-    items?: Array<{
+    children?: Array<{
       id: string
       label: string
       href?: string
@@ -1601,7 +1601,7 @@ export async function getCategoryKeywords(): Promise<Record<string, string[]>> {
         fields: [
           'id', 'title', 'slug',
           'items.id', 'items.label', 'items.href', 'items.synonyme.name',
-          'items.items.id', 'items.items.label', 'items.items.href', 'items.items.synonyme.name',
+          'items.children.id', 'items.children.label', 'items.children.href', 'items.children.synonyme.name',
         ],
         deep: {
           items: {
@@ -1640,7 +1640,7 @@ export async function getCategoryKeywords(): Promise<Record<string, string[]>> {
           }
         }
 
-        for (const child of item.items || []) {
+        for (const child of item.children || []) {
           if (child.href) {
             const childSlug = child.href.split('/').pop()
             if (childSlug) {

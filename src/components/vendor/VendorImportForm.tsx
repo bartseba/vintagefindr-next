@@ -21,11 +21,15 @@ interface VendorImportFormProps {
 
 const initialState: ImportActionState = {}
 
+const MAX_CSV_SIZE_BYTES = 10 * 1024 * 1024
+
 export function VendorImportForm({ importHistory, shopifyDomain }: VendorImportFormProps) {
   const [state, formAction, isProcessing] = useActionState(importCSV, initialState)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [fileSizeError, setFileSizeError] = useState<string | null>(null)
   const [publishImmediately, setPublishImmediately] = useState(true)
+  const [hotlinkImages, setHotlinkImages] = useState(false)
   const [csvFormat, setCsvFormat] = useState<'standard' | 'shopify'>('standard')
   const [showShopifyDomainModal, setShowShopifyDomainModal] = useState(false)
   const [currentShopifyDomain, setCurrentShopifyDomain] = useState(shopifyDomain || '')
@@ -61,9 +65,17 @@ export function VendorImportForm({ importHistory, shopifyDomain }: VendorImportF
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
-    if (file) {
-      setSelectedFile(file)
+    if (!file) return
+
+    if (file.size > MAX_CSV_SIZE_BYTES) {
+      setFileSizeError(`Die Datei "${file.name}" ist zu groß (${(file.size / 1024 / 1024).toFixed(1)} MB). Maximal erlaubt sind 10 MB.`)
+      setSelectedFile(null)
+      event.target.value = ''
+      return
     }
+
+    setFileSizeError(null)
+    setSelectedFile(file)
   }
 
   // React 19 resets uncontrolled form fields (incl. the file input) after
@@ -142,7 +154,7 @@ export function VendorImportForm({ importHistory, shopifyDomain }: VendorImportF
           </div>
         </div>
 
-        <form action={formAction} encType="multipart/form-data" className="space-y-6">
+        <form action={formAction} className="space-y-6">
           <CSVFormatSelector
             csvFormat={csvFormat}
             onFormatChange={setCsvFormat}
@@ -154,6 +166,15 @@ export function VendorImportForm({ importHistory, shopifyDomain }: VendorImportF
             selectedFile={selectedFile}
             onFileSelect={handleFileSelect}
           />
+
+          {fileSizeError && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <div className="flex items-center gap-3">
+                <AlertCircle className="w-5 h-5 text-red-600" />
+                <p className="text-sm text-red-800">{fileSizeError}</p>
+              </div>
+            </div>
+          )}
 
           {selectedFile && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -311,6 +332,26 @@ export function VendorImportForm({ importHistory, shopifyDomain }: VendorImportF
                 </p>
                 <p className="text-sm text-gray-600">
                   Wenn aktiviert, werden Produkte sofort im Shop sichtbar. Wenn deaktiviert, werden sie als Entwurf gespeichert.
+                </p>
+              </div>
+            </label>
+          </div>
+
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                name="hotlinkImages"
+                checked={hotlinkImages}
+                onChange={(e) => setHotlinkImages(e.target.checked)}
+                className="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <div>
+                <p className="font-medium text-gray-900">
+                  Bild-URLs direkt verlinken statt hochzuladen
+                </p>
+                <p className="text-sm text-gray-600">
+                  Wenn aktiviert, werden die Bild-URLs aus der CSV unverändert übernommen, statt die Bilder auf unser CDN hochzuladen. Sinnvoll für externe Feeds, bei denen die Bilder weiterhin vom Original-Anbieter gehostet werden dürfen/sollen.
                 </p>
               </div>
             </label>

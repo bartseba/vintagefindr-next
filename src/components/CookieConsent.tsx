@@ -4,18 +4,36 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
-const CONSENT_KEY = "posthog_consent";
+const POSTHOG_CONSENT_KEY = "posthog_consent";
+const AWIN_CONSENT_KEY = "awin_consent";
 
 export type ConsentStatus = "pending" | "accepted" | "rejected";
 
+export interface ConsentState {
+  posthog: ConsentStatus;
+  awin: ConsentStatus;
+}
+
 interface CookieConsentProps {
-  onConsentChange: (status: ConsentStatus) => void;
+  onConsentChange: (consent: ConsentState) => void;
+}
+
+function readConsent(): ConsentState {
+  return {
+    posthog: (localStorage.getItem(POSTHOG_CONSENT_KEY) as ConsentStatus) || "pending",
+    awin: (localStorage.getItem(AWIN_CONSENT_KEY) as ConsentStatus) || "pending",
+  };
 }
 
 export function CookieConsent({ onConsentChange }: CookieConsentProps) {
   const [showBanner, setShowBanner] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [mounted, setMounted] = useState(false);
+  // Default to "rejected", not "pending": GDPR requires that a category
+  // the user never actively toggles is saved as no-consent, not as a
+  // dangling "pending" value written to localStorage by "Auswahl speichern".
+  const [draftPosthog, setDraftPosthog] = useState<ConsentStatus>("rejected");
+  const [draftAwin, setDraftAwin] = useState<ConsentStatus>("rejected");
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- hydration-safe mount flag, ported as-is from the working Remix component
@@ -23,29 +41,32 @@ export function CookieConsent({ onConsentChange }: CookieConsentProps) {
 
     if (typeof window === "undefined") return;
 
-    const savedConsent = localStorage.getItem(CONSENT_KEY);
-    if (!savedConsent) {
+    const posthogConsent = localStorage.getItem(POSTHOG_CONSENT_KEY);
+    const awinConsent = localStorage.getItem(AWIN_CONSENT_KEY);
+
+    if (!posthogConsent || !awinConsent) {
       setShowBanner(true);
-      onConsentChange("pending");
+      setDraftPosthog(posthogConsent === "accepted" ? "accepted" : "rejected");
+      setDraftAwin(awinConsent === "accepted" ? "accepted" : "rejected");
+      onConsentChange(readConsent());
     } else {
-      onConsentChange(savedConsent as ConsentStatus);
+      onConsentChange(readConsent());
     }
   }, [onConsentChange]);
 
   // Don't render anything on server
   if (!mounted) return null;
 
-  const handleAccept = () => {
-    localStorage.setItem(CONSENT_KEY, "accepted");
+  const applyConsent = (posthog: ConsentStatus, awin: ConsentStatus) => {
+    localStorage.setItem(POSTHOG_CONSENT_KEY, posthog);
+    localStorage.setItem(AWIN_CONSENT_KEY, awin);
     setShowBanner(false);
-    onConsentChange("accepted");
+    onConsentChange({ posthog, awin });
   };
 
-  const handleReject = () => {
-    localStorage.setItem(CONSENT_KEY, "rejected");
-    setShowBanner(false);
-    onConsentChange("rejected");
-  };
+  const handleAcceptAll = () => applyConsent("accepted", "accepted");
+  const handleRejectAll = () => applyConsent("rejected", "rejected");
+  const handleSaveSelection = () => applyConsent(draftPosthog, draftAwin);
 
   if (!showBanner) return null;
 
@@ -61,6 +82,11 @@ export function CookieConsent({ onConsentChange }: CookieConsentProps) {
               Wir nutzen PostHog zur Analyse der Website-Nutzung (<strong>Ihre Einwilligung erforderlich</strong>).
               Dabei werden <strong>keine Cookies</strong> gesetzt. Es werden pseudonymisierte Daten
               (Seitenaufrufe, Klicks, Geräteinformationen) auf EU-Servern gespeichert.
+            </p>
+            <p className="text-sm text-gray-600 mb-3">
+              Bei mit „Werbung" gekennzeichneten Produkten kann unser Partnernetzwerk Awin beim Klick
+              ein Tracking-Cookie setzen, um Käufe unserer Provision zuzuordnen (<strong>Ihre Einwilligung erforderlich</strong>).
+              Ohne Einwilligung werden Sie weiterhin zum Händler weitergeleitet, nur ohne dass Awin dabei ein Cookie setzt.
             </p>
             <p className="text-sm text-gray-600 mb-3">
               Weitere Informationen finden Sie in unserer{" "}
@@ -95,16 +121,73 @@ export function CookieConsent({ onConsentChange }: CookieConsentProps) {
                 Die Funktion "Zuletzt angesehen" speichert besuchte Produkte lokal für 30 Tage.
                 Diese Daten bleiben auf Ihrem Gerät und werden nicht übertragen.
               </p>
-              <ul className="list-disc list-inside space-y-1 text-gray-600">
-                <li>Anbieter: PostHog Inc.</li>
-                <li>Zweck: Analyse der Website-Nutzung zur Verbesserung</li>
-                <li>Verarbeitete Daten: Seitenaufrufe, Klicks, Geräteinformationen (pseudonymisiert)</li>
-                <li>NICHT erfasst: IP-Adressen, Session-Aufzeichnungen, Autocapture von Formularen</li>
-                <li>Speicherort: EU-Server (eu.i.posthog.com)</li>
-                <li>Speicherdauer: 90 Tage</li>
-                <li>Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO (Einwilligung erforderlich)</li>
-                <li>Keine Weitergabe an Dritte</li>
-              </ul>
+
+              <div className="border border-gray-200 rounded-md p-3 mb-4 bg-white">
+                <div className="flex items-center justify-between gap-3 mb-2">
+                  <h5 className="font-semibold">PostHog (Analyse)</h5>
+                  <div className="flex gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setDraftPosthog("rejected")}
+                      aria-pressed={draftPosthog === "rejected"}
+                      className={`px-3 py-1 text-xs font-medium rounded-md border-2 border-black transition-colors ${draftPosthog === "rejected" ? "bg-black text-white" : "bg-white text-black hover:bg-gray-50"}`}
+                    >
+                      Aus
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDraftPosthog("accepted")}
+                      aria-pressed={draftPosthog === "accepted"}
+                      className={`px-3 py-1 text-xs font-medium rounded-md border-2 border-black transition-colors ${draftPosthog === "accepted" ? "bg-black text-white" : "bg-white text-black hover:bg-gray-50"}`}
+                    >
+                      An
+                    </button>
+                  </div>
+                </div>
+                <ul className="list-disc list-inside space-y-1 text-gray-600">
+                  <li>Anbieter: PostHog Inc.</li>
+                  <li>Zweck: Analyse der Website-Nutzung zur Verbesserung</li>
+                  <li>Verarbeitete Daten: Seitenaufrufe, Klicks, Geräteinformationen (pseudonymisiert)</li>
+                  <li>NICHT erfasst: IP-Adressen, Session-Aufzeichnungen, Autocapture von Formularen</li>
+                  <li>Speicherort: EU-Server (eu.i.posthog.com)</li>
+                  <li>Speicherdauer: 90 Tage</li>
+                  <li>Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO (Einwilligung erforderlich)</li>
+                  <li>Keine Weitergabe an Dritte</li>
+                </ul>
+              </div>
+
+              <div className="border border-gray-200 rounded-md p-3 mb-3 bg-white">
+                <div className="flex items-center justify-between gap-3 mb-2">
+                  <h5 className="font-semibold">Awin (Affiliate-Tracking)</h5>
+                  <div className="flex gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setDraftAwin("rejected")}
+                      aria-pressed={draftAwin === "rejected"}
+                      className={`px-3 py-1 text-xs font-medium rounded-md border-2 border-black transition-colors ${draftAwin === "rejected" ? "bg-black text-white" : "bg-white text-black hover:bg-gray-50"}`}
+                    >
+                      Aus
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDraftAwin("accepted")}
+                      aria-pressed={draftAwin === "accepted"}
+                      className={`px-3 py-1 text-xs font-medium rounded-md border-2 border-black transition-colors ${draftAwin === "accepted" ? "bg-black text-white" : "bg-white text-black hover:bg-gray-50"}`}
+                    >
+                      An
+                    </button>
+                  </div>
+                </div>
+                <ul className="list-disc list-inside space-y-1 text-gray-600">
+                  <li>Anbieter: Awin AG, Otto-Ostrowski-Straße 1A, 10249 Berlin</li>
+                  <li>Zweck: Zuordnung eines Klicks auf ein "Werbung"-Produkt zu einem späteren Kauf, zur Berechnung unserer Provision</li>
+                  <li>Verarbeitete Daten: IP-Adresse, Browser-/Geräteinformationen, Referrer, Zeitpunkt des Klicks, Affiliate-/Klickkennung</li>
+                  <li>Speicherort/Cookie-Domain: awin1.com</li>
+                  <li>Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO i.V.m. § 25 TDDDG (Einwilligung erforderlich)</li>
+                  <li>Ohne Einwilligung: Weiterleitung erfolgt weiterhin über Awin zum Händler, aber ohne Awin-Cookie und ohne Übermittlung einer Klick-ID (Awin „Consent Signals Framework", Parameter cons=0)</li>
+                </ul>
+              </div>
+
               <p className="mt-2 text-gray-600">
                 Sie können Ihre Einwilligung jederzeit in den Datenschutz-Einstellungen widerrufen.
                 Weitere Informationen finden Sie in unserer{" "}
@@ -125,6 +208,15 @@ export function CookieConsent({ onConsentChange }: CookieConsentProps) {
                 <li>Speicherdauer: 12 Monate</li>
                 <li>Sie haben ein Widerspruchsrecht gemäß Art. 21 DSGVO</li>
               </ul>
+
+              <div className="flex justify-end mt-4">
+                <button
+                  onClick={handleSaveSelection}
+                  className="px-6 py-2 text-sm font-medium text-black bg-white border-2 border-black rounded-md hover:bg-gray-50 transition-colors"
+                >
+                  Auswahl speichern
+                </button>
+              </div>
             </div>
           )}
           <div className="flex gap-3 ">
@@ -135,16 +227,16 @@ export function CookieConsent({ onConsentChange }: CookieConsentProps) {
               {showDetails ? "Details ausblenden" : "Mehr erfahren"}
             </button>
             <button
-              onClick={handleReject}
+              onClick={handleRejectAll}
               className="px-6 flex-1 py-2 text-sm font-medium text-black bg-white border-2 border-black rounded-md hover:bg-gray-50 transition-colors"
             >
-              Ablehnen
+              Alle ablehnen
             </button>
             <button
-              onClick={handleAccept}
+              onClick={handleAcceptAll}
               className="px-6 py-2 flex-1 text-sm font-medium text-white bg-black border-2 border-black rounded-md hover:bg-gray-800 transition-colors"
             >
-              Akzeptieren
+              Alle akzeptieren
             </button>
           </div>
         </div>
@@ -166,9 +258,9 @@ export function ConsentWidget() {
     setMounted(true);
     if (typeof window === "undefined") return;
 
-    // Show widget if consent decision has been made
-    const savedConsent = localStorage.getItem(CONSENT_KEY);
-    setShowWidget(!!savedConsent);
+    // Show widget if at least one consent decision has been made
+    const hasDecision = !!localStorage.getItem(POSTHOG_CONSENT_KEY) || !!localStorage.getItem(AWIN_CONSENT_KEY);
+    setShowWidget(hasDecision);
   }, []);
 
   if (!mounted || !showWidget) return null;
@@ -208,6 +300,7 @@ export function ConsentWidget() {
 }
 
 export function resetConsent() {
-  localStorage.removeItem(CONSENT_KEY);
+  localStorage.removeItem(POSTHOG_CONSENT_KEY);
+  localStorage.removeItem(AWIN_CONSENT_KEY);
   window.location.reload();
 }

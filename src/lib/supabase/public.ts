@@ -97,6 +97,7 @@ export interface LatestProduct {
   productUrl?: string
   checkoutUrl?: string | null
   vendorId?: string
+  tags?: string | null
 }
 
 /**
@@ -128,6 +129,7 @@ export async function getLatestProducts(limit = 12): Promise<LatestProduct[]> {
       productUrl: product.product_url,
       checkoutUrl: product.checkout_url,
       vendorId: product.vendor_id,
+      tags: product.tags,
     }))
   } catch (error) {
     console.error('Products loading error:', error)

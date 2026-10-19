@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { QueryProvider } from "@/components/QueryProvider";
 import { AuthModalsProvider } from "@/components/auth/AuthModalsProvider";
+import { CookieConsentProvider } from "@/components/CookieConsentProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Suspense fallback={null}>
           <AuthModalsProvider />
         </Suspense>
+        <CookieConsentProvider />
       </body>
     </html>
   );

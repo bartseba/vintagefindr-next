@@ -36,6 +36,7 @@ interface ProductCardProps {
     productUrl?: string
   }) => void
   index?: number
+  tags?: string | null
   // PAngV fields
   shipping_cost?: number | null
   free_shipping_threshold?: number | null
@@ -61,6 +62,7 @@ export function ProductCard({
   userId,
   index,
   onProductClick,
+  tags,
   shipping_cost,
   free_shipping_threshold,
   delivery_time_min_days,
@@ -80,6 +82,7 @@ export function ProductCard({
   })
 
   const favorited = isFavorited(id)
+  const isAffiliate = !!tags?.split(',').map((t) => t.trim().toLowerCase()).includes('affiliate')
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -169,6 +172,12 @@ export function ProductCard({
               {brand ? brand.charAt(0).toUpperCase() : 'V'}
             </span>
           </div>
+        )}
+
+        {isAffiliate && (
+          <span className="absolute top-3 left-3 px-2 py-1 text-xs font-semibold bg-white/90 backdrop-blur-sm text-gray-700 rounded-full">
+            Werbung
+          </span>
         )}
 
         {/* Favorite button */}

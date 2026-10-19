@@ -62,6 +62,7 @@ function ProductCarousel({ title, subtitle, products }: { title: string; subtitl
                 vendorName={product.vendorName}
                 productUrl={product.productUrl}
                 checkoutUrl={product.checkoutUrl}
+                tags={product.tags}
                 index={index}
               />
             </div>

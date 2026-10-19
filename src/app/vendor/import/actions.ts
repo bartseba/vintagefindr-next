@@ -13,6 +13,8 @@ import {
   type ImportError,
 } from '@/lib/csv'
 
+const MAX_CSV_SIZE_BYTES = 10 * 1024 * 1024
+
 export interface ImportActionState {
   error?: string
   dryRun?: {
@@ -107,9 +109,14 @@ export async function importCSV(_prevState: ImportActionState, formData: FormDat
     const csvFile = formData.get('csvFile') as File
     const csvFormat = (formData.get('csvFormat') as string) || 'standard'
     const publishImmediately = formData.get('publishImmediately') === 'on'
+    const hotlinkImages = formData.get('hotlinkImages') === 'on'
 
     if (!csvFile || csvFile.size === 0) {
       return { error: 'Bitte wählen Sie eine CSV-Datei aus' }
+    }
+
+    if (csvFile.size > MAX_CSV_SIZE_BYTES) {
+      return { error: 'Die CSV-Datei ist zu groß (max. 10 MB).' }
     }
 
     const csvText = await csvFile.text()
@@ -247,24 +254,31 @@ export async function importCSV(_prevState: ImportActionState, formData: FormDat
         let imageUrl2: string | null = null
         let imageUrl3: string | null = null
 
-        if (mappedRow.image_url_1) {
-          const uploadResult = await uploadImageFromUrl(mappedRow.image_url_1, 'products')
-          if (uploadResult.success && uploadResult.url) {
-            imageUrl1 = uploadResult.url
+        if (hotlinkImages) {
+          // Link directly to the external image URLs instead of mirroring them to our CDN
+          imageUrl1 = mappedRow.image_url_1 || null
+          imageUrl2 = mappedRow.image_url_2 || null
+          imageUrl3 = mappedRow.image_url_3 || null
+        } else {
+          if (mappedRow.image_url_1) {
+            const uploadResult = await uploadImageFromUrl(mappedRow.image_url_1, 'products')
+            if (uploadResult.success && uploadResult.url) {
+              imageUrl1 = uploadResult.url
+            }
           }
-        }
 
-        if (mappedRow.image_url_2) {
-          const uploadResult = await uploadImageFromUrl(mappedRow.image_url_2, 'products')
-          if (uploadResult.success && uploadResult.url) {
-            imageUrl2 = uploadResult.url
+          if (mappedRow.image_url_2) {
+            const uploadResult = await uploadImageFromUrl(mappedRow.image_url_2, 'products')
+            if (uploadResult.success && uploadResult.url) {
+              imageUrl2 = uploadResult.url
+            }
           }
-        }
 
-        if (mappedRow.image_url_3) {
-          const uploadResult = await uploadImageFromUrl(mappedRow.image_url_3, 'products')
-          if (uploadResult.success && uploadResult.url) {
-            imageUrl3 = uploadResult.url
+          if (mappedRow.image_url_3) {
+            const uploadResult = await uploadImageFromUrl(mappedRow.image_url_3, 'products')
+            if (uploadResult.success && uploadResult.url) {
+              imageUrl3 = uploadResult.url
+            }
           }
         }
 

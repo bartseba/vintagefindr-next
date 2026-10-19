@@ -99,6 +99,7 @@ export default async function DashboardPage() {
         imageUrl: fav.products.image_url_1,
         vendorName: fav.products.vendors?.store_name || 'Unknown',
         productUrl: fav.products.product_url,
+        tags: fav.products.tags,
       }))
     }
 
@@ -240,6 +241,7 @@ export default async function DashboardPage() {
                       imageUrl={product.imageUrl}
                       vendorName={product.vendorName}
                       productUrl={product.productUrl}
+                      tags={product.tags}
                       userId={user?.id}
                     />
                   ))}

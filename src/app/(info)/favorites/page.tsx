@@ -21,6 +21,7 @@ interface FavoriteRow {
     category: string | null
     image_url_1: string | null
     product_url: string | null
+    tags: string | null
     vendors?: { store_name: string | null; store_location: string | null } | null
   }
 }
@@ -85,6 +86,7 @@ export default async function FavoritesPage({
         imageUrl: fav.products.image_url_1 ?? undefined,
         vendorName: fav.products.vendors?.store_name || 'Unknown',
         productUrl: fav.products.product_url ?? undefined,
+        tags: fav.products.tags,
       }))
     }
 
