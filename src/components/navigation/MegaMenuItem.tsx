@@ -77,22 +77,6 @@ export function MegaMenuItem({ section, isVisible, onClose }: MegaMenuItemProps)
             item.label
           )}
         </Link>
-
-        {item.children && item.children.length > 0 && (
-          <ul className="space-y-1">
-            {item.children.map((child) => (
-              <li key={child.id}>
-                <Link
-                  href={child.href}
-                  onClick={onClose}
-                  className="block text-sm text-slate-600 hover:text-[#4140d4] hover:underline"
-                >
-                  {child.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
       </div>
     ));
   };

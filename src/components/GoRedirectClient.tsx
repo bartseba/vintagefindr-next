@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Loader2, ExternalLink } from 'lucide-react'
 import { companyName } from '@/constant/routes'
+import { isAwinUrl } from '@/lib/awin'
 
 interface GoRedirectClientProps {
   targetUrl: string
@@ -24,20 +25,16 @@ interface GoRedirectClientProps {
  * Non-Awin product URLs are passed through unchanged.
  */
 function resolveRedirectUrl(targetUrl: string): string {
-  let url: URL
-  try {
-    url = new URL(targetUrl)
-  } catch {
-    return targetUrl
-  }
-  if (!url.hostname.endsWith('awin1.com')) return targetUrl
+  if (!isAwinUrl(targetUrl)) return targetUrl
 
+  const url = new URL(targetUrl)
   const hasConsent = localStorage.getItem('awin_consent') === 'accepted'
   url.searchParams.set('cons', hasConsent ? '1' : '0')
   return url.toString()
 }
 
 export function GoRedirectClient({ targetUrl, productTitle, vendorName }: GoRedirectClientProps) {
+  const isAwin = isAwinUrl(targetUrl)
   const [countdown, setCountdown] = useState(3)
   // Starts as targetUrl to match the server-rendered markup exactly, then
   // resolved for real client-side (reads localStorage, so it must happen
@@ -71,7 +68,11 @@ export function GoRedirectClient({ targetUrl, productTitle, vendorName }: GoRedi
           </h1>
 
           <p className="text-gray-600 mb-1">
-            Du wirst zu <span className="font-semibold text-vintage-secondary">{vendorName}</span> weitergeleitet
+            {isAwin ? (
+              'Du wirst zum Werbepartner weitergeleitet'
+            ) : (
+              <>Du wirst zu <span className="font-semibold text-vintage-secondary">{vendorName}</span> weitergeleitet</>
+            )}
           </p>
 
           <p className="text-sm text-gray-500">

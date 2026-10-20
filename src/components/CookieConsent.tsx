@@ -84,7 +84,7 @@ export function CookieConsent({ onConsentChange }: CookieConsentProps) {
               (Seitenaufrufe, Klicks, Geräteinformationen) auf EU-Servern gespeichert.
             </p>
             <p className="text-sm text-gray-600 mb-3">
-              Bei mit „Werbung" gekennzeichneten Produkten kann unser Partnernetzwerk Awin beim Klick
+              Bei mit „Anzeige" gekennzeichneten Produkten kann unser Partnernetzwerk Awin beim Klick
               ein Tracking-Cookie setzen, um Käufe unserer Provision zuzuordnen (<strong>Ihre Einwilligung erforderlich</strong>).
               Ohne Einwilligung werden Sie weiterhin zum Händler weitergeleitet, nur ohne dass Awin dabei ein Cookie setzt.
             </p>
@@ -180,7 +180,7 @@ export function CookieConsent({ onConsentChange }: CookieConsentProps) {
                 </div>
                 <ul className="list-disc list-inside space-y-1 text-gray-600">
                   <li>Anbieter: Awin AG, Otto-Ostrowski-Straße 1A, 10249 Berlin</li>
-                  <li>Zweck: Zuordnung eines Klicks auf ein "Werbung"-Produkt zu einem späteren Kauf, zur Berechnung unserer Provision</li>
+                  <li>Zweck: Zuordnung eines Klicks auf ein "Anzeige"-Produkt zu einem späteren Kauf, zur Berechnung unserer Provision</li>
                   <li>Verarbeitete Daten: IP-Adresse, Browser-/Geräteinformationen, Referrer, Zeitpunkt des Klicks, Affiliate-/Klickkennung</li>
                   <li>Speicherort/Cookie-Domain: awin1.com</li>
                   <li>Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO i.V.m. § 25 TDDDG (Einwilligung erforderlich)</li>

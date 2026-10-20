@@ -62,8 +62,8 @@ interface RawNavigationItem {
   id: string
   label: string
   href: string
+  synonyme?: Array<{ name: string | null }>
   children?: RawNavigationItem[]
-  items?: RawNavigationItem[]
 }
 
 interface RawNavigationSection {
@@ -72,6 +72,52 @@ interface RawNavigationSection {
   slug: string
   items?: RawNavigationItem[]
   Megamenu?: RawNavigationItem[]
+}
+
+interface FlatNavigationsItem {
+  id: string
+  label: string
+  href: string
+  parent: string | number | null
+  isBrand?: boolean | string | number | null
+  synonyme?: Array<{ name: string | null }>
+}
+
+function isNavigationsItemBrand(value: FlatNavigationsItem['isBrand']): boolean {
+  return value === true || value === 'true' || value === 1 || value === '1'
+}
+
+/**
+ * `navigations_items` is a flat, self-referencing table (each row has its
+ * own `parent` FK, max depth 1 in practice) — there is no `children` field
+ * in the Directus schema (confirmed directly via `fields: ['*']`), so a
+ * nested `deep: { children: {...} }` query always silently returns empty,
+ * no matter how it's phrased. `getSidebarNavigationItems()` below already
+ * works around this correctly by fetching the table flat and joining
+ * parent/child in JS; `getAllNavigationSections()` and
+ * `getCategoryKeywords()` didn't, so every section/category with
+ * sub-items (e.g. "Shirts" under "Oberteile") silently lost its children.
+ */
+async function getFlatNavigationsItems(client: ReturnType<typeof getDirectusClient>): Promise<FlatNavigationsItem[]> {
+  return client.request<FlatNavigationsItem[]>(
+    readItems('navigations_items', {
+      fields: ['id', 'label', 'href', 'parent', 'isBrand', 'synonyme.name'] as unknown as string[],
+      deep: { synonyme: { limit: -1 } } as unknown as Record<string, unknown>,
+      limit: -1,
+    })
+  )
+}
+
+function groupChildrenByParentId(flatItems: FlatNavigationsItem[]): Map<string, RawNavigationItem[]> {
+  const map = new Map<string, RawNavigationItem[]>()
+  for (const item of flatItems) {
+    if (item.parent == null) continue
+    const key = String(item.parent)
+    const list = map.get(key) ?? []
+    list.push({ id: item.id, label: item.label, href: item.href, synonyme: item.synonyme })
+    map.set(key, list)
+  }
+  return map
 }
 
 /**
@@ -85,47 +131,45 @@ export async function getAllNavigationSections(): Promise<NavigationSection[]> {
   const fields = [
     'id', 'title', 'slug',
     'items.id', 'items.label', 'items.href', 'items.synonyme.name',
-    'items.children.id', 'items.children.label', 'items.children.href', 'items.children.synonyme.name',
     'Megamenu.id', 'Megamenu.label', 'Megamenu.href', 'Megamenu.synonyme.name',
-    'Megamenu.children.id', 'Megamenu.children.label', 'Megamenu.children.href', 'Megamenu.children.synonyme.name',
   ] as const
 
-  const sections = await client.request<RawNavigationSection[]>(
-    readItems('navigation_sections', {
-      limit: -1,
-      fields: fields as unknown as string[],
-      deep: {
-        items: {
-          filter: { parent: { _null: true } },
-          limit: -1,
-          deep: {
-            children: { limit: -1 },
-            synonyme: { limit: -1 },
+  const [sections, flatItems] = await Promise.all([
+    client.request<RawNavigationSection[]>(
+      readItems('navigation_sections', {
+        limit: -1,
+        fields: fields as unknown as string[],
+        deep: {
+          items: {
+            filter: { parent: { _null: true } },
+            limit: -1,
+            deep: { synonyme: { limit: -1 } },
+          },
+          Megamenu: {
+            filter: { parent: { _null: true } },
+            limit: -1,
+            deep: { synonyme: { limit: -1 } },
           },
         },
-        Megamenu: {
-          filter: { parent: { _null: true } },
-          limit: -1,
-          deep: {
-            children: { limit: -1 },
-            synonyme: { limit: -1 },
-          },
-        },
-      },
-    })
-  )
+      })
+    ),
+    getFlatNavigationsItems(client),
+  ])
+
+  const childrenByParentId = groupChildrenByParentId(flatItems)
+  const withChildren = (item: RawNavigationItem): RawNavigationItem => ({
+    ...item,
+    children: childrenByParentId.get(String(item.id)) ?? [],
+  })
 
   return sections.map((section): NavigationSection => {
     if (section.title === 'Megamenu' && section.Megamenu) {
-      return { id: section.id, label: section.title, items: section.Megamenu }
+      return { id: section.id, label: section.title, items: section.Megamenu.map(withChildren) }
     }
     return {
       id: section.id,
       label: section.title,
-      items: (section.items ?? []).map((item) => ({
-        ...item,
-        children: item.children ?? item.items ?? [],
-      })),
+      items: (section.items ?? []).map(withChildren),
     }
   })
 }
@@ -1427,36 +1471,28 @@ const FALLBACK_VALID_CATEGORIES = [
 ]
 
 /**
- * Ported from app/lib/directus.server.ts:1399 (getValidCategories) — reuses
- * `getAllNavigationSections()` (Phase 0) exactly like the Remix original
- * reused its own `getAllNavigationSections()`, extracting category slugs
- * from every item/child href. Used by CSV import validation to check
- * whether a row's category is real.
+ * Ported from app/lib/directus.server.ts:1399 (getValidCategories). Used by
+ * CSV import validation to check whether a row's category is real.
+ *
+ * Originally sourced from `getAllNavigationSections()` (the curated
+ * mega-menu dropdown tree) — but that tree only contains a subset of real
+ * product categories (e.g. "Oberteile"/"Shirts" are never linked into any
+ * `navigation_sections` item list at all, confirmed by direct inspection).
+ * The complete, actual category taxonomy is the flat `navigations_items`
+ * table itself, filtered to non-brand rows — the same source
+ * `getSidebarNavigationItems()` already uses for the product-filter
+ * sidebar, which is the UI that's actually meant to cover every category.
  */
 export async function getValidCategories(): Promise<string[]> {
+  if (!directusUrl) return FALLBACK_VALID_CATEGORIES
+  const client = getDirectusClient()
+
   try {
-    const sections = await getAllNavigationSections()
-
-    if (!sections || sections.length === 0) {
-      return FALLBACK_VALID_CATEGORIES
-    }
-
-    const categories: string[] = []
-
-    for (const section of sections) {
-      for (const item of section.items || []) {
-        if (item.href) {
-          const slug = item.href.split('/').pop()
-          if (slug) categories.push(slug)
-        }
-        for (const child of item.children || []) {
-          if (child.href) {
-            const childSlug = child.href.split('/').pop()
-            if (childSlug) categories.push(childSlug)
-          }
-        }
-      }
-    }
+    const items = await getFlatNavigationsItems(client)
+    const categories = items
+      .filter((item) => !isNavigationsItemBrand(item.isBrand))
+      .map((item) => item.href?.split('/').pop())
+      .filter((slug): slug is string => Boolean(slug))
 
     const uniqueCategories = [...new Set(categories)]
     return uniqueCategories.length > 0 ? uniqueCategories : FALLBACK_VALID_CATEGORIES
@@ -1565,90 +1601,60 @@ const FALLBACK_CATEGORY_KEYWORDS: Record<string, string[]> = {
   'shorts': ['shorts', 'kurze hose', 'bermuda'],
 }
 
-interface RawNavigationSectionWithSynonyms {
-  id: string
-  title: string
-  slug: string
-  items?: Array<{
-    id: string
-    label: string
-    href?: string
-    synonyme?: Array<{ name: string | null }>
-    children?: Array<{
-      id: string
-      label: string
-      href?: string
-      synonyme?: Array<{ name: string | null }>
-    }>
-  }>
+function extractKeywords(label: string | undefined, synonyme: Array<{ name: string | null }> | undefined): string[] {
+  const keywords: string[] = []
+  if (label) keywords.push(label.toLowerCase())
+  if (synonyme && Array.isArray(synonyme) && synonyme.length > 0) {
+    const synonyms = synonyme
+      .map((syn) => syn.name?.trim().toLowerCase())
+      .filter((name): name is string => Boolean(name && name.length > 0))
+    keywords.push(...synonyms)
+  }
+  return keywords
 }
 
 /**
- * Ported from app/lib/directus.server.ts:1606 (getCategoryKeywords) — a
- * separate, deeper `navigation_sections` query than `getAllNavigationSections`
- * (includes `synonyme` for keyword-based category detection during CSV
- * import), matching the Remix original's own separate query rather than
- * trying to extend the shared one.
+ * Manual aliases for CSV category inputs that don't exist as their own
+ * Directus navigation item (confirmed by direct inspection — a genuine
+ * taxonomy gap, not a data-fetching bug). Only appends to a target slug
+ * that Directus actually returned; a harmless no-op if that slug is ever
+ * renamed/removed.
+ */
+const MANUAL_CATEGORY_KEYWORD_ALIASES: Record<string, string[]> = {
+  accessoires: ['schal', 'schals'],
+  jacken: ['blazer', 'sakko'],
+}
+
+/**
+ * Ported from app/lib/directus.server.ts:1606 (getCategoryKeywords) — used
+ * for keyword-based category detection during CSV import.
+ *
+ * Same data-source correction as `getValidCategories()`: sourced from the
+ * flat, non-brand `navigations_items` rows (see `getFlatNavigationsItems()`
+ * and `getValidCategories()`'s doc comments) instead of the curated
+ * `navigation_sections` mega-menu tree, which doesn't link every real
+ * category (e.g. "Shirts").
  */
 export async function getCategoryKeywords(): Promise<Record<string, string[]>> {
   if (!directusUrl) return FALLBACK_CATEGORY_KEYWORDS
   const client = getDirectusClient()
 
   try {
-    const sections = await client.request<RawNavigationSectionWithSynonyms[]>(
-      readItems('navigation_sections', {
-        limit: -1,
-        fields: [
-          'id', 'title', 'slug',
-          'items.id', 'items.label', 'items.href', 'items.synonyme.name',
-          'items.children.id', 'items.children.label', 'items.children.href', 'items.children.synonyme.name',
-        ],
-        deep: {
-          items: {
-            filter: { parent: { _null: true } },
-            limit: -1,
-            deep: {
-              children: { limit: -1 },
-              synonyme: { limit: -1 },
-            },
-          },
-        } as unknown as Record<string, unknown>,
-      })
-    )
-
+    const items = await getFlatNavigationsItems(client)
     const keywordMap: Record<string, string[]> = {}
 
-    const extractKeywords = (label: string | undefined, synonyme: Array<{ name: string | null }> | undefined): string[] => {
-      const keywords: string[] = []
-      if (label) keywords.push(label.toLowerCase())
-      if (synonyme && Array.isArray(synonyme) && synonyme.length > 0) {
-        const synonyms = synonyme
-          .map((syn) => syn.name?.trim().toLowerCase())
-          .filter((name): name is string => Boolean(name && name.length > 0))
-        keywords.push(...synonyms)
-      }
-      return keywords
+    for (const item of items) {
+      if (isNavigationsItemBrand(item.isBrand) || !item.href) continue
+      const slug = item.href.split('/').pop()
+      if (!slug) continue
+      const keywords = extractKeywords(item.label, item.synonyme)
+      if (keywords.length > 0) keywordMap[slug] = keywords
     }
 
-    for (const section of sections) {
-      for (const item of section.items || []) {
-        if (item.href) {
-          const slug = item.href.split('/').pop()
-          if (slug) {
-            const keywords = extractKeywords(item.label, item.synonyme)
-            if (keywords.length > 0) keywordMap[slug] = keywords
-          }
-        }
-
-        for (const child of item.children || []) {
-          if (child.href) {
-            const childSlug = child.href.split('/').pop()
-            if (childSlug) {
-              const keywords = extractKeywords(child.label, child.synonyme)
-              if (keywords.length > 0) keywordMap[childSlug] = keywords
-            }
-          }
-        }
+    for (const [targetSlug, aliases] of Object.entries(MANUAL_CATEGORY_KEYWORD_ALIASES)) {
+      if (!keywordMap[targetSlug]) continue
+      for (const alias of aliases) {
+        if (!keywordMap[targetSlug].includes(alias)) keywordMap[targetSlug].push(alias)
       }
     }
 

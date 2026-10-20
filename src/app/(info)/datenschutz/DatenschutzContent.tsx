@@ -89,7 +89,7 @@ export default function Datenschutz() {
             Empfänger Ihrer personenbezogenen Daten sind insbesondere von uns eingesetzte Dienstleister für Hosting, Content-Auslieferung (CDN), Sicherheit & DDoS-Schutz (Cloudflare), Datenbank- und Authentifizierungsdienste, Suchfunktion, Webanalyse, E-Mail-Versand sowie Fehlerüberwachung. Diese Dienstleister verarbeiten personenbezogene Daten in unserem Auftrag auf Grundlage eines Vertrags zur Auftragsverarbeitung gemäß Art. 28 DSGVO.
           </p>
           <p className="mb-4">
-            Darüber hinaus werden beim Klick auf als "Werbung" gekennzeichnete Angebote Daten an das Affiliate-/Partnernetzwerk Awin übermittelt. Awin verarbeitet diese Daten als eigener, unabhängiger Verantwortlicher (kein Auftragsverarbeiter) – siehe Abschnitt 5a.
+            Darüber hinaus werden beim Klick auf als "Anzeige" gekennzeichnete Angebote Daten an das Affiliate-/Partnernetzwerk Awin übermittelt. Awin ist dabei kein Auftragsverarbeiter; nach aktuellem Stand – vorbehaltlich abschließender Prüfung anhand der tatsächlichen Vertragsunterlagen – gehen wir von einer gemeinsamen Verantwortlichkeit mit Awin aus. Einzelheiten dazu finden Sie in Abschnitt 5a.
           </p>
           <p>
             Darüber hinaus übermitteln wir personenbezogene Daten nur, wenn dies zur Erfüllung gesetzlicher Pflichten erforderlich ist oder zur Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen notwendig ist.
@@ -651,25 +651,58 @@ export default function Datenschutz() {
         <section>
           {/*
             ENTWURF – NICHT ohne juristische Prüfung veröffentlichen.
-            Die ursprünglichen offenen Punkte (Consent-Layer, Rollenverteilung
-            mit Awin, Kauf-/Transaktionsdaten, Speicherdauer) wurden anhand
-            der Angaben des Betreibers bzw. der jetzt umgesetzten
-            Consent-Kategorie ausgefüllt. Das ersetzt keine Prüfung gegen den
-            tatsächlich unterschriebenen Awin-Vertrag — vor Veröffentlichung
-            trotzdem von einem Juristen gegenlesen lassen. Die Pflichtenaufteilung
-            im Abschnitt "Anbieter und Verantwortlichkeit" stammt wörtlich aus
-            Ziff. 12.4 der Awin Publisher Terms and Conditions (2018,
-            awin.com/at/allgemeine-geschaftsbedingungen/publisher-terms-and-conditions-2018)
-            — vor Veröffentlichung gegen die tatsächlich für den eigenen
-            Account geltende Vertragsfassung gegenprüfen. Weiterhin offen:
-            genauer Cookie-Name von Awin (von Awin öffentlich nicht
-            dokumentiert, siehe Abschnitt "Cookies und ähnliche Technologien").
+            Stand nach dritter Überarbeitung (zweite juristische
+            Review-Rückmeldung eingearbeitet, gestützt auf vier direkt
+            abgerufene Awin-Quellen):
+            - awin.com/de/compliance-und-regulierungen/dsgvo-die-haeufigsten-kundenanfragen
+            - awin.com/de/compliance-und-regulierungen/publisher-richtlinien-zur-dsgvo-und-user-einwilligung
+            - awin.com/de/compliance-und-regulierungen/awin-and-die-datenschutz-grundverordnung (wirkt wie 2018er Artikel, nur als Kontext verwendet)
+            - awin.com/de/rechtliches/dsgvo-eprivacy-awin (DSGVO/ePrivacy-Whitepaper, Hauptbeleg)
+            - help.awin.com/developers/docs/consent-framework-for-partners
+
+            Neu eingearbeitet: Awins eigene Rechtsgrundlage für die
+            Tracking-Datenverarbeitung konkret benannt (Art. 6 Abs. 1 lit. f
+            DSGVO, berechtigtes Interesse — wörtlich aus dem Whitepaper
+            belegt), statt nur pauschal auf Awins Datenschutzerklärung zu
+            verweisen; Widerspruch zwischen "ungeprüft" und "wir folgen der
+            Einordnung" aufgelöst (jetzt durchgehend als vorläufige
+            Arbeitsannahme formuliert); "Awin selbst verantwortlich"
+            entschärft zu "Awin als hierfür zuständiger Mitverantwortlicher"
+            (vermeidet Eindruck einer rein eigenständigen Verantwortung);
+            Hinweis ergänzt, dass die Ziff.-12.4-Pflichten laut Awin
+            Anhänge zum Vertrag sind, deren vollständige, account-spezifische
+            Fassung wir nicht geprüft haben; Art.-13-Aussage ausdrücklich auf
+            den einen beschriebenen Datenfluss (Browser→Awin) begrenzt, nicht
+            als pauschale Aussage für alle Affiliate-Daten.
+
+            Weiterhin offen, vor Veröffentlichung zu klären:
+            1) Prüfung gegen den tatsächlich unterschriebenen Awin-Vertrag
+               bzw. die eigenen Account-spezifischen Vertrags-Anhänge (die
+               Pflichtenaufteilung stammt wörtlich aus Ziff. 12.4 der
+               öffentlichen Awin Publisher Terms and Conditions 2018,
+               awin.com/at/allgemeine-geschaftsbedingungen/publisher-terms-and-conditions-2018,
+               nicht aus der für den eigenen Account geltenden Fassung;
+               laut Awins Whitepaper sind die Anhänge ggf. nicht frei
+               zugänglich, Kontakt laut Whitepaper: global-privacy@awin.com).
+            2) Ob Awin bei fehlender Cookie-Einwilligung tatsächlich nur IP
+               + Standard-Connection-Daten erhält oder serverseitig noch
+               mehr erfasst — das ist von Awin öffentlich nicht dokumentiert,
+               die Formulierung im Text ist bewusst vorsichtig/offen gehalten.
+            3) Genauer Cookie-Name von Awin (ebenfalls öffentlich nicht
+               dokumentiert, siehe Abschnitt "Cookies und ähnliche
+               Technologien").
+            4) Ob die eigene Interessenabwägung, auf die sich Awin für Art. 6
+               Abs. 1 lit. f DSGVO beruft, im eigenen Fall tatsächlich trägt
+               — das haben wir nicht eigenständig geprüft, sondern nur
+               Awins eigene Aussage dazu wiedergegeben.
+            Insgesamt: juristisches Gegenlesen vor Go-Live weiterhin nötig,
+            auch wenn der Text jetzt präziser und besser belegt ist als zuvor.
           */}
           <h2 className="text-2xl font-semibold text-gray-900 mb-4">5a. Affiliate-Partnerprogramm Awin</h2>
 
           <h3 className="text-xl font-semibold text-gray-900 mb-3">Zweck und Ablauf</h3>
           <p className="mb-4">
-            Ein Teil unseres Angebots finanziert sich über provisionsbasierte Partnerprogramme. Mit „Werbung" gekennzeichnete Produkte sind Affiliate-Angebote, die über das Partnernetzwerk Awin vermittelt werden können.
+            Ein Teil unseres Angebots finanziert sich über provisionsbasierte Partnerprogramme. Mit „Anzeige" gekennzeichnete Produkte sind Affiliate-Angebote, die über das Partnernetzwerk Awin vermittelt werden können.
           </p>
           <p className="mb-4">
             Wenn Sie einen solchen Link anklicken, wird Ihr Browser zunächst mit Awin verbunden und anschließend zur Website des jeweiligen Händlers weitergeleitet. Awin kann den Klick und einen daraus entstehenden Kauf unserem Publisher-Konto zuordnen und die Provision berechnen.
@@ -695,7 +728,17 @@ export default function Datenschutz() {
             Nach der von uns beschriebenen Einbindung kann Awin ein technisches Cookie auf der Domain <strong>awin1.com</strong> verwenden, um den Klick einem späteren Kauf zuzuordnen. Der genaue Cookie-Name und die Speicherdauer sind von Awin öffentlich nicht dokumentiert.
           </p>
           <p className="mb-4">
-            Soweit dabei Informationen auf Ihrem Endgerät gespeichert oder ausgelesen werden, erfolgt dies nur nach Ihrer Einwilligung, sofern keine gesetzliche Ausnahme greift (§ 25 Abs. 1 und 2 TDDDG). Diese Einwilligung holen wir über unseren Cookie-Banner ein, der eine eigene, separat zustimmbare Kategorie „Awin (Affiliate-Tracking)" enthält, und übermitteln Ihre Entscheidung über das von Awin dafür vorgesehene technische Verfahren (Consent-Signal-Parameter im Weiterleitungslink). Ohne Ihre Einwilligung in dieser Kategorie werden Sie beim Klick auf ein „Werbung"-Produkt zwar weiterhin über Awin zum Händler weitergeleitet, Awin setzt dabei aber kein Cookie und übermittelt keine Klickkennung an den Händler.
+            Soweit dabei Informationen auf Ihrem Endgerät gespeichert oder ausgelesen werden, erfolgt dies nur nach Ihrer Einwilligung, sofern keine gesetzliche Ausnahme greift (§ 25 Abs. 1 und 2 TDDDG). Diese Einwilligung holen wir über unseren Cookie-Banner ein, der eine eigene, separat zustimmbare Kategorie „Awin (Affiliate-Tracking)" enthält, und übermitteln Ihre Entscheidung über das von Awin dafür vorgesehene technische Verfahren (Consent-Signal-Parameter im Weiterleitungslink). Diese Einwilligung betrifft ausschließlich die Frage, ob auf Ihrem Endgerät ein Cookie gesetzt werden darf; sie beantwortet nicht die gesondert zu prüfende Frage, auf welcher datenschutzrechtlichen Grundlage die dabei verarbeiteten personenbezogenen Daten verarbeitet werden – dazu finden Sie Einzelheiten im Abschnitt "Anbieter und Verantwortlichkeit".
+          </p>
+          <p className="mb-4">
+            Ohne Ihre Einwilligung in dieser Kategorie setzt Awin kein Cookie und ordnet den Klick nicht über eine Klickkennung einem späteren Kauf zu (näher beschrieben in Awins{" "}
+            <a href="https://help.awin.com/developers/docs/consent-framework-for-partners" target="_blank" rel="noopener noreferrer" className="text-vintage-primary hover:underline">
+              Consent Signals Framework
+            </a>). Das bedeutet aber nicht, dass gar keine Daten an Awin übermittelt werden: Da Ihr Browser beim Klick auf ein „Anzeige"-Produkt zunächst eine Verbindung zu Awin aufbaut, erhält Awin dabei technisch bedingt zumindest Ihre IP-Adresse; je nach konkreter technischer Ausgestaltung bei Awin können weitere Verbindungs- und Browserdaten (z. B. User-Agent, Zeitpunkt des Aufrufs) anfallen. Das geschieht unabhängig von Ihrer Cookie-Einwilligung, da es sich um die für den Verbindungsaufbau technisch notwendige Datenübertragung handelt, nicht um das Setzen oder Auslesen eines Cookies. Für diese Verarbeitung beruft sich Awin nach eigenen Angaben auf Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse) mit einer eigenen Interessenabwägung, die Awin in seinem{" "}
+            <a href="https://www.awin.com/de/rechtliches/dsgvo-eprivacy-awin" target="_blank" rel="noopener noreferrer" className="text-vintage-primary hover:underline">
+              DSGVO/ePrivacy-Whitepaper
+            </a>{" "}
+            darlegt. Da wir diese Verarbeitung nach eigener Einschätzung als gemeinsam Verantwortliche mittragen (siehe Abschnitt "Anbieter und Verantwortlichkeit"), reicht ein bloßer Verweis auf Awins Datenschutzerklärung hierfür nicht aus; weitere, über das oben Genannte hinausgehende Einzelheiten zu dieser Verarbeitung entnehmen Sie bitte dennoch primär der Datenschutzerklärung von Awin, da Awin über die technische Ausgestaltung der eigenen Systeme genauer Auskunft geben kann als wir.
           </p>
 
           <h3 className="text-xl font-semibold text-gray-900 mb-3">Unser eigenes Klick-Tracking</h3>
@@ -711,18 +754,21 @@ export default function Datenschutz() {
             Deutschland
           </p>
           <p className="mb-4">
-            Nach der von Awin selbst vertretenen Einordnung sind Advertiser (Händler), Awin und Publisher (wie VintageFindr) für die Verarbeitung im Rahmen des Affiliate-Trackings <strong>gemeinsam Verantwortliche</strong> im Sinne von Art. 26 DSGVO ("tripartite joint controller relationship"), da sowohl Awin als auch die Publisher über die Zwecke und Mittel der Verarbeitung mitentscheiden. Die Aufteilung der jeweiligen Pflichten ist in den Datenverarbeitungsbedingungen geregelt, die Bestandteil des Awin-Publisher-Vertrags sind.
+            Awin vertritt öffentlich die Einordnung, dass Advertiser (Händler), Awin und Publisher (wie VintageFindr) für die Verarbeitung im Rahmen des Affiliate-Trackings <strong>gemeinsam Verantwortliche</strong> im Sinne von Art. 26 DSGVO sind ("tripartite joint controller relationship"), da sowohl Awin als auch die Publisher über die Zwecke und Mittel der Verarbeitung mitentscheiden (so übereinstimmend mehrere öffentliche Awin-Quellen zu Compliance und DSGVO, u. a. das oben verlinkte Whitepaper). Diese Einordnung ist Awins eigene Position. Ob und für welche einzelnen Verarbeitungsschritte tatsächlich eine gemeinsame Verantwortlichkeit mit uns besteht, haben wir nicht unabhängig anhand unserer konkreten technischen Einbindung und der mit Awin tatsächlich getroffenen Vereinbarung überprüft; diese Prüfung steht noch aus. Bis zu deren Abschluss legen wir Awins Einordnung dieser Information als vorläufige, noch nicht abschließend verifizierte Arbeitsannahme zugrunde. Laut Awins DSGVO/ePrivacy-Whitepaper sind die hierfür maßgeblichen Datenverarbeitungsbedingungen als Anhänge Bestandteil der Awin Publisher Terms and Conditions; die oben und im Folgenden wiedergegebenen Kernpflichten aus deren Ziff. 12.4 bilden den öffentlich zugänglichen wesentlichen Inhalt ab. Eine Prüfung der vollständigen, konkret für unseren Account geltenden Anhänge steht ebenfalls noch aus.
           </p>
           <p className="mb-4">
-            Nach den Datenverarbeitungsbedingungen des Awin-Publisher-Vertrags (Ziff. 12.4) gilt dabei im Kern: Jede Partei informiert Betroffene eigenständig und in verständlicher Form über ihre jeweils eigene Verarbeitung (entsprechend Art. 13, 14 und 26 DSGVO) – diese Datenschutzerklärung ist unser entsprechender Hinweis für unsere eigene Verarbeitung, ergänzt um einen Verweis auf die Datenschutzerklärung von Awin für dessen Verarbeitung. Für Anfragen zur Ausübung Ihrer Betroffenenrechte (z. B. Auskunft, Löschung, Widerspruch) ist jede Partei für ihre eigene Verarbeitung zuständig und beantwortet entsprechende Anfragen selbst; beide Parteien sind zur Zusammenarbeit verpflichtet, damit Ihre Anfrage vollständig bearbeitet werden kann. Betrifft Ihre Anfrage die von Awin verantwortete Verarbeitung, wenden Sie sich bitte direkt an Awin über die in dessen Datenschutzerklärung genannten Kontaktwege; wir leiten entsprechende Anfragen bei Bedarf ebenfalls weiter.
+            Nach Ziff. 12.4 der Awin Publisher Terms and Conditions informiert jede Partei Betroffene eigenständig und in verständlicher Form über ihre jeweils eigene Verarbeitung (entsprechend Art. 13, 14 und 26 DSGVO) – diese Datenschutzerklärung ist unser entsprechender Hinweis für unsere eigene Verarbeitung, ergänzt um einen Verweis auf die Datenschutzerklärung von Awin für dessen Verarbeitung. Im Innenverhältnis ist primär jede Partei für die Beantwortung von Anfragen zu ihrer eigenen Verarbeitung zuständig, und beide Parteien sind zur Zusammenarbeit verpflichtet, damit Ihre Anfrage vollständig bearbeitet wird. Das schränkt Ihre Rechte aber nicht ein: Nach Art. 26 Abs. 3 DSGVO können Sie Ihre Betroffenenrechte unabhängig von dieser internen Aufteilung bei und gegenüber jedem der gemeinsam Verantwortlichen geltend machen – also auch bei uns, selbst wenn sich Ihre Anfrage inhaltlich auf eine von Awin verantwortete Verarbeitung bezieht. Für Anfragen an uns nutzen Sie bitte die Kontaktdaten aus Abschnitt 2 bzw. die Angaben zu Ihren Rechten in Abschnitt 11; für Anfragen direkt an Awin die in dessen Datenschutzerklärung genannten Kontaktwege.
           </p>
           <p className="mb-4">
-            Für unsere eigene Verarbeitung, insbesondere unser Klick-Tracking, sind wir verantwortlich. Soweit wir selbst Daten im Zusammenhang mit der Affiliate-Weiterleitung verarbeiten, stützen wir uns auf Art. 6 Abs. 1 lit. f DSGVO – unser Interesse an der Finanzierung des Angebots durch Affiliate-Provisionen überwiegt dabei die Interessen der Nutzer, da keine über das für die Weiterleitung notwendige Maß hinausgehenden Daten verarbeitet werden. Awin informiert über die von Awin verantwortete Verarbeitung in seiner Datenschutzerklärung.
+            Für unsere eigene Verarbeitung sind wir verantwortlich. Diese beschränkt sich im Zusammenhang mit Affiliate-Produkten auf (a) unser eigenes Klick-Tracking nach Abschnitt 5 – dort mit eigener Rechtsgrundlage, Interessenabwägung und Speicherdauer beschrieben – sowie (b) das Setzen des Consent-Signal-Parameters im Weiterleitungslink anhand Ihrer in Abschnitt 10 gespeicherten Cookie-Entscheidung. Die eigentliche Verbindung Ihres Browsers zu Awin, bei der Awin die oben beschriebenen Verbindungsdaten erhält, findet unmittelbar zwischen Ihrem Browser und Awin statt; diese Daten laufen nicht zusätzlich über unsere Server und werden von uns nicht gespeichert oder weiter verarbeitet. Für die Verarbeitungsschritte, die Awin im Rahmen der (nach aktuellem Stand: gemeinsamen) Verantwortlichkeit mit eigenen Zwecken und Mitteln bestimmt – insbesondere den Empfang und die weitere Verarbeitung der Verbindungsdaten sowie, bei erteilter Einwilligung, das Setzen des Cookies –, liegt die Verantwortung bei Awin als dem hierfür zuständigen Mitverantwortlichen; die dortige Rechtsgrundlage (Art. 6 Abs. 1 lit. f DSGVO, siehe oben) sowie weitere Einzelheiten entnehmen Sie bitte der Datenschutzerklärung von Awin.
+          </p>
+          <p className="mb-4">
+            Für diesen konkreten Datenfluss – die unmittelbare Verbindung Ihres Browsers zu Awin beim Klick auf ein „Anzeige"-Produkt – ist auf unserer Seite Art. 13 DSGVO (Erhebung bei der betroffenen Person) einschlägig, nicht Art. 14 DSGVO, da die dabei an Awin übermittelten Daten direkt von Ihnen stammen und nicht von uns an Awin weitergegeben werden. Diese Einordnung bezieht sich ausdrücklich nur auf diesen Datenfluss, nicht pauschal auf sämtliche im Zusammenhang mit Affiliate-Produkten denkbaren Datenübermittlungen. Nach aktueller technischer Ausgestaltung (siehe oben) findet keine weitere Datenübermittlung von uns an Awin statt; sollte sich das künftig ändern, wäre dies gesondert zu prüfen und hier zu ergänzen.
           </p>
 
           <h3 className="text-xl font-semibold text-gray-900 mb-3">Speicherdauer und weitere Informationen</h3>
           <p className="mb-4">
-            Laut der eigenen Datenschutzerklärung von Awin werden Tracking-Daten grundsätzlich bis zu drei Jahre gespeichert, in bestimmten Fällen in pseudonymisierter Form bis zu fünf Jahre für interne Analysezwecke.
+            Laut der eigenen Datenschutzerklärung von Awin werden Tracking-Daten grundsätzlich bis zu drei Jahre gespeichert, in bestimmten Fällen in pseudonymisierter Form bis zu fünf Jahre für interne Analysezwecke. Da wir im Zusammenhang mit der Weiterleitung zu Awin selbst keine zusätzlichen personenbezogenen Daten speichern (siehe oben), gilt für unsere eigene Verarbeitung die bereits in Abschnitt 5 genannte Speicherdauer von 12 Monaten.
           </p>
           <p className="mb-2">
             Weitere Informationen zur Verarbeitung durch Awin finden Sie in der Datenschutzerklärung von Awin:{" "}
@@ -986,7 +1032,7 @@ export default function Datenschutz() {
 
           <h3 className="text-xl font-semibold text-gray-900 mb-3">Verwendung von localStorage</h3>
           <p className="mb-4">
-            Wir selbst setzen keine Tracking-Cookies. Für bestimmte Funktionen nutzen wir jedoch technisch notwendige Speichertechnologien (z. B. localStorage für die Speicherung Ihrer Einwilligungsentscheidung und Session-Cookies für Login-/Authentifizierungszwecke). Eine Ausnahme betrifft als "Werbung" gekennzeichnete Affiliate-Angebote: Klicken Sie darauf, setzt das Partnernetzwerk Awin ein eigenes Cookie auf seiner eigenen Domain (<strong>awin1.com</strong>) zur Provisionszuordnung – siehe Abschnitt 5a.
+            Wir selbst setzen keine Tracking-Cookies. Für bestimmte Funktionen nutzen wir jedoch technisch notwendige Speichertechnologien (z. B. localStorage für die Speicherung Ihrer Einwilligungsentscheidung und Session-Cookies für Login-/Authentifizierungszwecke). Eine Ausnahme betrifft als "Anzeige" gekennzeichnete Affiliate-Angebote: Klicken Sie darauf, setzt das Partnernetzwerk Awin ein eigenes Cookie auf seiner eigenen Domain (<strong>awin1.com</strong>) zur Provisionszuordnung – siehe Abschnitt 5a.
           </p>
 
           <h3 className="text-xl font-semibold text-gray-900 mb-3">Gespeicherte Daten im localStorage</h3>

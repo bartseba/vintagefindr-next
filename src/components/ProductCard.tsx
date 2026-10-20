@@ -7,6 +7,8 @@ import { useImpressionTracking } from '@/hooks/useImpressionTracking'
 import { addToRecentlyViewed } from './RecentlyViewedSection'
 import { PriceDisplay } from './PriceDisplay'
 import { VendorInfoModal } from './VendorInfoModal'
+import { AdInfoModal } from './AdInfoModal'
+import { isAwinUrl } from '@/lib/awin'
 
 interface ProductCardProps {
   id: string
@@ -71,6 +73,7 @@ export function ProductCard({
 }: ProductCardProps) {
   const [imageError, setImageError] = useState(false)
   const [showVendorInfo, setShowVendorInfo] = useState(false)
+  const [showAdInfo, setShowAdInfo] = useState(false)
   const { toggleFavorite, isFavorited, isToggling } = useFavoritesQuery({ isAuthenticated: !!userId })
 
   // DSGVO-compliant impression tracking
@@ -83,6 +86,7 @@ export function ProductCard({
 
   const favorited = isFavorited(id)
   const isAffiliate = !!tags?.split(',').map((t) => t.trim().toLowerCase()).includes('affiliate')
+  const isAwin = isAwinUrl(productUrl)
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -175,9 +179,17 @@ export function ProductCard({
         )}
 
         {isAffiliate && (
-          <span className="absolute top-3 left-3 px-2 py-1 text-xs font-semibold bg-white/90 backdrop-blur-sm text-gray-700 rounded-full">
-            Werbung
-          </span>
+          <button
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              setShowAdInfo(true)
+            }}
+            className="absolute top-3 left-3 flex items-center gap-1 px-2 py-1 text-xs font-semibold bg-white/90 backdrop-blur-sm text-gray-700 rounded-full hover:bg-white"
+          >
+            Anzeige
+            <Info className="h-3 w-3" />
+          </button>
         )}
 
         {/* Favorite button */}
@@ -234,20 +246,22 @@ export function ProductCard({
         </a>
 
         {/* Link "Händlerinfo" */}
-        <button
-          onClick={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            setShowVendorInfo(true)
-          }}
-          className="w-full text-sm text-vintage-primary hover:underline mt-1.5 justify-center flex"
+        {!isAwin && (
+          <button
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              setShowVendorInfo(true)
+            }}
+            className="w-full text-sm text-vintage-primary hover:underline mt-1.5 justify-center flex"
 
-        >
-          <span className=' flex gap-[5px] items-center mt-1'>
-           {vendorName}
-          <Info className="h-3 w-3" />
-                    </span>
-        </button>
+          >
+            <span className=' flex gap-[5px] items-center mt-1'>
+             {vendorName}
+            <Info className="h-3 w-3" />
+                      </span>
+          </button>
+        )}
       </div>
 
       {/* Vendor Info Modal */}
@@ -257,6 +271,16 @@ export function ProductCard({
           onClose={() => setShowVendorInfo(false)}
           vendorName={vendorName}
           productId={id}
+        />
+      )}
+
+      {/* Ad Info Modal */}
+      {showAdInfo && (
+        <AdInfoModal
+          isOpen={showAdInfo}
+          onClose={() => setShowAdInfo(false)}
+          brand={brand}
+          vendorName={vendorName}
         />
       )}
     </a>
