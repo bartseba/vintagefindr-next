@@ -96,15 +96,15 @@ export function FavoritesDropdown({
 
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     {product?.id && (
-                      <a
+                      <Link
                         href={`/go/${product.id}`}
-                        target="_blank"
+                        prefetch={false}
                         rel="nofollow sponsored noopener"
                         className="p-1 text-gray-400 hover:text-amber-600 transition-colors"
                         title="Zum Produkt"
                       >
                         <ExternalLink size={14} />
-                      </a>
+                      </Link>
                     )}
                     <button
                       onClick={() => product?.id && onRemoveFavorite(product.id)}

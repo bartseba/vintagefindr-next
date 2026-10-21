@@ -128,6 +128,7 @@ export default function RecentlyViewedSection() {
             <Link
               key={product.id}
               href={`/go/${product.id}`}
+              prefetch={false}
               className="group relative overflow-hidden rounded-lg bg-gray-100 vintage-border"
             >
               <div className="aspect-square">

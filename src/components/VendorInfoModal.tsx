@@ -1,6 +1,7 @@
 'use client'
 
 import { X, Store, ShoppingBag, RefreshCw, AlertCircle, Truck } from 'lucide-react'
+import Link from 'next/link'
 import { createPortal } from 'react-dom'
 
 interface VendorInfoModalProps {
@@ -116,9 +117,9 @@ export function VendorInfoModal({ isOpen, onClose, vendorName, productId }: Vend
 
             {/* Primary: Zum Shop (nur wenn productId vorhanden) */}
             {productId && (
-              <a
+              <Link
                 href={`/go/${productId}`}
-                target="_blank"
+                prefetch={false}
                 rel="nofollow sponsored noopener"
                 onClick={(e) => {
                   e.stopPropagation()
@@ -127,7 +128,7 @@ export function VendorInfoModal({ isOpen, onClose, vendorName, productId }: Vend
                 className="flex-1 px-4 py-2 bg-vintage-primary text-white rounded-lg hover:bg-vintage-hover transition-colors font-medium text-center"
               >
                 Zum Shop (externer Link)
-              </a>
+              </Link>
             )}
           </div>
         </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { Heart, Info } from 'lucide-react'
+import Link from 'next/link'
 import { useState } from 'react'
 import { useFavoritesQuery } from '@/hooks/useFavoritesQuery'
 import { useImpressionTracking } from '@/hooks/useImpressionTracking'
@@ -146,10 +147,10 @@ export function ProductCard({
   }
 
   return (
-    <a
+    <Link
       ref={impressionRef as React.Ref<HTMLAnchorElement>}
       href={`/go/${id}`}
-      target="_blank"
+      prefetch={false}
       rel="nofollow sponsored noopener"
       onMouseDown={() => {
         // Use onMouseDown to ensure tracking happens before navigation
@@ -231,19 +232,10 @@ export function ProductCard({
           />
         </div>
 
-        {/* Button "Zum Shop (externer Link)" */}
-        <a
-          href={`/go/${id}`}
-          target="_blank"
-          rel="nofollow sponsored noopener"
-          onClick={(e) => {
-            e.stopPropagation()
-            handleProductClick()
-          }}
-          className="block w-full mt-3 px-3 py-2 bg-vintage-primary text-white text-sm font-medium rounded-md hover:bg-vintage-hover transition-colors text-center"
-        >
+        {/* Button "Zum Shop (externer Link)" - visual only, click is handled by the outer card anchor */}
+        <div className="block w-full mt-3 px-3 py-2 bg-vintage-primary text-white text-sm font-medium rounded-md group-hover:bg-vintage-hover transition-colors text-center">
           Zum Shop (externer Link)
-        </a>
+        </div>
 
         {/* Link "Händlerinfo" */}
         {!isAwin && (
@@ -279,10 +271,8 @@ export function ProductCard({
         <AdInfoModal
           isOpen={showAdInfo}
           onClose={() => setShowAdInfo(false)}
-          brand={brand}
-          vendorName={vendorName}
         />
       )}
-    </a>
+    </Link>
   )
 }

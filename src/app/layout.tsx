@@ -26,11 +26,12 @@ export const metadata: Metadata = {
  */
 export const dynamic = 'force-dynamic'
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children, modal }: LayoutProps<"/">) {
   return (
     <html lang="de" className="h-full">
       <body className="min-h-full flex flex-col font-sans antialiased">
         <QueryProvider>{children}</QueryProvider>
+        {modal}
         <Suspense fallback={null}>
           <AuthModalsProvider />
         </Suspense>

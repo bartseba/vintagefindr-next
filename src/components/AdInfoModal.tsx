@@ -6,14 +6,10 @@ import { createPortal } from 'react-dom'
 interface AdInfoModalProps {
   isOpen: boolean
   onClose: () => void
-  brand?: string
-  vendorName: string
 }
 
-export function AdInfoModal({ isOpen, onClose, brand, vendorName }: AdInfoModalProps) {
+export function AdInfoModal({ isOpen, onClose }: AdInfoModalProps) {
   if (!isOpen) return null
-
-  const placementFor = brand ? `${brand} / ${vendorName}` : vendorName
 
   return createPortal(
     <div
@@ -50,7 +46,7 @@ export function AdInfoModal({ isOpen, onClose, brand, vendorName }: AdInfoModalP
             Wir arbeiten mit Markenpartnern zusammen, um dir Inhalte zu präsentieren, die für dich relevant und interessant sein könnten.
           </p>
           <p className="text-sm text-gray-700">
-            Diese Produktplatzierung ist für {placementFor}.
+            Diese Produktplatzierung ist Teil einer bezahlten Kooperation mit unseren Partnermarken und -shops.
           </p>
         </div>
 
