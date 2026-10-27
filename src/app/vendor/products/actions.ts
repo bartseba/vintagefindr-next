@@ -31,7 +31,15 @@ export async function updateProductStatus(productId: string, action: 'activate' 
   try {
     const { error } = await supabase
       .from('products')
-      .update({ is_active: action === 'activate', updated_at: new Date().toISOString() })
+      .update({
+        is_active: action === 'activate',
+        // A vendor manually choosing this clears auto_paused, so
+        // _update_products_visibility_packages() (which only reactivates
+        // products IT paused for lack of a click package) never silently
+        // re-publishes a product the vendor deliberately set to draft.
+        auto_paused: false,
+        updated_at: new Date().toISOString(),
+      })
       .eq('id', productId)
       .eq('vendor_id', vendor.id)
 
