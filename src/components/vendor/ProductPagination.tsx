@@ -64,10 +64,10 @@ export function ProductPagination({
         {getPageNumbers().map(pageNum => (
           <Button
             key={pageNum}
-            variant="outline"
             size="sm"
+            variant={pageNum === currentPage ? 'primary' : 'outline'}
             onClick={() => onPageChange(pageNum)}
-            className={pageNum === currentPage ? 'bg-gray-900 text-white' : ''}
+            className={pageNum === currentPage ? 'bg-gray-900 text-vintage-primary' : ''}
           >
             {pageNum}
           </Button>

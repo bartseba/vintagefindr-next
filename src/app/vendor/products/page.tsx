@@ -31,7 +31,7 @@ interface RawProductRow {
 export default async function VendorProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ search?: string; status?: string; category?: string; page?: string }>
+  searchParams: Promise<{ search?: string; status?: string; category?: string; page?: string; limit?: string }>
 }) {
   const { supabase, vendor } = await requireVendorAuth()
   const params = await searchParams
@@ -40,7 +40,9 @@ export default async function VendorProductsPage({
   const statusFilter = params.status || 'all'
   const categoryFilter = params.category || 'all'
   const page = parseInt(params.page || '1')
-  const limit = 20
+  const ALLOWED_LIMITS = [20, 50, 100, 200]
+  const requestedLimit = parseInt(params.limit || '20')
+  const limit = ALLOWED_LIMITS.includes(requestedLimit) ? requestedLimit : 20
   const offset = (page - 1) * limit
 
   const { data: packageInfoData } = await supabase

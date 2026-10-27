@@ -5,6 +5,7 @@ import { Link2, Link2Off, RefreshCw, ExternalLink, Package, CheckCircle, AlertCi
 import { Button } from '@/components/ui/Button'
 
 interface ShopifyConnectionProps {
+  vendorId: string
   connected: boolean
   shopDomain: string | null
   installedAt: string | null
@@ -12,7 +13,10 @@ interface ShopifyConnectionProps {
   syncedProducts: number
 }
 
+const SHOPIFY_CONNECT_APP_URL = 'https://connect.vintagefindr.de'
+
 export function ShopifyConnectionCard({
+  vendorId,
   connected,
   shopDomain,
   installedAt,
@@ -73,6 +77,9 @@ export function ShopifyConnectionCard({
   const currentStatus = syncStatusLabel[syncStatus || 'none'] || syncStatusLabel.none
 
   if (!connected) {
+    const returnTo = 'https://vintagefindr.de/vendor/dashboard'
+    const connectUrl = `${SHOPIFY_CONNECT_APP_URL}/connect?vendor_id=${encodeURIComponent(vendorId)}&return_to=${encodeURIComponent(returnTo)}`
+
     return (
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-start gap-4">
@@ -81,13 +88,21 @@ export function ShopifyConnectionCard({
           </div>
           <div className="flex-1">
             <h3 className="text-lg font-semibold text-gray-900 mb-1">Shopify Verbindung</h3>
-            <p className="text-sm text-gray-600 mb-2">
+            <p className="text-sm text-gray-600 mb-3">
               Verbinde deinen Shopify Store, um Produkte automatisch zu synchronisieren.
               Nur Produkte mit dem Tag &quot;vintagefindr&quot; werden importiert.
             </p>
 
-            <p className="text-sm text-gray-600">
-              Installiere VintageFindr direkt aus dem{' '}
+            <a
+              href={connectUrl}
+              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+            >
+              <Link2 size={14} />
+              Shopify verbinden
+            </a>
+
+            <p className="text-sm text-gray-600 mt-3">
+              Hast du noch keinen Shop installiert? Installiere VintageFindr direkt aus dem{' '}
               <a
                 href="https://apps.shopify.com"
                 target="_blank"

@@ -28,7 +28,7 @@ export async function submitContactForm(_prevState: ContactFormState, formData: 
 
   try {
     const supabaseUrl = process.env.SUPABASE_URL
-    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY
+    const supabaseAnonKey = process.env.SUPABASE_PUBLISHABLE_KEYS
 
     if (!supabaseUrl || !supabaseAnonKey) {
       throw new Error('Supabase configuration missing')

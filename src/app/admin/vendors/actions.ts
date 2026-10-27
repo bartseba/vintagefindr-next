@@ -44,7 +44,7 @@ export async function approveVendorWithEmail(vendorId: string): Promise<VendorAc
     let emailStatus = 'nicht versendet'
     try {
       const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL
-      const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY
+      const supabaseAnonKey = process.env.SUPABASE_PUBLISHABLE_KEYS || process.env.VITE_SUPABASE_PUBLISHABLE_KEYS
 
       console.log('Email sending attempt:', {
         hasUrl: !!supabaseUrl,

@@ -13,6 +13,16 @@ export default async function VendorBillingPortalPage() {
   await requireVendorAuth()
 
   const supabase = await createSupabaseServerClient()
+
+  // getUser() validates the token against the Supabase Auth server - this
+  // is a fresh client instance from requireVendorAuth()'s, so its own
+  // identity check must be repeated before trusting getSession()'s token
+  // for the external Bearer-auth call below.
+  const { data: { user }, error: userError } = await supabase.auth.getUser()
+  if (!user || userError) {
+    redirect('/vendor/login?modal=login')
+  }
+
   const { data: { session } } = await supabase.auth.getSession()
 
   if (!session) {

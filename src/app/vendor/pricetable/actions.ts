@@ -15,22 +15,31 @@ export interface CheckoutState {
  */
 export async function createCheckoutSession(_prevState: CheckoutState, formData: FormData): Promise<CheckoutState> {
   const priceId = formData.get('priceId') as string
-
   if (!priceId) {
     return { error: 'Price ID is required' }
   }
 
   const supabase = await createSupabaseServerClient()
-  const { data: { session }, error: sessionError } = await supabase.auth.getSession()
 
-  if (!session || sessionError) {
+  // getUser() validates the token against the Supabase Auth server - needed
+  // here because this decision (which vendor, is it approved) gates access
+  // to an external Bearer-auth call. getSession() alone only reads
+  // unverified local cookie data and must not be used for this.
+  const { data: { user }, error: userError } = await supabase.auth.getUser()
+  if (!user || userError) {
     return { error: 'Not authenticated' }
   }
+
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) {
+    return { error: 'Not authenticated' }
+  }
+
 
   const { data: vendor } = await supabase
     .from('vendors')
     .select('status')
-    .eq('user_id', session.user.id)
+    .eq('user_id', user.id)
     .maybeSingle()
 
   if (!vendor || vendor.status !== 'approved') {
@@ -40,6 +49,7 @@ export async function createCheckoutSession(_prevState: CheckoutState, formData:
   try {
     const supabaseUrl = process.env.SUPABASE_URL
     const siteUrl = process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || ''
+      console.log('######### createCheckoutSession ##########', siteUrl, session.access_token)
 
     const checkoutResponse = await fetch(`${supabaseUrl}/functions/v1/stripe-checkout`, {
       method: 'POST',

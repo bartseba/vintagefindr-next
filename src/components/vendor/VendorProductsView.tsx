@@ -11,6 +11,7 @@ import { ProductFilterBar } from '@/components/vendor/ProductFilterBar'
 import { ProductGrid, type VendorProductListItem } from '@/components/vendor/ProductGrid'
 import { ProductBulkActions } from '@/components/vendor/ProductBulkActions'
 import { ProductPagination } from '@/components/vendor/ProductPagination'
+import { ProductPageSizeSelect } from '@/components/vendor/ProductPageSizeSelect'
 import type { VendorPackageInfo } from '@/types/vendor-packages'
 import { updateProductStatus, deleteProduct, bulkDeleteProducts } from '@/app/vendor/products/actions'
 
@@ -58,12 +59,13 @@ export function VendorProductsView({
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [openDropdown])
 
-  const buildUrl = (overrides: { search?: string; status?: string; category?: string; page?: string }) => {
+  const buildUrl = (overrides: { search?: string; status?: string; category?: string; page?: string; limit?: string }) => {
     const combined = {
       search: searchQuery,
       status: statusFilter,
       category: categoryFilter,
       page: String(currentPage),
+      limit: String(limit),
       ...overrides,
     }
     const params = new URLSearchParams()
@@ -71,6 +73,7 @@ export function VendorProductsView({
     if (combined.status && combined.status !== 'all') params.set('status', combined.status)
     if (combined.category && combined.category !== 'all') params.set('category', combined.category)
     if (combined.page && combined.page !== '1') params.set('page', combined.page)
+    if (combined.limit && combined.limit !== '20') params.set('limit', combined.limit)
     const qs = params.toString()
     return qs ? `/vendor/products?${qs}` : '/vendor/products'
   }
@@ -95,6 +98,10 @@ export function VendorProductsView({
 
   const handlePageChange = (page: number) => {
     router.push(buildUrl({ page: page === 1 ? undefined : String(page) }))
+  }
+
+  const handleLimitChange = (newLimit: string) => {
+    router.push(buildUrl({ limit: newLimit === '20' ? undefined : newLimit, page: undefined }))
   }
 
   const handleSelectAll = () => {
@@ -256,15 +263,19 @@ export function VendorProductsView({
                 onClearSelection={() => setSelectedProducts([])}
               />
 
-              <ProductPagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                totalCount={totalCount}
-                limit={limit}
-                searchQuery={searchQuery}
-                statusFilter={statusFilter}
-                onPageChange={handlePageChange}
-              />
+              <div className="flex items-center gap-4">
+                <ProductPageSizeSelect limit={limit} onLimitChange={handleLimitChange} />
+
+                <ProductPagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalCount={totalCount}
+                  limit={limit}
+                  searchQuery={searchQuery}
+                  statusFilter={statusFilter}
+                  onPageChange={handlePageChange}
+                />
+              </div>
             </div>
           )}
         </div>

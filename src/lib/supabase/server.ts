@@ -18,7 +18,7 @@ export async function createSupabaseServerClient() {
 
   return createServerClient(
     process.env.SUPABASE_URL!,
-    process.env.SUPABASE_ANON_KEY!,
+    process.env.SUPABASE_PUBLISHABLE_KEYS!,
     {
       cookies: {
         getAll() {
@@ -46,7 +46,7 @@ export async function createSupabaseServerClient() {
 export function createSupabaseAdminClient() {
   return createClient(
     process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    process.env.SUPABASE_SECRET_KEYS!,
     { auth: { autoRefreshToken: false, persistSession: false } }
   )
 }

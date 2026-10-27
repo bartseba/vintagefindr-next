@@ -13,6 +13,7 @@ function getPlans(): Plan[] {
       clicksAmount: 10,
       centsPerClick: 'ca. 8 Ct/Klick',
       features: ['Klick-Übersicht im Dashboard', 'Volle Kostenkontrolle', 'Ideal zum Ausprobieren'],
+      active: false,
     },
     {
       id: 'starter',
@@ -24,6 +25,7 @@ function getPlans(): Plan[] {
       clicksAmount: 150,
       centsPerClick: 'ca. 6 Ct/Klick',
       features: ['Klick-Übersicht im Dashboard', 'Volle Kostenkontrolle', 'Ideal zum Ausprobieren'],
+      active: true,
     },
     {
       id: 'basic',
@@ -36,6 +38,7 @@ function getPlans(): Plan[] {
       centsPerClick: 'ca. 4 Ct/Klick',
       features: ['Klick-Übersicht im Dashboard', 'Volle Kostenkontrolle', 'Beliebtestes Paket'],
       highlight: true,
+      active: true,
     },
     {
       id: 'growth',
@@ -47,13 +50,14 @@ function getPlans(): Plan[] {
       clicksAmount: 3000,
       centsPerClick: 'ca. 3 Ct/Klick',
       features: ['Klick-Übersicht im Dashboard', 'Volle Kostenkontrolle', 'Für große Händler'],
+      active: true,
     },
   ]
 }
 
 export default async function VendorPricetablePage() {
   const { vendor } = await requireVendorAuth()
-  const plans = getPlans()
+  const plans = getPlans().filter((p) => p.active !== false)
 
   return <VendorPricingTable plans={plans} vendorStatus={vendor.status} />
 }

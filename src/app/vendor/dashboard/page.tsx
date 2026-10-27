@@ -617,6 +617,7 @@ export default async function VendorDashboardPage() {
 
           <div className="mb-8">
             <ShopifyConnectionCard
+              vendorId={vendor.id}
               connected={shopifyStatus.connected}
               shopDomain={shopifyStatus.shopDomain}
               installedAt={shopifyStatus.installedAt}

@@ -31,6 +31,15 @@ export function getRedisClient(): Redis | null {
         return delay
       },
       lazyConnect: false,
+      // ioredis v6 defaults to RESP3, whose decoder has a known bug with
+      // certain reply types (e.g. the attribute type) that desyncs the
+      // connection and surfaces as "Unknown RESP type N" errors -
+      // https://github.com/redis/ioredis/issues/2212. RESP2 avoids it.
+      protocol: 2,
+      // Railway's private networking is IPv6-only on newer projects;
+      // ioredis only does an IPv4 lookup by default, which would 404 on
+      // redis.railway.internal otherwise.
+      family: 0,
     })
 
     redis.on('connect', () => {

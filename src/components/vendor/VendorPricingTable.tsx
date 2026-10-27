@@ -16,6 +16,7 @@ export interface Plan {
   features: string[]
   highlight?: boolean
   clicksAmount: number
+  active?: boolean
 }
 
 interface VendorPricingTableProps {
