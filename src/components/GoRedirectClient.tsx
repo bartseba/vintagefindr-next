@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Loader2, ExternalLink } from 'lucide-react'
 import { companyName } from '@/constant/routes'
 import { isAwinUrl } from '@/lib/awin'
@@ -34,6 +35,7 @@ function resolveRedirectUrl(targetUrl: string): string {
 }
 
 export function GoRedirectClient({ targetUrl, productTitle, vendorName }: GoRedirectClientProps) {
+  const router = useRouter()
   const isAwin = isAwinUrl(targetUrl)
   const [countdown, setCountdown] = useState(3)
   // Starts as targetUrl to match the server-rendered markup exactly, then
@@ -52,8 +54,9 @@ export function GoRedirectClient({ targetUrl, productTitle, vendorName }: GoRedi
       return () => clearTimeout(timer)
     } else {
       window.open(redirectUrl, '_blank', 'noopener')
+      router.back()
     }
-  }, [countdown, redirectUrl])
+  }, [countdown, redirectUrl, router])
 
   return (
     <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
