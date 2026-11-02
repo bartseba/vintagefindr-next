@@ -39,7 +39,10 @@ interface ProductCardProps {
     productUrl?: string
   }) => void
   index?: number
-  tags?: string | null
+  // Supabase-backed pages (dashboard, favorites) pass the raw comma-separated
+  // column value; Algolia-backed pages (category/search hits) pass the
+  // array sync-algolia-products indexes it as (tags.split(",") at index time).
+  tags?: string | string[] | null
   // PAngV fields
   shipping_cost?: number | null
   free_shipping_threshold?: number | null
@@ -86,7 +89,8 @@ export function ProductCard({
   })
 
   const favorited = isFavorited(id)
-  const isAffiliate = !!tags?.split(',').map((t) => t.trim().toLowerCase()).includes('affiliate')
+  const tagsList = Array.isArray(tags) ? tags : tags?.split(',') ?? []
+  const isAffiliate = tagsList.map((t) => t.trim().toLowerCase()).includes('affiliate')
   const isAwin = isAwinUrl(productUrl)
 
   const handleFavoriteClick = (e: React.MouseEvent) => {

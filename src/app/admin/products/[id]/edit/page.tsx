@@ -24,6 +24,7 @@ interface RawProduct {
   external_product_id: string
   external_variant_id: string | null
   vendor_id: string
+  gender: string | null
   created_at: string
   updated_at: string
   vendors: { store_name: string } | null
@@ -80,6 +81,7 @@ export default async function AdminProductEditPage({
     vendorId: raw.vendor_id,
     vendorName: raw.vendors?.store_name || 'Unknown',
     clicks: clicksCount || 0,
+    gender: raw.gender,
     createdAt: raw.created_at,
     updatedAt: raw.updated_at,
   }

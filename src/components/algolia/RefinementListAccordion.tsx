@@ -8,19 +8,26 @@ interface RefinementListAccordionProps extends UseRefinementListProps {
   title: string;
   searchable?: boolean;
   defaultOpen?: boolean;
+  hideValues?: string[];
 }
 
 export function RefinementListAccordion({
   title,
   searchable = false,
   defaultOpen = false,
+  hideValues,
   ...props
 }: RefinementListAccordionProps) {
   const { items, refine, searchForItems } = useRefinementList(props);
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
   const [searchQuery, setSearchQuery] = React.useState("");
 
-  const selectedItems = items.filter(item => item.isRefined);
+  const visibleItems = hideValues?.length
+    ? items.filter(item => !hideValues.includes(item.label))
+    : items;
+
+  if (visibleItems.length === 0) return null;
+  const selectedItems = visibleItems.filter(item => item.isRefined);
 
   const handleSearch = (value: string) => {
     setSearchQuery(value);
@@ -30,10 +37,10 @@ export function RefinementListAccordion({
   };
 
   const filteredItems = searchable && searchQuery
-    ? items.filter(item =>
+    ? visibleItems.filter(item =>
         item.label.toLowerCase().includes(searchQuery.toLowerCase())
       )
-    : items;
+    : visibleItems;
 
   return (
     <div className="border-b border-gray-200">

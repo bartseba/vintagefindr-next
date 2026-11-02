@@ -63,7 +63,7 @@ export default function Hero({ gridImageSrc: _gridImageSrc = "/hero-fade.png" }:
 
           {/* Right: Bild — hidden on mobile via CSS, no JS needed */}
           <div className="hidden lg:block relative max-w-[650px] justify-self-end">
-              <img className="max-h-[380px] w-full object-cover rounded-2xl shadow-[0px_0px_4px_1px_rgba(0,_0,_0,_0.1)]" src="https://vintagefinder.b-cdn.net/image/hero_image_startseite.jpg?class=blockimage" />
+              <img className="max-h-[380px] w-full object-cover rounded-2xl shadow-[0px_0px_4px_1px_rgba(0,_0,_0,_0.1)]" src="https://vintagefinder.b-cdn.net/image/hero_image_startseite.jpg?class=blockimage" alt="Vintage Mode und Second Hand Kleidung bei Vintagefindr" />
           </div>
         </div>
       </div>

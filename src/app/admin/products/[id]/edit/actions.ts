@@ -45,6 +45,7 @@ export async function updateAdminProduct(productId: string, _prevState: AdminPro
       availability: (formData.get('availability') as string) || 'in stock',
       tags: (formData.get('tags') as string)?.trim() || null,
       vintage_styles: (formData.get('vintageStyles') as string)?.trim() || null,
+      gender: (formData.get('gender') as string) || null,
       image_url_1: (formData.get('imageUrl1') as string)?.trim() || null,
       image_url_2: (formData.get('imageUrl2') as string)?.trim() || null,
       image_url_3: (formData.get('imageUrl3') as string)?.trim() || null,

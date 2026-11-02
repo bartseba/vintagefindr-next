@@ -420,6 +420,19 @@ export function VendorProductNewForm({ navigationItems, sizes, brands }: VendorP
                 </p>
               </div>
 
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Geschlecht (optional)
+                </label>
+                <select name="gender" className="input-field">
+                  <option value="">Bitte wählen</option>
+                  <option value="Damen">Damen</option>
+                  <option value="Herren">Herren</option>
+                  <option value="Kids">Kids</option>
+                  <option value="Universal">Universal</option>
+                </select>
+              </div>
+
               <SearchableSelect
                 name="size"
                 label="Größe"

@@ -40,6 +40,7 @@ export interface EditableProduct {
   tags: string | null
   external_product_id: string | null
   size: string | null
+  gender: string | null
 }
 
 interface VendorProductEditFormProps {
@@ -384,6 +385,19 @@ export function VendorProductEditForm({ product, navigationSections, sizes, bran
                   <p className="text-xs text-gray-500 mt-1">
                     Wählen Sie den passenden Vintage-Stil für bessere Kategorisierung
                   </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Geschlecht (optional)
+                  </label>
+                  <select name="gender" className="input-field" defaultValue={product.gender || ''}>
+                    <option value="">Bitte wählen</option>
+                    <option value="Damen">Damen</option>
+                    <option value="Herren">Herren</option>
+                    <option value="Kids">Kids</option>
+                    <option value="Universal">Universal</option>
+                  </select>
                 </div>
 
                 <SearchableSelect

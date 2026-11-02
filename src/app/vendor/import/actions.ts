@@ -8,6 +8,7 @@ import { getValidCategories, getCategoryKeywords, getSizeKeywords, getAllBrands 
 import {
   validateCSVData,
   detectCategoryFromTitle,
+  detectGenderFromTitle,
   SHOPIFY_FIELD_MAPPING,
   CSV_FIELD_MAPPING,
   type ImportError,
@@ -404,6 +405,7 @@ export async function importCSV(_prevState: ImportActionState, formData: FormDat
           external_product_id: mappedRow.external_product_id?.trim() || null,
           tags: `csv-import${hasErrors ? ',has-errors,needs-review' : ''}${mappedRow.tags ? ',' + mappedRow.tags : ''}${hasPendingSuggestions ? ',pending-suggestions' : ''}${!publishImmediately ? ',draft' : ''}`,
           size: finalSize,
+          gender: mappedRow.gender || detectGenderFromTitle(mappedRow.title || '') || null,
           is_active: publishImmediately && !hasErrors && !hasPendingSuggestions,
           deleted: false,
           suggested_brand_id: suggestedBrandId,

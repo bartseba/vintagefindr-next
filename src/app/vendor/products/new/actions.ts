@@ -39,6 +39,7 @@ export async function createProduct(_prevState: CreateProductState, formData: Fo
     tags: formData.get('tags') as string,
     externalProductId: formData.get('externalProductId') as string,
     size: formData.get('size') as string,
+    gender: formData.get('gender') as string,
     publishNow: formData.get('publishNow') === 'on',
   }
 
@@ -120,6 +121,7 @@ export async function createProduct(_prevState: CreateProductState, formData: Fo
       stock_qty: data.stockQty,
       tags: data.tags || null,
       size: data.size || null,
+      gender: data.gender || null,
       is_active: isActive,
       has_pending_suggestions: hasPendingSuggestions,
       suggested_brand_id: brandSuggestion.data?.status === 'pending' ? brandSuggestion.data.id : null,

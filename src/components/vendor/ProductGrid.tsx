@@ -30,6 +30,7 @@ export interface VendorProductListItem {
   productUrl: string | null
   checkoutUrl: string | null
   tags: string | null
+  gender: string | null
   externalProductId: string | null
   createdAt: string
   updatedAt: string

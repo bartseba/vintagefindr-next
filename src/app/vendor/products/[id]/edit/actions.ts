@@ -43,6 +43,7 @@ export async function updateProduct(productId: string, _prevState: UpdateProduct
     tags: formData.get('tags') as string,
     externalProductId: formData.get('externalProductId') as string,
     size: formData.get('size') as string,
+    gender: formData.get('gender') as string,
     shippingCost: formData.get('shippingCost') ? parseFloat(formData.get('shippingCost') as string) : null,
     freeShippingThreshold: formData.get('freeShippingThreshold') ? parseFloat(formData.get('freeShippingThreshold') as string) : null,
     deliveryTimeMinDays: formData.get('deliveryTimeMinDays') ? parseInt(formData.get('deliveryTimeMinDays') as string) : null,
@@ -108,6 +109,7 @@ export async function updateProduct(productId: string, _prevState: UpdateProduct
       tags: cleanedTags || null,
       external_product_id: data.externalProductId?.trim() || null,
       size: data.size || null,
+      gender: data.gender || null,
       is_active: true,
       updated_at: new Date().toISOString(),
     })

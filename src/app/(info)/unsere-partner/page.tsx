@@ -26,7 +26,7 @@ export default function Partners({ partners = [] }: { partners?: Partner[] }) {
     <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
       {/* Header */}
       <div className="text-center mb-12">
-        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">Unsere Partner</h2>
+        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">Unsere Partner</h1>
         <p className="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">
           <span className="font-semibold">{companyName}</span> bringt Vintage-Händler:innen aus ganz Deutschland zusammen.
           Von Streetwear aus den 80ern und 90ern bis zu Archiv-Stücken – alle Angebote an einem Ort.

@@ -30,10 +30,11 @@ export interface ProductHit {
   vintage_styles?: string
   image_url_1?: string
   vendor_name?: string
+  gender?: string
   vendor_id?: string
   product_url?: string
   checkout_url?: string
-  tags?: string
+  tags?: string[]
   shipping_cost?: number
   free_shipping_threshold?: number
   delivery_time_min_days?: number

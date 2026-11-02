@@ -535,7 +535,7 @@ export async function getBrandCategoryPage(path: string): Promise<CategoryPage |
         imageUrl: buildDirectusImageUrl(data.faq_block.image, 'blockimage'),
         image_alt: replaceBrand(data.faq_block.image_alt),
         isAiImage: data.faq_block.ki_bild ?? false,
-        faqs: data.faq_block.faqs.map((faq) => ({
+        faqs: (data.faq_block.faqs ?? []).map((faq) => ({
           id: faq.id,
           question: replaceBrand(faq.question),
           answer: replaceBrand(faq.answer),
@@ -601,7 +601,7 @@ export async function getCategoryPage(path: string): Promise<CategoryPage | null
         imageUrl: buildDirectusImageUrl(data.faq_block.image, 'blockimage'),
         image_alt: data.faq_block.image_alt ?? null,
         isAiImage: data.faq_block.ki_bild ?? false,
-        faqs: data.faq_block.faqs,
+        faqs: data.faq_block.faqs ?? [],
       } : null,
     }
   } catch (error) {

@@ -43,7 +43,7 @@ export default function SeoFooter() {
                                 <li><Link href="/vintage/jacken" className="font-medium underline">Vintage Jacken</Link></li>
                                 <li><Link href="/vintage/sneaker" className="font-medium underline">Vintage Sneaker</Link></li>
                                 <li><Link href="/vintage/y2k" className="font-medium underline">Y2K Mode</Link></li>
-                                <li><Link href="/vintage/sport/fussballtrikots" className="font-medium underline">Vintage Trikots</Link></li>
+                                <li><Link href="/vintage/trikots" className="font-medium underline">Vintage Trikots</Link></li>
                             </ul>
                         </div>
                         {/* End Col */}
@@ -76,7 +76,7 @@ export default function SeoFooter() {
                                 <li><p className="text-vintage-darkGray font-medium">Vintage Styles:</p></li>
                                 <li><Link href="/vintage/jacken" className="font-medium underline">Jacken</Link></li>
                                 <li><Link href="/vintage/sneaker" className="font-medium underline">Sneaker</Link></li>
-                                <li><Link href="/vintage/sport/fussballtrikots" className="font-medium underline">Trikots</Link></li>
+                                <li><Link href="/vintage/trikots" className="font-medium underline">Trikots</Link></li>
                                 <li><Link href="/vintage/oberteile/shirts" className="font-medium underline">Shirts</Link></li>
                                 <li><Link href="/vintage/y2k" className="font-medium underline">Y2K</Link></li>
                             </ul>

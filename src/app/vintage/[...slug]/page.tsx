@@ -12,6 +12,7 @@ import SeoFooter from '@/components/SeoFooter'
 import { FaqBlockSection } from '@/components/FaqBlockSection'
 import { CategorySearch } from '@/components/algolia/CategorySearch'
 import { buildBreadcrumb } from '@/lib/breadcrumb'
+import { buildCategoryFilter } from '@/lib/algolia/filterConfig'
 
 export const dynamic = 'force-dynamic'
 
@@ -58,7 +59,10 @@ async function loadPageData(slug: string[]) {
   const categoryPage = await resolveCategoryPage(fullPath)
   if (!categoryPage) return null
 
-  return { type: 'category_page' as const, categoryPage, fullPath }
+  const brandHrefs = await getAllBrandHrefs()
+  const categoryFilter = buildCategoryFilter(slug, brandHrefs)
+
+  return { type: 'category_page' as const, categoryPage, fullPath, categoryFilter }
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -113,7 +117,7 @@ export default async function VintageCategoryPage({ params }: PageProps) {
     )
   }
 
-  const { categoryPage, fullPath } = data
+  const { categoryPage, fullPath, categoryFilter } = data
   const sidebarItems = await getSidebarNavigationItems()
   const popularBrands = await getPopularBrands()
   const defaultSortIndex = fullPath.includes('neuester-drop') ? 'products_new' : undefined
@@ -136,6 +140,7 @@ export default async function VintageCategoryPage({ params }: PageProps) {
               introSafeHtml={categoryPage.intro_html ? sanitizeHTML(categoryPage.intro_html) : undefined}
               breadcrumb={buildBreadcrumb(fullPath)}
               popularBrands={popularBrands}
+              categoryFilter={categoryFilter}
             />
           </div>
         </div>

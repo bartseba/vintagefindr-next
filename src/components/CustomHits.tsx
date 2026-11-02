@@ -22,7 +22,7 @@ interface Hit {
   vendor_id?: string
   product_url?: string
   checkout_url?: string
-  tags?: string
+  tags?: string[]
 }
 
 type CustomHitsProps = UseHitsProps<Hit> & {

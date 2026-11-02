@@ -116,9 +116,9 @@ export function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordModalProp
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <KeyRound className="w-8 h-8 text-blue-600" />
               </div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
                 Passwort vergessen?
-              </h1>
+              </h2>
               <p className="text-gray-600 text-sm">
                 Wählen Sie, wie Sie sich anmelden möchten
               </p>

@@ -17,8 +17,10 @@ export {
   VALID_CONDITIONS,
   VALID_VINTAGE_STYLES,
   VALID_AVAILABILITY,
+  VALID_GENDERS,
 
   // Functions
+  detectGenderFromTitle,
   detectSizeFromTitle,
   matchCategoryFromInput,
   detectCategoryFromTitle,

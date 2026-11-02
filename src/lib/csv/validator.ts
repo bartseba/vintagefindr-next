@@ -53,6 +53,7 @@ export const SHOPIFY_FIELD_MAPPING: Record<string, string> = {
   'option1 value': 'size_option1',
   'option2 value': 'size_option2',
   'option3 value': 'size_option3',
+  'gender': 'gender',
 }
 
 /** Standard CSV column mapping (German + English) */
@@ -94,6 +95,8 @@ export const CSV_FIELD_MAPPING: Record<string, string> = {
   'option1 value': 'size_option1',
   'option2 value': 'size_option2',
   'option3 value': 'size_option3',
+  'geschlecht': 'gender',
+  'gender': 'gender',
 }
 
 export const VALID_CONDITIONS = ['neu', 'sehr gut', 'gut', 'akzeptabel']
@@ -104,6 +107,21 @@ export const VALID_VINTAGE_STYLES = [
 ]
 
 export const VALID_AVAILABILITY = ['in_stock', 'out_of_stock', 'preorder', 'discontinued']
+
+export const VALID_GENDERS = ['Damen', 'Herren', 'Kids', 'Universal']
+
+/**
+ * Detect gender from product title keywords.
+ * Returns null if no gender can be detected.
+ */
+export function detectGenderFromTitle(title: string): string | null {
+  const t = title.toLowerCase()
+  if (/\b(damen|dame|women|woman|girl|girls|mädchen)\b/.test(t)) return 'Damen'
+  if (/\b(herren|herr|men|man|boy|boys|jungs|männer)\b/.test(t)) return 'Herren'
+  if (/\b(kids|kinder|kind|baby|babies|children|child|jugend)\b/.test(t)) return 'Kids'
+  if (/\b(unisex|universal)\b/.test(t)) return 'Universal'
+  return null
+}
 
 // ============================================================================
 // Helper Functions
@@ -527,6 +545,16 @@ function validateOptionalFields(
       field: 'vintage_style',
       message: `Ungültiger Vintage Style. Erlaubt: ${VALID_VINTAGE_STYLES.join(', ')}`,
       value: mappedRow.vintage_style as string,
+    })
+  }
+
+  // Validate gender
+  if (mappedRow.gender && !VALID_GENDERS.includes(mappedRow.gender as string)) {
+    errors.push({
+      row: rowNumber,
+      field: 'gender',
+      message: `Ungültiges Geschlecht. Erlaubt: ${VALID_GENDERS.join(', ')}`,
+      value: mappedRow.gender as string,
     })
   }
 

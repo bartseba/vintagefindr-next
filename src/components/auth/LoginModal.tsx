@@ -140,7 +140,7 @@ export function LoginModal({ isOpen, onClose, actionData, redirectTo = '' }: Log
               <div className="w-16 h-16 bg-vintage-primary rounded-full flex items-center justify-center mx-auto mb-4">
                 <User className="w-8 h-8 text-white" />
               </div>
-              <h1 className="text-2xl font-bold text-vintage-primary mb-2">{companyName}</h1>
+              <p className="text-2xl font-bold text-vintage-primary mb-2">{companyName}</p>
               <h2 className="text-xl font-bold text-gray-900 mb-2">
                 Anmelden
               </h2>

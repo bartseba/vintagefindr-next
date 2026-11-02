@@ -212,7 +212,7 @@ export function ShopifyConnectionCard({
           </div>
         </div>
       )}
-
+   
       <div className="flex items-center gap-3">
         <Button
           variant="outline"
@@ -223,16 +223,7 @@ export function ShopifyConnectionCard({
           <RefreshCw size={14} className={`mr-2 ${isResyncing ? 'animate-spin' : ''}`} />
           {isResyncing ? 'Wird gestartet...' : 'Neu synchronisieren'}
         </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setShowDisconnectConfirm(true)}
-          disabled={isResyncing || isDisconnecting || showDisconnectConfirm}
-          className="text-red-600 border-red-200 hover:bg-red-50"
-        >
-          <Unlink size={14} className="mr-2" />
-          Verbindung trennen
-        </Button>
+          Verbindung trennen? Bitte deinstalliere die Shopify-App aus deinem Shop.
       </div>
     </div>
   )

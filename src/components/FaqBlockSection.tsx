@@ -12,7 +12,7 @@ interface FaqBlock {
 }
 
 export function FaqBlockSection({ block }: { block: FaqBlock }) {
-  if (block.faqs.length === 0) return null
+  if (!block.faqs || block.faqs.length === 0) return null
 
   return (
     <div className="mb-8 px-4 md:px-0">

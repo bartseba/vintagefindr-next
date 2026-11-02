@@ -22,6 +22,7 @@ export interface AdminEditProduct {
   availability: string
   tags: string | null
   vintageStyles: string | null
+  gender: string | null
   imageUrl1: string | null
   imageUrl2: string | null
   imageUrl3: string | null
@@ -246,6 +247,19 @@ export function AdminProductEditForm({ product, navigationSections, brands }: Ad
                       placeholder="z.B. 80er, 90er, Y2K"
                       className="w-full"
                     />
+                  </div>
+
+                  <div>
+                    <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">
+                      Geschlecht
+                    </label>
+                    <select id="gender" name="gender" className="input-field" defaultValue={product.gender || ''}>
+                      <option value="">Bitte wählen</option>
+                      <option value="Damen">Damen</option>
+                      <option value="Herren">Herren</option>
+                      <option value="Kids">Kids</option>
+                      <option value="Universal">Universal</option>
+                    </select>
                   </div>
 
                   <div>

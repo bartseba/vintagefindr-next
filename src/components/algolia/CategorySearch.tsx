@@ -44,6 +44,7 @@ import { BreadcrumbSegment } from "@/lib/breadcrumb";
 interface RouteState {
   q?: string;
   brand?: string;
+  gender?: string;
   size?: string;
   vendor?: string;
   color?: string;
@@ -64,6 +65,9 @@ function buildStateMapping(defaultSortIndex?: string) {
       }
       if (indexUiState.refinementList?.brand?.length) {
         routeState.brand = indexUiState.refinementList.brand.join('+');
+      }
+      if (indexUiState.refinementList?.gender?.length) {
+        routeState.gender = indexUiState.refinementList.gender.join('+');
       }
       if (indexUiState.refinementList?.size?.length) {
         routeState.size = indexUiState.refinementList.size.join('+');
@@ -100,6 +104,7 @@ function buildStateMapping(defaultSortIndex?: string) {
       const splitParam = (value: string) => value.split('+');
       if (routeState.brand) refinementList.brand = splitParam(routeState.brand);
       if (routeState.size) refinementList.size = splitParam(routeState.size);
+      if (routeState.gender) refinementList.gender = splitParam(routeState.gender);
       if (routeState.vendor) refinementList.vendor = splitParam(routeState.vendor);
       if (routeState.color) refinementList.color = splitParam(routeState.color);
       if (routeState.condition) refinementList.condition = splitParam(routeState.condition);
@@ -173,6 +178,7 @@ interface CategorySearchProps {
   introSafeHtml?: string;
   breadcrumb?: BreadcrumbSegment[];
   popularBrands?: PopularBrand[];
+  categoryFilter?: string;
 }
 
 export function CategorySearch({
@@ -188,6 +194,7 @@ export function CategorySearch({
   introSafeHtml,
   breadcrumb,
   popularBrands,
+  categoryFilter,
 }: CategorySearchProps) {
   const cfg = buildConfigure({ brand });
   const [showFilters, setShowFilters] = useState(false);
@@ -225,9 +232,12 @@ export function CategorySearch({
       insights={true}
     >
       {/* Configure filters - InstantSearch routing handles URL query params automatically */}
-      {cfg?.length === 0 && (
-        <Configure facetFilters={cfg} />
-      )}
+      <Configure
+        facetFilters={cfg.length > 0 ? cfg : undefined}
+        filters={categoryFilter || undefined}
+        facets={['brand', 'size', 'vendor_name', 'condition', 'price', 'gender']}
+        hitsPerPage={60}
+      />
       <CategorySearchBody
         h1={h1}
         introSafeHtml={introSafeHtml}
@@ -301,7 +311,7 @@ function CategorySearchBody({
     () => findCurrentParent(sidebarItems ?? [], pathname),
     [sidebarItems, pathname]
   );
-
+  
   return (
     <div>
       {breadcrumb && breadcrumb.length > 0 && (
@@ -374,8 +384,9 @@ function CategorySearchBody({
 
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 <RefinementListAccordion attribute="brand" title="Brand" searchable={true} defaultOpen={true} />
+                <RefinementListAccordion attribute="gender" title="Geschlecht" searchable={false}  defaultOpen={true} />
                 <RefinementListAccordion attribute="size" title="Größe" searchable={false} />
-                <RefinementListAccordion attribute="vendor_name" title="Händler" searchable={false} />
+                <RefinementListAccordion attribute="vendor_name" title="Händler" searchable={false} hideValues={['Awin Vintagefindr']} />
                 <RefinementListAccordion attribute="price" title="Preis" />
               </div>
 
@@ -478,11 +489,12 @@ function CategorySearchBody({
             )}
           </div>
         ) : (
-          <div className="hidden lg:block min-w-full gap-4 mb-6  bg-white  vintage-filter-section rounded-md shadow-sm ">
+          <div className="hidden h-fit lg:block min-w-full gap-4 mb-6  bg-white  vintage-filter-section rounded-md shadow-sm ">
             <RefinementListAccordion attribute="brand" title="Brand" searchable={true} defaultOpen={true} />
+            <RefinementListAccordion attribute="gender" title="Geschlecht" searchable={false}  defaultOpen={true} />
             <RefinementListAccordion attribute="size" title="Größe" searchable={true} defaultOpen={true} />
-            <RefinementListAccordion attribute="vendor_name" title="Händler" searchable={true} defaultOpen={true} />
-            <RefinementListAccordion attribute="tags" title="Tags" searchable={true} defaultOpen={true} />
+            <RefinementListAccordion attribute="vendor_name" title="Händler" searchable={true} defaultOpen={true} hideValues={['Awin Vintagefindr']} />
+
             <RefinementListAccordion attribute="condition" title="Zustand" searchable={true} defaultOpen={true} />
             <PriceRangeAccordion attribute="price" title="Preis" defaultOpen={true} />
           </div>

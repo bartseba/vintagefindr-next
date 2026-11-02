@@ -20,6 +20,7 @@ interface RawProductRow {
   product_url: string | null
   checkout_url: string | null
   tags: string | null
+  gender: string | null
   external_product_id: string | null
   created_at: string
   updated_at: string
@@ -56,7 +57,10 @@ export default async function VendorProductsPage({
     .eq('deleted', false)
 
   if (searchQuery) {
-    countQuery = countQuery.or(`title.ilike.%${searchQuery}%,brand.ilike.%${searchQuery}%,category.ilike.%${searchQuery}%`)
+    const words = searchQuery.trim().split(/\s+/).filter(Boolean)
+    for (const word of words) {
+      countQuery = countQuery.or(`title.ilike.%${word}%,brand.ilike.%${word}%,category.ilike.%${word}%`)
+    }
   }
   if (categoryFilter !== 'all') {
     countQuery = countQuery.eq('category', categoryFilter)
@@ -82,7 +86,10 @@ export default async function VendorProductsPage({
     .eq('deleted', false)
 
   if (searchQuery) {
-    query = query.or(`title.ilike.%${searchQuery}%,brand.ilike.%${searchQuery}%,category.ilike.%${searchQuery}%`)
+    const words = searchQuery.trim().split(/\s+/).filter(Boolean)
+    for (const word of words) {
+      query = query.or(`title.ilike.%${word}%,brand.ilike.%${word}%,category.ilike.%${word}%`)
+    }
   }
   if (categoryFilter !== 'all') {
     query = query.eq('category', categoryFilter)
@@ -144,6 +151,7 @@ export default async function VendorProductsPage({
         productUrl: product.product_url,
         checkoutUrl: product.checkout_url,
         tags: product.tags,
+        gender: product.gender,
         externalProductId: product.external_product_id,
         createdAt: product.created_at,
         updatedAt: product.updated_at,

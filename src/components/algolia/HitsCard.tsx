@@ -24,7 +24,7 @@ interface Hit {
   description?: string;
   availability?: string;
   stock_qty?: number;
-  tags?: string;
+  tags?: string[];
   created_at?: string;
   // PAngV fields
   shipping_cost?: number;

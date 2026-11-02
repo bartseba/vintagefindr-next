@@ -126,7 +126,7 @@ export const vintageRoutes = {
   fleece: "/vintage/fleece",
   hosen: "/vintage/hosen",
   y2k: "/vintage/y2k",
-  trikots: "/vintage/sport/fussballtrikots",
+  trikots: "/vintage/trikots",
 
   // Dynamic Routes
   brand: (brand: string) => `/vintage/${brand}`,
