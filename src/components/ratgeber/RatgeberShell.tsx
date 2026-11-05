@@ -46,7 +46,7 @@ export function RatgeberShell({ categoryTree, breadcrumbs, children }: RatgeberS
           <aside className={`w-full lg:w-80 flex-shrink-0 ${showCategories ? 'block' : 'hidden lg:block'}`}>
             <div className="lg:sticky lg:top-24">
               <div className="bg-white rounded-lg shadow-sm p-6 vintage-border ">
-                <h2 className="text-lg font-semibold mb-4">Kategorien</h2>
+                <p className="text-lg font-semibold mb-4">Kategorien</p>
 
                 <nav className="space-y-1">
                   {categoryTree.map((category) => (

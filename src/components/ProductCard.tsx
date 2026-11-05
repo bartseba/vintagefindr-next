@@ -213,11 +213,18 @@ export function ProductCard({
 
       {/* Content */}
       <div className="p-3">
-        {brand && (
-          <p className="text-xs text-vintage-secondary tracking-wide">
-            {brand}
-          </p>
-        )}
+        <div className="flex items-center justify-between gap-2">
+          {brand && (
+            <p className="text-xs text-vintage-secondary tracking-wide">
+              {brand}
+            </p>
+          )}
+          {condition && (
+            <span className="shrink-0 text-xs text-gray-600 bg-gray-100 px-2 py-0.5 rounded-full">
+              {condition}
+            </span>
+          )}
+        </div>
 
         <h3 className="text-gray-900 line-clamp-2 text-sm font-semibold leading-tight my-1">
           {title}

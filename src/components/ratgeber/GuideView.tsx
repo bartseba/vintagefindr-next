@@ -1,10 +1,14 @@
 import Link from 'next/link'
+import { headers } from 'next/headers'
 import type { Guide } from '@/lib/directus'
 import { sanitizeHTML } from '@/lib/sanitize'
 import ButtonPrimary from '@/components/ui/ButtonPrimary'
+import { companyName, siteUrl } from '@/constant/routes'
 import { GuideCard } from './GuideCard'
 
-export function GuideView({ guide, relatedGuides }: { guide: Guide; relatedGuides: Guide[] }) {
+export async function GuideView({ guide, relatedGuides }: { guide: Guide; relatedGuides: Guide[] }) {
+  const nonce = (await headers()).get('x-nonce') ?? undefined
+
   return (
     <div className="space-y-8">
       <article className="rounded-lg overflow-hidden bg-white vintage-border">
@@ -85,6 +89,7 @@ export function GuideView({ guide, relatedGuides }: { guide: Guide; relatedGuide
 
       <script
         type="application/ld+json"
+        nonce={nonce}
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             '@context': 'https://schema.org',
@@ -95,7 +100,15 @@ export function GuideView({ guide, relatedGuides }: { guide: Guide; relatedGuide
             datePublished: guide.published_at,
             author: {
               '@type': 'Organization',
-              name: 'Vintage Finder'
+              name: companyName
+            },
+            publisher: {
+              '@type': 'Organization',
+              name: companyName,
+              logo: {
+                '@type': 'ImageObject',
+                url: `${siteUrl}/latest-02.png`
+              }
             }
           })
         }}

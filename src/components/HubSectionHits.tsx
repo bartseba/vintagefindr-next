@@ -14,7 +14,15 @@ import type { ProductHit } from '@/lib/algolia/search'
  * `sendEvent` call — there's no InstantSearch context here since this
  * doesn't need interactive refinement, just a fixed-filter product list.
  */
-export function HubSectionHits({ hits, title }: { hits: ProductHit[]; title: string }) {
+export function HubSectionHits({
+  hits,
+  title,
+  layout = 'slider',
+}: {
+  hits: ProductHit[]
+  title: string
+  layout?: 'slider' | 'grid'
+}) {
   const handleClickout = (item: ProductHit) => {
     if (item.vendor_id && item.product_url) {
       addToRecentlyViewed({
@@ -45,34 +53,40 @@ export function HubSectionHits({ hits, title }: { hits: ProductHit[]; title: str
     )
   }
 
+  const cards = hits.map((item) => (
+    <ProductCard
+      key={item.id}
+      id={item.id}
+      vendorId={item.vendor_id}
+      title={item.title}
+      brand={item.brand}
+      category={item.category}
+      price={item.price}
+      currency={item.currency || 'EUR'}
+      condition={item.condition}
+      era={item.vintage_styles}
+      imageUrl={item.image_url_1}
+      vendorName={item.vendor_name || 'Unknown'}
+      productUrl={item.product_url}
+      checkoutUrl={item.checkout_url}
+      tags={item.tags}
+      onProductClick={() => handleClickout(item)}
+      shipping_cost={item.shipping_cost}
+      free_shipping_threshold={item.free_shipping_threshold}
+      delivery_time_min_days={item.delivery_time_min_days}
+      delivery_time_max_days={item.delivery_time_max_days}
+      tax_included={item.tax_included}
+      tax_rate={item.tax_rate}
+    />
+  ))
+
+  if (layout === 'grid') {
+    return <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">{cards}</div>
+  }
+
   return (
     <HorizontalCarousel title="" showAll="">
-      {hits.map((item) => (
-        <ProductCard
-          key={item.id}
-          id={item.id}
-          vendorId={item.vendor_id}
-          title={item.title}
-          brand={item.brand}
-          category={item.category}
-          price={item.price}
-          currency={item.currency || 'EUR'}
-          condition={item.condition}
-          era={item.vintage_styles}
-          imageUrl={item.image_url_1}
-          vendorName={item.vendor_name || 'Unknown'}
-          productUrl={item.product_url}
-          checkoutUrl={item.checkout_url}
-          tags={item.tags}
-          onProductClick={() => handleClickout(item)}
-          shipping_cost={item.shipping_cost}
-          free_shipping_threshold={item.free_shipping_threshold}
-          delivery_time_min_days={item.delivery_time_min_days}
-          delivery_time_max_days={item.delivery_time_max_days}
-          tax_included={item.tax_included}
-          tax_rate={item.tax_rate}
-        />
-      ))}
+      {cards}
     </HorizontalCarousel>
   )
 }

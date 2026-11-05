@@ -236,6 +236,11 @@ export interface ProductSliderBlockItem {
   title: string | null
   query: string | null
   isPublic: boolean
+  titleTag: 'h1' | 'h2' | 'h3' | 'p' | null
+  /** PRIMARY (default) renders the horizontal slider; SECONDARY renders a
+   * fixed 18-product grid instead. Falls back to PRIMARY when the Directus
+   * field is absent/empty (see getHubContentPageById's mapping). */
+  variant: 'PRIMARY' | 'SECONDARY' | null
 }
 
 export interface HubContentPage {
@@ -315,7 +320,7 @@ interface RawHubContentPage {
   image_alt: string | null
   CategoryTeaserBlock?: Array<{ HubContent_id: RawHubContentItem }>
   content_block?: Array<{ IntroSection_id: HubContentPage['content_block'][number] }>
-  productSliderBlock?: Array<{ ProductSliderBlock_id: { id: number; title: string | null; query: string | null; isPublic: boolean | null } }>
+  productSliderBlock?: Array<{ ProductSliderBlock_id: { id: number; title: string | null; query: string | null; isPublic: boolean | null; titleTag: string | null; variant: string | null } }>
   faq_block: RawFaqBlock | null
 }
 
@@ -344,7 +349,7 @@ export async function getHubContentPageById(id: number): Promise<HubContentPage 
               { IntroSection_id: ['id', 'Headline', 'IntroText', 'intro_image', 'button_text', { button_href: ['id', 'href'] }] }
             ],
             productSliderBlock: [
-              { ProductSliderBlock_id: ['id', 'title', 'query', 'isPublic'] }
+              { ProductSliderBlock_id: ['id', 'title', 'query', 'isPublic', 'titleTag', 'variant'] }
             ]
           },
           { faq_block: FAQ_BLOCK_FIELDS },
@@ -391,6 +396,8 @@ export async function getHubContentPageById(id: number): Promise<HubContentPage 
         title: junction.ProductSliderBlock_id.title ?? null,
         query: junction.ProductSliderBlock_id.query ?? null,
         isPublic: junction.ProductSliderBlock_id.isPublic ?? false,
+        titleTag: (junction.ProductSliderBlock_id.titleTag ?? null) as ProductSliderBlockItem['titleTag'],
+        variant: (junction.ProductSliderBlock_id.variant ?? 'PRIMARY') as ProductSliderBlockItem['variant'],
       })),
       faqBlock: raw.faq_block ? {
         id: raw.faq_block.id,
@@ -1083,6 +1090,9 @@ export interface HomepageSectionItem {
   title: string | null
   query: string | null
   hasBackground: boolean
+  titleTag: 'h1' | 'h2' | 'h3' | 'p' | null
+  /** Only meaningful for type: 'product_slider' - see ProductSliderBlockItem. */
+  variant: 'PRIMARY' | 'SECONDARY' | null
 }
 
 /**
@@ -1098,13 +1108,15 @@ export async function getHomepageSections(): Promise<HomepageSectionItem[]> {
   try {
     const sections = await client.request<HomepageSectionItem[]>(
       readItems('HomepageSection', {
-        fields: ['id', 'type', 'title', 'query', 'hasBackground'],
+        fields: ['id', 'type', 'title', 'query', 'hasBackground', 'titleTag', 'variant'],
         filter: { isPublic: { _eq: true } },
         sort: ['sort'],
         limit: -1,
       })
     )
-    return sections
+    // Defaults to PRIMARY when the field is absent/empty, same as
+    // ProductSliderBlockItem's mapping in getHubContentPageById.
+    return sections.map((section) => ({ ...section, variant: section.variant ?? 'PRIMARY' }))
   } catch (error) {
     console.error('Failed to fetch homepage sections:', error)
     return []

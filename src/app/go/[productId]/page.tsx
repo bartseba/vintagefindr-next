@@ -1,6 +1,17 @@
 import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
 import { getGoRedirectData } from '@/lib/go-redirect'
 import { GoRedirectClient } from '@/components/GoRedirectClient'
+
+/**
+ * These interstitials are near-duplicate redirect pages (one per product
+ * ID, thousands of them) with no unique content of their own — indexing
+ * them wastes crawl budget and clutters the index. noindex, but still
+ * followable so the outbound link to the vendor is reachable.
+ */
+export function generateMetadata(): Metadata {
+  return { robots: 'noindex, nofollow' }
+}
 
 /**
  * Ported from `app/routes/go.$productId.tsx` — the product click-through

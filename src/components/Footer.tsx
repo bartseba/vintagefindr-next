@@ -42,7 +42,7 @@ export function Footer({ partner = true, showPrice = true }: FooterProps) {
           <div className="grid gap-10 md:grid-cols-4">
             {/* Logo / Brand */}
             <div className="flex items-center space-x-2">
-              <img loading="lazy" src="/latest-invert.png" alt={`logo ${companyName}`} />
+              <img loading="lazy" src="/latest-invert.png" alt={`logo ${companyName}`} width={165} height={92} />
             </div>
 
             {/* Spalte: Vintagefinder */}
@@ -52,27 +52,27 @@ export function Footer({ partner = true, showPrice = true }: FooterProps) {
               </h3>
               <ul className="mt-5 space-y-3 text-slate-100/90">
                 <li>
-                  <Link href={footerLinks.about} className="hover:underline">
+                  <Link href={footerLinks.about} prefetch={false} className="hover:underline">
                     Über uns
                   </Link>
                 </li>
                 <li>
-                  <Link href={infoRoutes.partnerWerden} className="hover:underline">
+                  <Link href={infoRoutes.partnerWerden} prefetch={false} className="hover:underline">
                     Partner werden
                   </Link>
                 </li>
                 <li>
-                  <Link href={footerLinks.partner} className="hover:underline">
+                  <Link href={footerLinks.partner} prefetch={false} className="hover:underline">
                     Unser Partner
                   </Link>
                 </li>
                 <li>
-                  <Link href={footerLinks.help} className="hover:underline">
+                  <Link href={footerLinks.help} prefetch={false} className="hover:underline">
                     Hilfe
                   </Link>
                 </li>
                 <li>
-                  <Link href={footerLinks.jobs} className="hover:underline">
+                  <Link href={footerLinks.jobs} prefetch={false} className="hover:underline">
                     Jobs
                   </Link>
                 </li>
@@ -86,17 +86,17 @@ export function Footer({ partner = true, showPrice = true }: FooterProps) {
               </h3>
               <ul className="mt-5 space-y-3 text-slate-100/90">
                 <li>
-                  <Link href={footerLinks.imprint} className="hover:underline font-semibold">
+                  <Link href={footerLinks.imprint} prefetch={false} className="hover:underline font-semibold">
                     Impressum
                   </Link>
                 </li>
                 <li>
-                  <Link href={infoRoutes.nutzungsbedingungen} className="hover:underline">
+                  <Link href={infoRoutes.nutzungsbedingungen} prefetch={false} className="hover:underline">
                     Nutzungsbedingungen
                   </Link>
                 </li>
                 <li>
-                  <Link href={footerLinks.privacy} className="hover:underline">
+                  <Link href={footerLinks.privacy} prefetch={false} className="hover:underline">
                     Datenschutz
                   </Link>
                 </li>
@@ -117,17 +117,17 @@ export function Footer({ partner = true, showPrice = true }: FooterProps) {
               </h3>
               <ul className="mt-5 space-y-3 text-slate-100/90">
                 <li>
-                  <Link href={infoRoutes.hilfe} className="hover:underline">
+                  <Link href={infoRoutes.hilfe} prefetch={false} className="hover:underline">
                     Hilfe
                   </Link>
                 </li>
                 <li>
-                  <Link href={footerLinks.contact} className="hover:underline">
+                  <Link href={footerLinks.contact} prefetch={false} className="hover:underline">
                     Kontakt
                   </Link>
                 </li>
                 <li>
-                  <Link href="/dsa-meldung" className="hover:underline">
+                  <Link href="/dsa-meldung" prefetch={false} className="hover:underline">
                     DSA-Meldung
                   </Link>
                 </li>
@@ -173,7 +173,7 @@ export function Footer({ partner = true, showPrice = true }: FooterProps) {
         <div className="bg-vintage-primary border-t-4 border-white">
           <div className="mx-auto max-w-7xl px-6 py-5">
             <p className="text-center text-white/95">
-              © 2026 {companyName}, Hamburg <Link href="/impressum">Impressum</Link>
+              © 2026 {companyName}, Hamburg <Link href="/impressum" prefetch={false}>Impressum</Link>
             </p>
           </div>
         </div>

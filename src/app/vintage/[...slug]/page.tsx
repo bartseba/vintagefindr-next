@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
+import { headers } from 'next/headers'
 
 import {
   getAllBrandHrefs, getBrandCategoryPage, getBrands, getCategoryPage, getSidebarNavigationItems,
@@ -11,8 +12,9 @@ import { HubContentPageView } from '@/components/HubContentPageView'
 import SeoFooter from '@/components/SeoFooter'
 import { FaqBlockSection } from '@/components/FaqBlockSection'
 import { CategorySearch } from '@/components/algolia/CategorySearch'
-import { buildBreadcrumb } from '@/lib/breadcrumb'
+import { buildBreadcrumb, breadcrumbListJsonLd } from '@/lib/breadcrumb'
 import { buildCategoryFilter } from '@/lib/algolia/filterConfig'
+import { searchProducts } from '@/lib/algolia/search'
 
 export const dynamic = 'force-dynamic'
 
@@ -91,13 +93,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
   }
 
-  const { categoryPage } = data
+  const { categoryPage, categoryFilter } = data
   const canonical = categoryPage.canonical_url ? `${siteUrl}${categoryPage.canonical_url}` : `${siteUrl}${pathname}`
+
+  /**
+   * Interim mitigation for pages indexed with zero products (root cause is
+   * a Shopify-sync reconciliation gap outside this repo, see Nov 2026 SEO
+   * audit) — `follow` stays on so internal links/breadcrumbs still get
+   * crawled, only the empty listing itself is kept out of the index. Skips
+   * the check when there's no category filter (e.g. a brand-root page with
+   * no category segments) since emptiness can't be determined that way.
+   */
+  const hasProducts = categoryFilter ? (await searchProducts(categoryFilter, 1)).length > 0 : true
+
   return {
     title: categoryPage.seo_title,
     description: categoryPage.seo_description,
     alternates: { canonical },
-    robots: 'index, follow',
+    robots: hasProducts ? 'index, follow' : 'noindex, follow',
     openGraph: { title: categoryPage.seo_title, description: categoryPage.seo_description, type: 'website' },
   }
 }
@@ -122,9 +135,46 @@ export default async function VintageCategoryPage({ params }: PageProps) {
   const popularBrands = await getPopularBrands()
   const defaultSortIndex = fullPath.includes('neuester-drop') ? 'products_new' : undefined
   const seoFooterData = categoryPage.seo_footer ?? categoryPage.seo_brand_footer
+  const breadcrumb = buildBreadcrumb(fullPath)
+
+  /**
+   * ItemList, not Product/Offer — VintageFindr is an aggregator, not the
+   * merchant of record, so we describe the listing, not sell the items
+   * ourselves. `url` points at the vendor's own product_url (comparison-
+   * shopping-engine pattern), not `/go/[productId]` — that's our own
+   * tracking interstitial, noindex'd, and not a stable per-product target.
+   */
+  const listedProducts = categoryFilter ? await searchProducts(categoryFilter, 20) : []
+  const itemListJsonLd = listedProducts.length > 0 ? {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: listedProducts
+      .filter((p) => p.product_url)
+      .map((p, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        url: p.product_url,
+        name: p.title,
+        image: p.image_url_1,
+      })),
+  } : null
+
+  const nonce = (await headers()).get('x-nonce') ?? undefined
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        nonce={nonce}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbListJsonLd(breadcrumb)) }}
+      />
+      {itemListJsonLd && (
+        <script
+          type="application/ld+json"
+          nonce={nonce}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+        />
+      )}
       <div className="xl:container xl:m-auto xl:px-4 lg:px-0">
         <div className="lg:flex flex-col lg:flex-row gap-6">
           <div className="flex-1 px-4 xl:px-0">
@@ -138,7 +188,7 @@ export default async function VintageCategoryPage({ params }: PageProps) {
               altText={categoryPage.altText}
               h1={categoryPage.h1}
               introSafeHtml={categoryPage.intro_html ? sanitizeHTML(categoryPage.intro_html) : undefined}
-              breadcrumb={buildBreadcrumb(fullPath)}
+              breadcrumb={breadcrumb}
               popularBrands={popularBrands}
               categoryFilter={categoryFilter}
             />

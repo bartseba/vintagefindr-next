@@ -71,8 +71,8 @@ export function CookieConsent({ onConsentChange }: CookieConsentProps) {
   if (!showBanner) return null;
 
   return (
-    <div className="max-w-[768px] mx-auto fixed bottom-10 left-0 right-0 z-[9999] rounded-md bg-white border-t border-gray-200 shadow-xl">
-      <div className="max-w-7xl mx-auto p-4 sm:p-6">
+    <div className="max-w-[768px] mx-auto fixed inset-x-0 bottom-0 sm:bottom-10 z-[9999] max-h-[55vh] flex flex-col rounded-t-md sm:rounded-md bg-white border-t border-gray-200 shadow-xl">
+      <div className="max-w-7xl mx-auto p-4 sm:p-6 overflow-y-auto">
         <div className="flex flex-col gap-4">
           <div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -219,26 +219,33 @@ export function CookieConsent({ onConsentChange }: CookieConsentProps) {
               </div>
             </div>
           )}
-          <div className="flex gap-3 ">
-            <button
-              onClick={() => setShowDetails(!showDetails)}
-              className="px-6 flex-1 py-2 text-sm font-medium text-black bg-white border-2 border-black rounded-md hover:bg-gray-50 transition-colors"
-            >
-              {showDetails ? "Details ausblenden" : "Mehr erfahren"}
-            </button>
-            <button
-              onClick={handleRejectAll}
-              className="px-6 flex-1 py-2 text-sm font-medium text-black bg-white border-2 border-black rounded-md hover:bg-gray-50 transition-colors"
-            >
-              Alle ablehnen
-            </button>
-            <button
-              onClick={handleAcceptAll}
-              className="px-6 py-2 flex-1 text-sm font-medium text-white bg-black border-2 border-black rounded-md hover:bg-gray-800 transition-colors"
-            >
-              Alle akzeptieren
-            </button>
-          </div>
+        </div>
+      </div>
+
+      {/* Pinned outside the scrollable area above so the decision buttons
+          stay reachable without scrolling, even when the banner is capped
+          at max-h-[55vh] on small viewports (previously uncapped — could
+          cover 60%+ of a mobile viewport and hide the page's own CTAs). */}
+      <div className="max-w-7xl mx-auto w-full p-4 sm:p-6 pt-3 border-t border-gray-100 shrink-0">
+        <div className="flex gap-3 ">
+          <button
+            onClick={() => setShowDetails(!showDetails)}
+            className="px-6 flex-1 py-2 text-sm font-medium text-black bg-white border-2 border-black rounded-md hover:bg-gray-50 transition-colors"
+          >
+            {showDetails ? "Details ausblenden" : "Mehr erfahren"}
+          </button>
+          <button
+            onClick={handleRejectAll}
+            className="px-6 flex-1 py-2 text-sm font-medium text-black bg-white border-2 border-black rounded-md hover:bg-gray-50 transition-colors"
+          >
+            Alle ablehnen
+          </button>
+          <button
+            onClick={handleAcceptAll}
+            className="px-6 py-2 flex-1 text-sm font-medium text-white bg-black border-2 border-black rounded-md hover:bg-gray-800 transition-colors"
+          >
+            Alle akzeptieren
+          </button>
         </div>
       </div>
     </div>

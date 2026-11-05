@@ -1,9 +1,31 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { QueryProvider } from "@/components/QueryProvider";
 import { AuthModalsProvider } from "@/components/auth/AuthModalsProvider";
 import { CookieConsentProvider } from "@/components/CookieConsentProvider";
+import { siteUrl, companyName, companyEmail } from "@/constant/routes";
 import "./globals.css";
+
+const organizationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: companyName,
+  url: siteUrl,
+  logo: `${siteUrl}/latest-02.png`,
+  contactPoint: {
+    '@type': 'ContactPoint',
+    email: companyEmail,
+    contactType: 'customer service',
+  },
+};
+
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: companyName,
+  url: siteUrl,
+};
 
 export const metadata: Metadata = {
   title: "VintageFindr",
@@ -26,7 +48,9 @@ export const metadata: Metadata = {
  */
 export const dynamic = 'force-dynamic'
 
-export default function RootLayout({ children, modal }: LayoutProps<"/">) {
+export default async function RootLayout({ children, modal }: LayoutProps<"/">) {
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
+
   return (
     <html lang="de" className="h-full">
       <body className="min-h-full flex flex-col font-sans antialiased">
@@ -36,6 +60,16 @@ export default function RootLayout({ children, modal }: LayoutProps<"/">) {
           <AuthModalsProvider />
         </Suspense>
         <CookieConsentProvider />
+        <script
+          type="application/ld+json"
+          nonce={nonce}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          nonce={nonce}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
       </body>
     </html>
   );

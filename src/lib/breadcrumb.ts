@@ -1,3 +1,5 @@
+import { siteUrl } from '@/constant/routes'
+
 export interface BreadcrumbSegment {
   label: string
   href: string
@@ -28,4 +30,21 @@ export function buildBreadcrumb(fullPath: string): BreadcrumbSegment[] {
     crumbs.push({ label: label.charAt(0).toUpperCase() + label.slice(1), href: `/${acc}` })
   }
   return crumbs
+}
+
+/**
+ * Builds a schema.org BreadcrumbList object from the same segments used for
+ * the visible breadcrumb nav, so both stay in sync automatically.
+ */
+export function breadcrumbListJsonLd(segments: BreadcrumbSegment[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: segments.map((segment, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: segment.label,
+      item: `${siteUrl}${segment.href}`,
+    })),
+  }
 }

@@ -48,7 +48,7 @@ export default function Hero({ gridImageSrc: _gridImageSrc = "/hero-fade.png" }:
             </p>
 
             <h1 className="font-playfair uppercase text-[44px] xl:text-[62px] leading-[1.15] tracking-tight text-vintage-darkGray mb-4">
-              Vintage Mode & <span className="lg:block">Second Hand.</span>
+              Vintage Mode & <span className="lg:block whitespace-nowrap">Second Hand.</span>
             </h1>
 
             <p className="xl:mt-2 mb-4 xl:mb-6 max-w-2xl text-sm lg:text-[16px] bg-transparent text-vintage-secondary leading-relaxed">

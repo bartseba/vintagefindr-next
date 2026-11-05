@@ -47,7 +47,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     getSitemapGuideCategoryUrls(),
   ])
 
-  const allPaths = Array.from(new Set([...staticPaths, ...vintageUrls, ...guideUrls, ...guideCategoryUrls]))
+  /**
+   * Some `guide_categories` are 1:1 leaf wrappers around a single guide,
+   * slugged identically to that guide (e.g. category "pflege-reperieren"
+   * under "grundlagen" vs. guide slug "pflege-reperieren"). Since
+   * `getGuideBySlug`'s last-segment fallback (ratgeber/[...slug]/page.tsx)
+   * resolves the nested category URL to the SAME guide anyway, keeping
+   * both in the sitemap just duplicates content under two URLs — drop the
+   * nested one whenever its last segment matches a real guide's slug.
+   */
+  const guideSlugLastSegments = new Set(guideUrls.map((url) => url.split('/').pop()))
+  const dedupedGuideCategoryUrls = guideCategoryUrls.filter(
+    (url) => !guideSlugLastSegments.has(url.split('/').pop())
+  )
+
+  const allPaths = Array.from(new Set([...staticPaths, ...vintageUrls, ...guideUrls, ...dedupedGuideCategoryUrls]))
 
   return allPaths.map((path) => ({ url: `${siteUrl}${path}` }))
 }

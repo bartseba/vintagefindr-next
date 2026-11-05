@@ -60,6 +60,7 @@ export function PriceRangeAccordion({
   };
 
   const isActive = start[0] !== undefined || start[1] !== undefined;
+  const hasRange = max > min;
 
   // Calculate the position of the range bar
   const minPercent = max > min ? ((minValue - min) / (max - min)) * 100 : 0;
@@ -75,7 +76,7 @@ export function PriceRangeAccordion({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-gray-900">{title}</span>
-            {isActive && (
+            {isActive && hasRange && (
               <span className="inline-flex items-center justify-center px-2 py-0.5 text-xs font-medium text-vintage-primary bg-vintage-secondary200/10 rounded">
                 {(typeof start[0] === 'number' && isFinite(start[0]) ? start[0] : min).toLocaleString('de-DE')} € - {(typeof start[1] === 'number' && isFinite(start[1]) ? start[1] : max).toLocaleString('de-DE')} €
               </span>
@@ -213,7 +214,7 @@ export function PriceRangeAccordion({
             </button>
           </form>
 
-          {canRefine && (
+          {canRefine && hasRange && (
             <div className="mt-3 text-xs text-gray-400 text-center">
               Bereich: {min.toLocaleString('de-DE')} € - {max.toLocaleString('de-DE')} €
             </div>

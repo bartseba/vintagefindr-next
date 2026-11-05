@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { headers } from 'next/headers'
 import type { HubContentPage } from '@/lib/directus'
 import { sanitizeHTML } from '@/lib/sanitize'
 import { HubSection } from './HubSection'
@@ -6,7 +7,7 @@ import { HubContentBlock } from './HubContentBlock'
 import { ProductSliderBlock } from './ProductSliderBlock'
 import { FaqBlockSection } from './FaqBlockSection'
 import { CollapsibleText } from './ui/CollapsibleText'
-import type { BreadcrumbSegment } from '@/lib/breadcrumb'
+import { breadcrumbListJsonLd, type BreadcrumbSegment } from '@/lib/breadcrumb'
 
 interface HubContentPageViewProps {
   hubContentPage: HubContentPage
@@ -26,14 +27,22 @@ interface HubContentPageViewProps {
  * like category pages — minus the live hit-count stat, which doesn't apply
  * here (this page isn't itself a filtered product listing).
  */
-export function HubContentPageView({ hubContentPage, breadcrumb = [] }: HubContentPageViewProps) {
+export async function HubContentPageView({ hubContentPage, breadcrumb = [] }: HubContentPageViewProps) {
   const categoryTeaserItems = hubContentPage.categoryTeaserBlock
     .filter((item) => item.isPublic)
     .sort((a, b) => (b.imageUrl ? 1 : 0) - (a.imageUrl ? 1 : 0))
   const productSliderItems = hubContentPage.productSliderBlock.filter((item) => item.isPublic)
+  const nonce = (await headers()).get('x-nonce') ?? undefined
 
   return (
     <div className="asdsad">
+      {breadcrumb.length > 0 && (
+        <script
+          type="application/ld+json"
+          nonce={nonce}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbListJsonLd(breadcrumb)) }}
+        />
+      )}
       <div className="relative h-[260px] overflow-hidden border-b border-gray-50 bg-vintage-darkGray">
         <div className="xl:container mx-auto px-4 py-8 flex items-center gap-2 justify-center relative h-[260px] flex-col">
 
@@ -90,7 +99,7 @@ export function HubContentPageView({ hubContentPage, breadcrumb = [] }: HubConte
       {productSliderItems.length > 0 && (
         <div className="xl:container mx-auto px-4 space-y-8 mb-16">
           {productSliderItems.slice(0, 1).map((item) => (
-            <ProductSliderBlock key={item.id} title={item.title} query={item.query} />
+            <ProductSliderBlock key={item.id} title={item.title} query={item.query} titleTag={item.titleTag} variant={item.variant} />
           ))}
         </div>
       )}
@@ -123,7 +132,7 @@ export function HubContentPageView({ hubContentPage, breadcrumb = [] }: HubConte
       {productSliderItems.length > 0 && (
         <div className="xl:container mx-auto px-4 mb-16 space-y-8">
           {productSliderItems.slice(1).map((item) => (
-            <ProductSliderBlock key={item.id} title={item.title} query={item.query} />
+            <ProductSliderBlock key={item.id} title={item.title} query={item.query} titleTag={item.titleTag} variant={item.variant} />
           ))}
         </div>
       )}

@@ -111,6 +111,7 @@ function renderHomepageSection(
     highlightCategories: Awaited<ReturnType<typeof getHighlightCategories>>
   }
 ) {
+  
   switch (section.type) {
     case 'collections_grid':
       return <HomeCollectionsGrid adidas={data.adidasCollection} nike={data.nikeCollection} oberteile={data.oberteilCollection} />
@@ -143,7 +144,7 @@ function renderHomepageSection(
     case 'brands':
       return <BrandLogoSection />
     case 'product_slider':
-      return <ProductSliderBlock title={section.title} query={section.query} />
+      return <ProductSliderBlock title={section.title} query={section.query} titleTag={section.titleTag} variant={section.variant} />
     default:
       return null
   }
