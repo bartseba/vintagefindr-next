@@ -46,34 +46,27 @@ export async function HubContentPageView({ hubContentPage, breadcrumb = [] }: Hu
       <div className="relative h-[260px] overflow-hidden border-b border-gray-50 bg-vintage-darkGray">
         <div className="xl:container mx-auto px-4 py-8 flex items-center gap-2 justify-center relative h-[260px] flex-col">
 
-         
+
           {hubContentPage.introHeadline && (
-                   <h1 className="font-playfair text-[44px] xl:text-[42px] max-w-[450px] size-auto text-white">
-                    {hubContentPage.introHeadline}
-                    </h1>
-                )}
-       
- {hubContentPage.introText && (
-                  <div
-                    className="prose prose-sm mt-3 max-w-4xl text-white hover:prose-a:underline text-center"
-                    dangerouslySetInnerHTML={{ __html: sanitizeHTML(hubContentPage.introText) }}
-                  />
-                )}
-        </div>
-      </div>
-      <div className="xl:container mx-auto ">
+            <h1 className="font-playfair text-[44px] xl:text-[42px] max-w-[450px] size-auto text-white">
+              {hubContentPage.introHeadline}
+            </h1>
+          )}
 
-
-        {(hubContentPage.introHeadline || hubContentPage.introText) && (
-          <div className={hubContentPage.imageUrl ? "md:flex md:items-start md:gap-8 justify-between" : ""}>
-            <div className="px-4 mb-4 py-4">
+          {hubContentPage.introText && (
+            <div
+              className="prose prose-sm mt-3 max-w-4xl text-white hover:prose-a:underline text-center"
+              dangerouslySetInnerHTML={{ __html: sanitizeHTML(hubContentPage.introText) }}
+            />
+          )}
+          <div className="px-0 mb-2 py-2">
               {breadcrumb.length > 0 && (
-                <nav aria-label="Breadcrumb" className="mb-3 text-sm text-gray-400">
+                <nav aria-label="Breadcrumb" className="text-sm text-gray-400">
                   {breadcrumb.map((segment, index) => (
                     <span key={segment.href}>
                       {index > 0 && <span className="mx-2">›</span>}
                       {index === breadcrumb.length - 1 ? (
-                        <span className="text-gray-700">{segment.label}</span>
+                        <span className="text-vintage-lightGray">{segment.label}</span>
                       ) : (
                         <Link href={segment.href} className="hover:text-vintage-primary">
                           {segment.label}
@@ -84,7 +77,15 @@ export async function HubContentPageView({ hubContentPage, breadcrumb = [] }: Hu
                 </nav>
               )}
             </div>
-            {/*hubContentPage.imageUrl && (
+        </div>
+      </div>
+      <div className="bg-white">
+
+        <div className="xl:container mx-auto px-4">
+          {(hubContentPage.introHeadline || hubContentPage.introText) && (
+            <div className={hubContentPage.imageUrl ? "md:flex md:items-start md:gap-8 justify-between" : ""}>
+
+              {/*hubContentPage.imageUrl && (
               // eslint-disable-next-line @next/next/no-img-element -- external Directus/Bunny image hosts, next/image adoption deferred (see migration plan problem #7)
               <img
                 src={hubContentPage.imageUrl}
@@ -93,22 +94,37 @@ export async function HubContentPageView({ hubContentPage, breadcrumb = [] }: Hu
                 loading="lazy"
               />
             ) */}
-          </div>
-        )}
+            </div>
+          )}
+        </div>
       </div>
       {productSliderItems.length > 0 && (
-        <div className="xl:container mx-auto px-4 space-y-8 mb-16">
-          {productSliderItems.slice(0, 1).map((item) => (
-            <ProductSliderBlock key={item.id} title={item.title} query={item.query} titleTag={item.titleTag} variant={item.variant} />
-          ))}
+        <div className="bg-white">
+          <div className="xl:container mx-auto px-4 space-y-8 pb-16 pt-8">
+            {productSliderItems.slice(0, 1).map((item) => (
+              <ProductSliderBlock
+                key={item.id}
+                title={item.title}
+                query={item.query}
+                titleTag={item.titleTag}
+                variant={item.variant}
+                showAllHref={breadcrumb.length > 0 ? breadcrumb[breadcrumb.length - 1].href : undefined}
+              />
+            ))}
+          </div>
         </div>
       )}
       {categoryTeaserItems.length > 0 && (
-        <div className="mb-16 bg-white py-8 border-t border-b border-gray-200">
-          <h2 className="xl:container mx-auto px-4 text-2xl font-semibold text-vintage-secondary uppercase tracking-widest mb-2">
-            {hubContentPage.Headline}
-          </h2>
-          <div className="xl:container mx-auto grid gap-6 md:grid md:grid-cols-3 md:gap-6 bg-white p-4">
+        <div className="pb-16 bg-vintage-silverGray py-16 border-t border-b border-gray-200">
+          <div className="xl:container mx-auto px-4 text-center mb-10">
+            <p className="text-xs text-vintage-secondary/60 uppercase tracking-[0.2em] mb-3">
+              Nach Kategorien stöbern
+            </p>
+            <h2 className="font-playfair text-3xl lg:text-4xl text-gray-900">
+              {hubContentPage.Headline}
+            </h2>
+          </div>
+          <div className="xl:container mx-auto grid gap-6 md:grid md:grid-cols-3 md:gap-6 px-4">
             {categoryTeaserItems.map((item, index) => (
               <HubSection
                 key={item.id}
@@ -129,33 +145,35 @@ export async function HubContentPageView({ hubContentPage, breadcrumb = [] }: Hu
           </div>
         </div>
       )}
-      {productSliderItems.length > 0 && (
-        <div className="xl:container mx-auto px-4 mb-16 space-y-8">
-          {productSliderItems.slice(1).map((item) => (
-            <ProductSliderBlock key={item.id} title={item.title} query={item.query} titleTag={item.titleTag} variant={item.variant} />
-          ))}
-        </div>
-      )}
-      {(hubContentPage.content_block.length > 0 || hubContentPage.faqBlock) && (
-        <div className="xl:container mx-auto px-4 mb-4">
-          <div
-            className={
-              hubContentPage.content_block.length > 0 && hubContentPage.faqBlock
-                ? 'lg:grid lg:grid-cols-2 lg:gap-10 items-start'
-                : ''
-            }
-          >
-            {hubContentPage.content_block.length > 0 && (
-              <CollapsibleText collapsedHeight={480}>
-                {hubContentPage.content_block.map((item) => (
-                  <HubContentBlock key={item.id} item={item} />
-                ))}
-              </CollapsibleText>
-            )}
-            {hubContentPage.faqBlock && <FaqBlockSection block={hubContentPage.faqBlock} />}
+      <div className="bg-white pt-8">
+        {productSliderItems.length > 0 && (
+          <div className="xl:container mx-auto px-4 mb-16 space-y-8">
+            {productSliderItems.slice(1).map((item) => (
+              <ProductSliderBlock key={item.id} title={item.title} query={item.query} titleTag={item.titleTag} variant={item.variant} />
+            ))}
           </div>
-        </div>
-      )}
+        )}
+        {(hubContentPage.content_block.length > 0 || hubContentPage.faqBlock) && (
+          <div className="xl:container mx-auto px-4 mb-4">
+            <div
+              className={
+                hubContentPage.content_block.length > 0 && hubContentPage.faqBlock
+                  ? 'lg:grid lg:grid-cols-2 lg:gap-10 items-start'
+                  : ''
+              }
+            >
+              {hubContentPage.content_block.length > 0 && (
+                <CollapsibleText collapsedHeight={480}>
+                  {hubContentPage.content_block.map((item) => (
+                    <HubContentBlock key={item.id} item={item} />
+                  ))}
+                </CollapsibleText>
+              )}
+              {hubContentPage.faqBlock && <FaqBlockSection variant={"SECONDARY"} block={hubContentPage.faqBlock} />}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

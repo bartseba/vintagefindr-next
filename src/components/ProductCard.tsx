@@ -1,6 +1,6 @@
 'use client'
 
-import { Heart, Info } from 'lucide-react'
+import { ExternalLink, Heart, Info } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import { useFavoritesQuery } from '@/hooks/useFavoritesQuery'
@@ -243,9 +243,10 @@ export function ProductCard({
           />
         </div>
 
-        {/* Button "Zum Shop (externer Link)" - visual only, click is handled by the outer card anchor */}
-        <div className="block w-full mt-3 px-3 py-2 bg-vintage-primary text-white text-sm font-medium rounded-md group-hover:bg-vintage-hover transition-colors text-center">
-          Zum Shop (externer Link)
+        {/* Button "Zum Shop" - visual only, click is handled by the outer card anchor */}
+        <div className="flex items-center justify-center gap-1.5 w-full mt-3 px-3 py-2 bg-vintage-primary text-white text-sm font-medium rounded-md group-hover:bg-vintage-hover transition-colors text-center">
+          Zum Shop
+          <ExternalLink size={13} />
         </div>
 
         {/* Link "Händlerinfo" */}

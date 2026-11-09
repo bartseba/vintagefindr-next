@@ -60,14 +60,14 @@ export async function HubSection({ isBrand, brand, title, teaserHtml, filterQuer
   return (
     <>
     {isPublic && (
-      <section className="border  bg-vintage-silverGray border-gray-200 p-6">
+      <section className="border bg-white border-gray-200 rounded-2xl p-6 hover:shadow-md transition-shadow duration-200">
       <div className={"flex flex-col items-center"}>
         {imageUrl && (
         // eslint-disable-next-line @next/next/no-img-element -- external Directus/Bunny image hosts, next/image adoption deferred (see migration plan problem #7)
-        <img className="aspect-[4_/_3] object-cover w-[200px] h-[200px] rounded-full" alt={image_alt ?? title} loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : undefined} width="400" height="300" src={imageUrl} />
+        <img className="aspect-4/3 object-cover w-[200px] h-[200px] rounded-full" alt={image_alt ?? title} loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : undefined} width="400" height="300" src={imageUrl} />
         )}
         <div className={`${false ? `${variant === "PRIMARY" ? "ml-6 mt-4" : "mr-6 mt-4"}`: ""}`}>
-            <p className="text-2xl font-semibold text-gray-900 text-center my-3">{title}</p>
+            <p className="text-xl font-bold text-gray-900 text-center my-3">{title}</p>
           <section
             className="prose prose-sm text-gray-600 mb-4 max-w-none text-sm text-center"
             dangerouslySetInnerHTML={{ __html: safeHTML }}

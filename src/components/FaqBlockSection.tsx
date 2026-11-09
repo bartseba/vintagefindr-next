@@ -8,10 +8,11 @@ interface FaqBlock {
   imageUrl?: string | null
   image_alt?: string | null
   isAiImage?: boolean
+  variant?: 'PRIMARY' | 'SECONDARY' | null
   faqs: Array<{ id: number; question: string; answer: string }>
 }
 
-export function FaqBlockSection({ block }: { block: FaqBlock }) {
+export function FaqBlockSection({ block, variant }: { block: FaqBlock, variant?: 'PRIMARY' | 'SECONDARY' | null }) {
   if (!block.faqs || block.faqs.length === 0) return null
 
   return (
@@ -37,7 +38,7 @@ export function FaqBlockSection({ block }: { block: FaqBlock }) {
               <p className="text-xs text-vintage-darkGray/60 -mt-3 mb-4">Bildnachweis: KI-generiert zur visuellen Veranschaulichung</p>
             )}
         </div> */}
-        <div className="bg-white px-6 py-2 rounded-md border vintage-border w-full ">
+        <div className={`px-6 py-2 rounded-md border vintage-border w-full ${variant === 'SECONDARY' ? 'bg-vintage-silverGray' : 'bg-white '}`}>
 
           {block.faqs.map((faq, index) => (
             <Accordion key={faq.id} title={faq.question} defaultOpen={index === 0}>
