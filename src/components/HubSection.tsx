@@ -60,7 +60,7 @@ export async function HubSection({ isBrand, brand, title, teaserHtml, filterQuer
   return (
     <>
     {isPublic && (
-      <section className="border bg-white border-gray-200 rounded-2xl p-6 hover:shadow-md transition-shadow duration-200">
+      <section className="border bg-white border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
       <div className={"flex flex-col items-center"}>
         {imageUrl && (
         // eslint-disable-next-line @next/next/no-img-element -- external Directus/Bunny image hosts, next/image adoption deferred (see migration plan problem #7)

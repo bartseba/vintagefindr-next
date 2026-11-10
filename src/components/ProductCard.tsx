@@ -151,19 +151,20 @@ export function ProductCard({
   }
 
   return (
-    <Link
-      ref={impressionRef as React.Ref<HTMLAnchorElement>}
-      href={`/go/${id}`}
-      prefetch={false}
-      rel="nofollow sponsored noopener"
-      onMouseDown={() => {
-        // Use onMouseDown to ensure tracking happens before navigation
-        handleProductClick();
-      }}
-      onClick={(e) => {
-        e.stopPropagation();
-      }} className="h-full group block bg-white rounded-md vintage-border overflow-hidden hover:shadow-md transition-all duration-300 cursor-pointer"
-    >
+    <div className="relative h-full group bg-white border border-gray-50 rounded-xl vintage-border overflow-hidden hover:shadow-md transition-all duration-300">
+      <Link
+        ref={impressionRef as React.Ref<HTMLAnchorElement>}
+        href={`/go/${id}`}
+        prefetch={false}
+        rel="nofollow sponsored noopener"
+        onMouseDown={() => {
+          // Use onMouseDown to ensure tracking happens before navigation
+          handleProductClick();
+        }}
+        aria-label={`${title}${brand ? ` von ${brand}` : ''}, ${price} ${currency}`}
+        className="absolute inset-0 z-10 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vintage-primary"
+      />
+      <div className="relative z-20 pointer-events-none [&_button]:pointer-events-auto [&_a]:pointer-events-auto">
       {/* Image */}
       <div className="relative aspect-square overflow-hidden bg-gray-50">
         {!imageError && imageUrl ? (
@@ -201,7 +202,7 @@ export function ProductCard({
         <button
           onClick={handleFavoriteClick}
           aria-label={favorited ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'}
-          className="absolute top-3 right-3 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-white disabled:opacity-50"
+          className="absolute top-3 right-3 w-10 h-10 lg:w-8 lg:h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200 hover:bg-white disabled:opacity-50"
           disabled={isToggling}
         >
           <Heart
@@ -267,6 +268,7 @@ export function ProductCard({
           </button>
         )}
       </div>
+      </div>
 
       {/* Vendor Info Modal */}
       {showVendorInfo && (
@@ -285,6 +287,6 @@ export function ProductCard({
           onClose={() => setShowAdInfo(false)}
         />
       )}
-    </Link>
+    </div>
   )
 }

@@ -21,8 +21,8 @@ const categories = [
 
 export default function BrandLogoSection() {
     return (
-        <div className={`py-12 mt-12  mb-12 bg-white`}>
-            <div className={`xl:container mx-auto p-4 lg:p-8 `}>
+        <div className={`py-12 mt-12 mb-12 bg-white`}>
+            <div className={`xl:container mx-auto p-4 lg:p-8`}>
                 {/* Grid */}
 
                 <div className="gap-6">
@@ -33,7 +33,7 @@ export default function BrandLogoSection() {
                             <a
                                 key={index}
                                 href={cat.url}
-                                className="text-lg md:text-2xl font-bold uppercase tracking-tight text-vintage-secondary/40 hover:text-vintage-primary transition-colors duration-300"
+                                className="text-lg md:text-2xl font-bold uppercase tracking-tight text-vintage-secondary/80 hover:text-vintage-primary transition-colors duration-300"
                                 aria-label={cat.label}
                             >
                                 {cat.label}

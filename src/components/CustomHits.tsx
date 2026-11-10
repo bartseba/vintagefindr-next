@@ -87,7 +87,7 @@ export function CustomHits({ altText: _altText, user, viewMode, onProductClick, 
         <div
           className={
             viewMode === 'grid'
-              ? 'grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4 overflow-x-auto content-start '
+              ? 'grid grid-cols-2 lg:grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4 overflow-x-auto content-start '
               : viewMode === 'masonry'
                 ? 'columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 [column-fill:_balance]'
                 : 'space-y-4'

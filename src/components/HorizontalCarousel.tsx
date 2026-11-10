@@ -74,7 +74,7 @@ export function HorizontalCarousel({ title, showAll, children, onShowAll, gridCl
           onClick={scrollLeft}
           disabled={!canScrollLeft}
           className={clsx(
-            'absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white shadow-lg rounded-full flex items-center justify-center transition-all duration-200',
+            'absolute left-0 top-1/2 -translate-y-1/2 z-30 w-10 h-10 bg-white shadow-lg rounded-full flex items-center justify-center transition-all duration-200',
             canScrollLeft
               ? 'opacity-100 hover:bg-gray-50'
               : 'opacity-0 cursor-not-allowed'
@@ -87,7 +87,7 @@ export function HorizontalCarousel({ title, showAll, children, onShowAll, gridCl
           onClick={scrollRight}
           disabled={!canScrollRight}
           className={clsx(
-            'absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white shadow-lg rounded-full flex items-center justify-center transition-all duration-200',
+            'absolute right-0 top-1/2 -translate-y-1/2 z-30 w-10 h-10 bg-white shadow-lg rounded-full flex items-center justify-center transition-all duration-200',
             canScrollRight
               ? 'opacity-100 hover:bg-gray-50'
               : 'opacity-0 cursor-not-allowed'

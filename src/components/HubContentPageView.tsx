@@ -35,7 +35,7 @@ export async function HubContentPageView({ hubContentPage, breadcrumb = [] }: Hu
   const nonce = (await headers()).get('x-nonce') ?? undefined
 
   return (
-    <div className="asdsad">
+    <div>
       {breadcrumb.length > 0 && (
         <script
           type="application/ld+json"
@@ -48,7 +48,7 @@ export async function HubContentPageView({ hubContentPage, breadcrumb = [] }: Hu
 
 
           {hubContentPage.introHeadline && (
-            <h1 className="font-playfair text-[44px] xl:text-[42px] max-w-[450px] size-auto text-white">
+            <h1 className="font-playfair text-[44px] xl:text-[52px] max-w-[450px] size-auto text-white">
               {hubContentPage.introHeadline}
             </h1>
           )}
@@ -108,6 +108,7 @@ export async function HubContentPageView({ hubContentPage, breadcrumb = [] }: Hu
                 query={item.query}
                 titleTag={item.titleTag}
                 variant={item.variant}
+                tabs={item.tabs}
                 showAllHref={breadcrumb.length > 0 ? breadcrumb[breadcrumb.length - 1].href : undefined}
               />
             ))}
@@ -117,7 +118,7 @@ export async function HubContentPageView({ hubContentPage, breadcrumb = [] }: Hu
       {categoryTeaserItems.length > 0 && (
         <div className="pb-16 bg-vintage-silverGray py-16 border-t border-b border-gray-200">
           <div className="xl:container mx-auto px-4 text-center mb-10">
-            <p className="text-xs text-vintage-secondary/60 uppercase tracking-[0.2em] mb-3">
+            <p className="text-xs text-vintage-secondary/85 uppercase tracking-[0.2em] mb-3">
               Nach Kategorien stöbern
             </p>
             <h2 className="font-playfair text-3xl lg:text-4xl text-gray-900">
@@ -149,7 +150,15 @@ export async function HubContentPageView({ hubContentPage, breadcrumb = [] }: Hu
         {productSliderItems.length > 0 && (
           <div className="xl:container mx-auto px-4 mb-16 space-y-8">
             {productSliderItems.slice(1).map((item) => (
-              <ProductSliderBlock key={item.id} title={item.title} query={item.query} titleTag={item.titleTag} variant={item.variant} />
+              <ProductSliderBlock
+                key={item.id}
+                title={item.title}
+                query={item.query}
+                titleTag={item.titleTag}
+                variant={item.variant}
+                tabs={item.tabs}
+                showAllHref={breadcrumb.length > 0 ? breadcrumb[breadcrumb.length - 1].href : undefined}
+              />
             ))}
           </div>
         )}

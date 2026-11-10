@@ -3,6 +3,7 @@
 import { Search, User, ChevronDown } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { NavigationToggle } from './ui/NavigationToggle'
 import { SlideMenu } from './SlideMenu'
 import { MegaMenu } from './MegaMenu'
@@ -40,6 +41,12 @@ export function HeaderPrimary({ user, userFavorites, vendorProfile, navigationSe
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMegaOpen, setIsMegaOpen] = useState(false)
+  const pathname = usePathname()
+  const activeLabel =
+    pathname.startsWith('/vintage/marken') ? 'Marken' :
+    pathname.startsWith('/vintage/trikots') ? 'Trikots' :
+    pathname.startsWith(routes.newDrop) ? 'Neue Drops' :
+    pathname.startsWith('/ratgeber') ? 'Ratgeber' : ''
 
 
   useEffect(() => {
@@ -147,10 +154,10 @@ export function HeaderPrimary({ user, userFavorites, vendorProfile, navigationSe
             </button>
 
             <div className="flex items-center gap-4">
-              <NavigationToggle options={['Marken']} link={'/vintage/marken'} defaultValue="" />
-              <NavigationToggle options={['Trikots']} link={"/vintage/trikots"} defaultValue="" />
-              <NavigationToggle options={['Neue Drops']} link={routes.newDrop} defaultValue="" />
-              <NavigationToggle options={['Ratgeber']} link={"/ratgeber"} defaultValue="" />
+              <NavigationToggle options={['Marken']} link={'/vintage/marken'} defaultValue={activeLabel} />
+              <NavigationToggle options={['Trikots']} link={"/vintage/trikots"} defaultValue={activeLabel} />
+              <NavigationToggle options={['Neue Drops']} link={routes.newDrop} defaultValue={activeLabel} />
+              <NavigationToggle options={['Ratgeber']} link={"/ratgeber"} defaultValue={activeLabel} />
             </div>
                         <div className="xl:mx-6 flex-1 relative z-[90] h-[70px] content-center">
               <div className='hidden xl:flex'>

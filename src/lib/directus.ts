@@ -241,6 +241,10 @@ export interface ProductSliderBlockItem {
    * fixed 18-product grid instead. Falls back to PRIMARY when the Directus
    * field is absent/empty (see getHubContentPageById's mapping). */
   variant: 'PRIMARY' | 'SECONDARY' | null
+  /** Pill filter tabs (Directus `ProductSliderBlockTab`, o2m via `tabs`).
+   * Only meaningful for SECONDARY: when non-empty, ProductSliderBlock.tsx
+   * renders the pill-tab grid instead of the single-query grid fallback. */
+  tabs: Array<{ id: number; label: string; query: string }>
 }
 
 export interface HubContentPage {
@@ -320,7 +324,7 @@ interface RawHubContentPage {
   image_alt: string | null
   CategoryTeaserBlock?: Array<{ HubContent_id: RawHubContentItem }>
   content_block?: Array<{ IntroSection_id: HubContentPage['content_block'][number] }>
-  productSliderBlock?: Array<{ ProductSliderBlock_id: { id: number; title: string | null; query: string | null; isPublic: boolean | null; titleTag: string | null; variant: string | null } }>
+  productSliderBlock?: Array<{ ProductSliderBlock_id: { id: number; title: string | null; query: string | null; isPublic: boolean | null; titleTag: string | null; variant: string | null; tabs: Array<{ id: number; label: string | null; query: string | null }> | null } }>
   faq_block: RawFaqBlock | null
 }
 
@@ -349,7 +353,7 @@ export async function getHubContentPageById(id: number): Promise<HubContentPage 
               { IntroSection_id: ['id', 'Headline', 'IntroText', 'intro_image', 'button_text', { button_href: ['id', 'href'] }] }
             ],
             productSliderBlock: [
-              { ProductSliderBlock_id: ['id', 'title', 'query', 'isPublic', 'titleTag', 'variant'] }
+              { ProductSliderBlock_id: ['id', 'title', 'query', 'isPublic', 'titleTag', 'variant', { tabs: ['id', 'label', 'query'] }] }
             ]
           },
           { faq_block: FAQ_BLOCK_FIELDS },
@@ -357,7 +361,7 @@ export async function getHubContentPageById(id: number): Promise<HubContentPage 
         deep: {
           CategoryTeaserBlock: { sort: ['sort'] },
           content_block: { sort: ['sort'] },
-          productSliderBlock: { sort: ['sort'] },
+          productSliderBlock: { sort: ['sort'], ProductSliderBlock_id: { tabs: { sort: ['sort'] } } },
           faq_block: { faqs: { sort: ['sort'] } },
         } as unknown as Record<string, unknown>,
       })
@@ -398,6 +402,8 @@ export async function getHubContentPageById(id: number): Promise<HubContentPage 
         isPublic: junction.ProductSliderBlock_id.isPublic ?? false,
         titleTag: (junction.ProductSliderBlock_id.titleTag ?? null) as ProductSliderBlockItem['titleTag'],
         variant: (junction.ProductSliderBlock_id.variant ?? 'PRIMARY') as ProductSliderBlockItem['variant'],
+        tabs: (junction.ProductSliderBlock_id.tabs ?? [])
+          .filter((tab): tab is { id: number; label: string; query: string } => !!tab.label && !!tab.query),
       })),
       faqBlock: raw.faq_block ? {
         id: raw.faq_block.id,

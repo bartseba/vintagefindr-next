@@ -441,9 +441,9 @@ function CategorySearchBody({
           </div>
         )}
       </div>
-      <div className="lg:grid lg:grid-cols-[300px_1fr] lg:gap-5 ">
+      <div className="lg:grid lg:grid-cols-[340px_1fr] lg:gap-5 ">
         {isEmptyCategory ? (
-          <div className="hidden lg:block min-w-full h-fit space-y-6 mb-6">
+          <div className="hidden lg:block min-w-full h-fit space-y-6 mb-6 lg:sticky lg:top-[90px] lg:self-start">
             {currentParent?.children && currentParent.children.length > 0 && (
               <div className="bg-white rounded-md border border-gray-200 p-4">
                 <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
@@ -489,7 +489,7 @@ function CategorySearchBody({
             )}
           </div>
         ) : (
-          <div className="hidden h-fit lg:block min-w-full gap-4 mb-6  bg-white  vintage-filter-section rounded-md shadow-sm ">
+          <div className="hidden h-fit lg:block min-w-full gap-4 mb-6 bg-white vintage-filter-section rounded-md border border-gray-200 lg:sticky lg:top-[90px] lg:self-start">
             <RefinementListAccordion attribute="brand" title="Brand" searchable={true} defaultOpen={true} />
             <RefinementListAccordion attribute="gender" title="Geschlecht" searchable={false}  defaultOpen={true} />
             <RefinementListAccordion attribute="size" title="Größe" searchable={true} defaultOpen={true} />

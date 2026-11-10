@@ -21,7 +21,7 @@ export default function SeoFooter({
   category_list_text,
 }: SeoFooterProps) {
   return (
-    <div className="mt-4 px-4 pb-6 lg:px-4 ">
+    <div className="mt-4 px-4 pb-6 lg:px-4">
       <div className="xl:container mx-auto mt-6 xl:px-4">
             {category_list_text && (
               <h2
@@ -48,8 +48,8 @@ export default function SeoFooter({
               </div>
             )}
       </div>
-      <div className=" py-2   ">
-      <div className="xl:container mx-auto xl:px-4 ">
+      <div className="py-2">
+      <div className="xl:container mx-auto xl:px-4">
         {intro_html && (
           <div
             className="prose max-w-none text-vintage-darkGray mb-4 vintage-seo-footer"
@@ -66,7 +66,7 @@ export default function SeoFooter({
 
         {brand_list && brand_list.length > 0 && (
 
-          <nav className="flex flex-wrap gap-4 ">
+          <nav className="flex flex-wrap gap-4">
             {brand_list.map((brand) => (
               <a
                 key={brand.href}

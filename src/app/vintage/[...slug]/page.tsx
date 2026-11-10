@@ -175,9 +175,9 @@ export default async function VintageCategoryPage({ params }: PageProps) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
         />
       )}
-      <div className="xl:container xl:m-auto xl:px-4 lg:px-0">
+      <div className="w-full px-4 sm:px-6 lg:px-10">
         <div className="lg:flex flex-col lg:flex-row gap-6">
-          <div className="flex-1 px-4 xl:px-0">
+          <div className="flex-1">
             <CategorySearch
               keyword={categoryPage.keyword?.[0]}
               sidebarItems={sidebarItems}
