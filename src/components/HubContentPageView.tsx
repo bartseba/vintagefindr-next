@@ -3,6 +3,8 @@ import { headers } from 'next/headers'
 import type { HubContentPage } from '@/lib/directus'
 import { sanitizeHTML } from '@/lib/sanitize'
 import { HubSection } from './HubSection'
+import { BrandCard } from './BrandCard'
+import { BrandCategoryPills } from './BrandCategoryPills'
 import { HubContentBlock } from './HubContentBlock'
 import { ProductSliderBlock } from './ProductSliderBlock'
 import { FaqBlockSection } from './FaqBlockSection'
@@ -31,6 +33,10 @@ export async function HubContentPageView({ hubContentPage, breadcrumb = [] }: Hu
   const categoryTeaserItems = hubContentPage.categoryTeaserBlock
     .filter((item) => item.isPublic)
     .sort((a, b) => (b.imageUrl ? 1 : 0) - (a.imageUrl ? 1 : 0))
+  // Brand-overview grids (e.g. /vintage/marken) get the badge/count card
+  // design (`BrandCard` + `BrandCategoryPills`); plain category teasers
+  // (e.g. /vintage/adidas "nach Kategorien stöbern") keep `HubSection`.
+  const isBrandGrid = categoryTeaserItems.some((item) => item.isBrand?.toUpperCase() === 'TRUE')
   const productSliderItems = hubContentPage.productSliderBlock.filter((item) => item.isPublic)
   const nonce = (await headers()).get('x-nonce') ?? undefined
 
@@ -125,24 +131,49 @@ export async function HubContentPageView({ hubContentPage, breadcrumb = [] }: Hu
               {hubContentPage.Headline}
             </h2>
           </div>
-          <div className="xl:container mx-auto grid gap-6 md:grid md:grid-cols-3 md:gap-6 px-4">
-            {categoryTeaserItems.map((item, index) => (
-              <HubSection
-                key={item.id}
-                title={item.title}
-                teaserHtml={item.teaser}
-                filterQuery={item.filterQuery}
-                showAllLink={item.link?.href ?? ""}
-                links={item.links ?? undefined}
-                imageUrl={item.imageUrl}
-                image_alt={item.image_alt}
-                isBrand={item.isBrand}
-                brand={hubContentPage.brand_list}
-                variant={item.variant}
-                isPublic={item.isPublic}
-                priority={index < 2}
+          <div className="xl:container mx-auto px-4">
+            {isBrandGrid ? (
+              <BrandCategoryPills
+                items={categoryTeaserItems.map((item, index) => ({
+                  id: item.id,
+                  category: item.badgeCategory,
+                  node: (
+                    <BrandCard
+                      title={item.title}
+                      teaserHtml={item.teaser}
+                      filterQuery={item.filterQuery}
+                      badgeCategory={item.badgeCategory}
+                      badgeLabel={item.badgeLabel}
+                      imageUrl={item.imageUrl}
+                      image_alt={item.image_alt}
+                      linkHref={item.link?.href}
+                      isPublic={item.isPublic}
+                      priority={index < 2}
+                    />
+                  ),
+                }))}
               />
-            ))}
+            ) : (
+              <div className="grid gap-6 md:grid md:grid-cols-3 md:gap-6">
+                {categoryTeaserItems.map((item, index) => (
+                  <HubSection
+                    key={item.id}
+                    title={item.title}
+                    teaserHtml={item.teaser}
+                    filterQuery={item.filterQuery}
+                    showAllLink={item.link?.href ?? ""}
+                    links={item.links ?? undefined}
+                    imageUrl={item.imageUrl}
+                    image_alt={item.image_alt}
+                    isBrand={item.isBrand}
+                    brand={hubContentPage.brand_list}
+                    variant={item.variant}
+                    isPublic={item.isPublic}
+                    priority={index < 2}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}

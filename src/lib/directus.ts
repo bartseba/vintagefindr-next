@@ -212,6 +212,11 @@ export interface HubContentItem {
   isPublic: boolean
   link: { id: number; label: string; href: string } | null
   links: Array<{ id: number; label: string; href: string }>
+  /** Brand-card badge, e.g. "OUTDOOR" · "90s Nuptse" (see `BrandCard.tsx`).
+   * Only meaningful for `isBrand: "TRUE"` items; null on plain category
+   * teasers. */
+  badgeCategory: string | null
+  badgeLabel: string | null
 }
 
 /** Shared shape for `FaqBlock` (Directus collection) — used by `HubContentPage`,
@@ -344,7 +349,7 @@ export async function getHubContentPageById(id: number): Promise<HubContentPage 
           'image_alt',
           {
             CategoryTeaserBlock: [
-              { HubContent_id: ['id', 'title', 'teaser', 'filterQuery', { image: ['id', 'type'] }, 'variant', 'isBrand', 'isPublic', 'image_alt',
+              { HubContent_id: ['id', 'title', 'teaser', 'filterQuery', { image: ['id', 'type'] }, 'variant', 'isBrand', 'isPublic', 'image_alt', 'badgeCategory', 'badgeLabel',
                 { link: ['id', 'label', 'href'] },
                 { links: [{ navigations_items_id: ['id', 'label', 'href'] }] }
               ] }

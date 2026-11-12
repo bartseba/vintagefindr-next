@@ -52,7 +52,12 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             ></path>
           </svg>
         )}
-        {children}
+        {/* Wrapped in a span so the spinner is never inserted next to a bare
+            text node: browser translation (Chrome/Google Translate) swaps
+            text nodes for <font> elements, and React's insertBefore against
+            the original node then throws NotFoundError and takes the whole
+            page down ("This page couldn't load" - Shopify review 2.1.1). */}
+        <span>{children}</span>
       </button>
     )
   }

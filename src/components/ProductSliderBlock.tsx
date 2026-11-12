@@ -54,7 +54,7 @@ export async function ProductSliderBlock({ title, query, titleTag, variant, show
         <div className="flex items-end justify-between mb-12">
           <Tag className="font-playfair text-2xl lg:text-3xl font-bold text-gray-900 leading-tight">{title}</Tag>
           {showAllHref && (
-          <ButtonPrimary variant="SECONDARY" text={" Alle ansehen"} href={showAllHref} />
+            <ButtonPrimary variant="SECONDARY" text={" Alle ansehen"} href={showAllHref} />
           )}
         </div>
       )}

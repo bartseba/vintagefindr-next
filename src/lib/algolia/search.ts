@@ -76,3 +76,29 @@ export async function searchProducts(filters: string, hitsPerPage = 12): Promise
     return []
   }
 }
+
+/**
+ * Total hit count for a filter expression, without fetching hit payloads
+ * (`hitsPerPage: 0`) — used for "X+ Produkte" style counts (e.g. `BrandCard`)
+ * where only the number matters.
+ */
+export async function searchProductCount(filters: string): Promise<number> {
+  if (!filters) return 0
+  const client = getSearchClient()
+  if (!client) return 0
+  try {
+    const { results } = await client.searchForHits<ProductHit>({
+      requests: [
+        {
+          indexName: 'products',
+          filters,
+          hitsPerPage: 0,
+        },
+      ],
+    })
+    return results[0]?.nbHits ?? 0
+  } catch (error) {
+    console.error('Algolia count failed:', error)
+    return 0
+  }
+}

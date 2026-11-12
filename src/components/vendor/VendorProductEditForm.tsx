@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useCallback, useMemo, useState } from 'react'
+import { startTransition, useActionState, useCallback, useMemo, useState, type FormEvent } from 'react'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
@@ -76,6 +76,16 @@ const initialState: UpdateProductState = {}
 export function VendorProductEditForm({ product, navigationSections, sizes, brands }: VendorProductEditFormProps) {
   const updateProductWithId = updateProduct.bind(null, product.id)
   const [state, formAction, isSubmitting] = useActionState(updateProductWithId, initialState)
+
+  // Dispatch the action manually instead of via <form action>: React 19
+  // auto-resets uncontrolled fields after a form action completes, which
+  // wiped the vendor's typed description whenever validation failed.
+  const handleSubmit = useCallback((event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const formData = new FormData(event.currentTarget)
+    startTransition(() => formAction(formData))
+  }, [formAction])
+  const hasFieldErrors = !!state.errors && Object.keys(state.errors).some((key) => key !== 'general')
 
   const [imageUrls, setImageUrls] = useState({
     image1: product.image_url_1 || '',
@@ -161,7 +171,7 @@ export function VendorProductEditForm({ product, navigationSections, sizes, bran
               </p>
             </div>
 
-            <form action={formAction} className="space-y-8">
+            <form onSubmit={handleSubmit} className="space-y-8">
               <div className="space-y-6">
                 <h3 className="text-lg font-medium text-gray-900">Grundinformationen</h3>
 
@@ -198,6 +208,7 @@ export function VendorProductEditForm({ product, navigationSections, sizes, bran
                   value={selectedBrand}
                   onChange={setSelectedBrand}
                   placeholder="Marke suchen... (z.B. Adidas, Nike, Levi's)"
+                  error={state.errors?.brand}
                   required
                 />
               </div>
@@ -359,6 +370,7 @@ export function VendorProductEditForm({ product, navigationSections, sizes, bran
                   value={selectedCategory}
                   onChange={setSelectedCategory}
                   placeholder="Kategorie suchen..."
+                  error={state.errors?.category}
                   required
                 />
 
@@ -481,6 +493,17 @@ export function VendorProductEditForm({ product, navigationSections, sizes, bran
                   hint="Ihre interne Produkt-ID (optional)"
                 />
               </div>
+
+              {hasFieldErrors && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <p className="text-red-700 text-sm">
+                    Bitte prüfe die markierten Pflichtfelder: {Object.entries(state.errors ?? {})
+                      .filter(([key]) => key !== 'general')
+                      .map(([, message]) => message)
+                      .join(', ')}
+                  </p>
+                </div>
+              )}
 
               {state.errors?.general && (
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4">

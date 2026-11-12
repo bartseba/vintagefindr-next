@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useCallback, useMemo, useState } from 'react'
+import { startTransition, useActionState, useCallback, useMemo, useState, type FormEvent } from 'react'
 import Link from 'next/link'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
@@ -81,6 +81,16 @@ const initialState: CreateProductState = {}
 
 export function VendorProductNewForm({ navigationItems, sizes, brands }: VendorProductNewFormProps) {
   const [state, formAction, isSubmitting] = useActionState(createProduct, initialState)
+
+  // Dispatch the action manually instead of via <form action>: React 19
+  // auto-resets uncontrolled fields after a form action completes, which
+  // wiped everything the vendor typed whenever validation failed.
+  const handleSubmit = useCallback((event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const formData = new FormData(event.currentTarget)
+    startTransition(() => formAction(formData))
+  }, [formAction])
+  const hasFieldErrors = !!state.errors && Object.keys(state.errors).some((key) => key !== 'general')
 
   const [imageUrls, setImageUrls] = useState({ image1: '', image2: '', image3: '' })
   const [selectedCategory, setSelectedCategory] = useState('')
@@ -207,7 +217,7 @@ export function VendorProductNewForm({ navigationItems, sizes, brands }: VendorP
             </p>
           </div>
 
-          <form action={formAction} className="space-y-8">
+          <form onSubmit={handleSubmit} className="space-y-8">
             <div className="space-y-6">
               <h3 className="text-lg font-medium text-gray-900">Grundinformationen</h3>
 
@@ -524,6 +534,17 @@ export function VendorProductNewForm({ navigationItems, sizes, brands }: VendorP
                 hint="Ihre interne Produkt-ID (optional)"
               />
             </div>
+
+            {hasFieldErrors && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p className="text-red-700 text-sm">
+                  Bitte prüfe die markierten Pflichtfelder: {Object.entries(state.errors ?? {})
+                    .filter(([key]) => key !== 'general')
+                    .map(([, message]) => message)
+                    .join(', ')}
+                </p>
+              </div>
+            )}
 
             {state.errors?.general && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">

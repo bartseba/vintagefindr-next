@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { QueryProvider } from "@/components/QueryProvider";
 import { AuthModalsProvider } from "@/components/auth/AuthModalsProvider";
 import { CookieConsentProvider } from "@/components/CookieConsentProvider";
+import { TranslateCrashGuard } from "@/components/TranslateCrashGuard";
 import { siteUrl, companyName, companyEmail } from "@/constant/routes";
 import "./globals.css";
 
@@ -54,6 +55,7 @@ export default async function RootLayout({ children, modal }: LayoutProps<"/">) 
   return (
     <html lang="de" className="h-full">
       <body className="min-h-full flex flex-col font-sans antialiased">
+        <TranslateCrashGuard />
         <QueryProvider>{children}</QueryProvider>
         {modal}
         <Suspense fallback={null}>
