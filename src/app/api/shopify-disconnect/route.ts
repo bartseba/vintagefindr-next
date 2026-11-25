@@ -1,16 +1,17 @@
 import { NextResponse } from 'next/server'
 import { requireVendorAuth } from '@/lib/auth/session'
+import { getShopifyAppConfigError, shopifyAppFetch } from '@/lib/shopifyApp'
 
 export async function POST() {
   const { vendor } = await requireVendorAuth()
 
-  const shopifyAppUrl = process.env.SHOPIFY_APP_URL
-  if (!shopifyAppUrl) {
-    return NextResponse.json({ error: 'SHOPIFY_APP_URL ist nicht konfiguriert' }, { status: 500 })
+  const configError = getShopifyAppConfigError()
+  if (configError) {
+    return NextResponse.json({ error: configError }, { status: 500 })
   }
 
   try {
-    const response = await fetch(`${shopifyAppUrl}/api/disconnect/${vendor.id}`, { method: 'POST' })
+    const response = await shopifyAppFetch(`/api/disconnect/${vendor.id}`, { method: 'POST' })
     const data = await response.json().catch(() => ({}))
 
     if (!response.ok) {

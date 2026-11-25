@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link2, Link2Off, RefreshCw, ExternalLink, Package, CheckCircle, AlertCircle, Loader2, Unlink } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
@@ -27,6 +27,23 @@ export function ShopifyConnectionCard({
   const [isDisconnecting, setIsDisconnecting] = useState(false)
   const [showDisconnectConfirm, setShowDisconnectConfirm] = useState(false)
   const [resyncMessage, setResyncMessage] = useState<string | null>(null)
+
+  // The stored connection can outlive the shop itself (deleted stores don't
+  // reliably trigger app/uninstalled). Verify once per mount; if the
+  // Shopify app cleared a dead connection, reload to show the connect state.
+  useEffect(() => {
+    if (!connected) return
+    let cancelled = false
+    fetch('/api/shopify-verify', { method: 'POST' })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        if (!cancelled && data?.cleared) window.location.reload()
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [connected])
 
   const handleResync = async () => {
     setIsResyncing(true)
