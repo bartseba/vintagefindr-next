@@ -116,6 +116,8 @@ export async function HubContentPageView({ hubContentPage, breadcrumb = [] }: Hu
                 variant={item.variant}
                 tabs={item.tabs}
                 showAllHref={breadcrumb.length > 0 ? breadcrumb[breadcrumb.length - 1].href : undefined}
+                source={item.source}
+                supabaseField={item.supabaseField}
               />
             ))}
           </div>
@@ -189,6 +191,8 @@ export async function HubContentPageView({ hubContentPage, breadcrumb = [] }: Hu
                 variant={item.variant}
                 tabs={item.tabs}
                 showAllHref={breadcrumb.length > 0 ? breadcrumb[breadcrumb.length - 1].href : undefined}
+                source={item.source}
+                supabaseField={item.supabaseField}
               />
             ))}
           </div>

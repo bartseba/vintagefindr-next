@@ -179,6 +179,7 @@ interface CategorySearchProps {
   breadcrumb?: BreadcrumbSegment[];
   popularBrands?: PopularBrand[];
   categoryFilter?: string;
+  showCategoryFilter?: boolean;
 }
 
 export function CategorySearch({
@@ -195,6 +196,7 @@ export function CategorySearch({
   breadcrumb,
   popularBrands,
   categoryFilter,
+  showCategoryFilter,
 }: CategorySearchProps) {
   const cfg = buildConfigure({ brand });
   const [showFilters, setShowFilters] = useState(false);
@@ -235,7 +237,9 @@ export function CategorySearch({
       <Configure
         facetFilters={cfg.length > 0 ? cfg : undefined}
         filters={categoryFilter || undefined}
-        facets={['brand', 'size', 'vendor_name', 'condition', 'price', 'gender']}
+        facets={showCategoryFilter
+          ? ['brand', 'size', 'vendor_name', 'condition', 'price', 'gender', 'category']
+          : ['brand', 'size', 'vendor_name', 'condition', 'price', 'gender']}
         hitsPerPage={60}
       />
       <CategorySearchBody
@@ -255,6 +259,7 @@ export function CategorySearch({
         onProductClick={onProductClick}
         searchQuery={searchQuery}
         popularBrands={popularBrands}
+        showCategoryFilter={showCategoryFilter}
       />
     </InstantSearchNext>
   );
@@ -277,6 +282,7 @@ interface CategorySearchBodyProps {
   onProductClick?: (productId: string) => void;
   searchQuery: string;
   popularBrands?: PopularBrand[];
+  showCategoryFilter?: boolean;
 }
 
 /**
@@ -303,6 +309,7 @@ function CategorySearchBody({
   onProductClick,
   searchQuery,
   popularBrands,
+  showCategoryFilter,
 }: CategorySearchBodyProps) {
   const { isEmptyCategory, isFilteredToZero } = useEmptyCategoryFilterState();
   const { refine: clearRefinements } = useClearRefinements();
@@ -383,6 +390,9 @@ function CategorySearchBody({
               </div>
 
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                {showCategoryFilter && (
+                  <RefinementListAccordion attribute="category" title="Kategorie" searchable={true} defaultOpen={true} />
+                )}
                 <RefinementListAccordion attribute="brand" title="Brand" searchable={true} defaultOpen={true} />
                 <RefinementListAccordion attribute="gender" title="Geschlecht" searchable={false}  defaultOpen={true} />
                 <RefinementListAccordion attribute="size" title="Größe" searchable={false} />
@@ -490,6 +500,9 @@ function CategorySearchBody({
           </div>
         ) : (
           <div className="hidden h-fit lg:block min-w-full gap-4 mb-6 bg-white vintage-filter-section rounded-md border border-gray-200 lg:sticky lg:top-[90px] lg:self-start">
+            {showCategoryFilter && (
+              <RefinementListAccordion attribute="category" title="Kategorie" searchable={true} defaultOpen={true} />
+            )}
             <RefinementListAccordion attribute="brand" title="Brand" searchable={true} defaultOpen={true} />
             <RefinementListAccordion attribute="gender" title="Geschlecht" searchable={false}  defaultOpen={true} />
             <RefinementListAccordion attribute="size" title="Größe" searchable={true} defaultOpen={true} />

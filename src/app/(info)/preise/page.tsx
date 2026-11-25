@@ -216,7 +216,7 @@ export default function Preise() {
           <p className="mb-2">
             Für Fragen zu Paketen, Preisen oder individuellen Angeboten kontaktieren Sie uns bitte:
           </p>
-          <div className="bg-vintage-primary bg-opacity-10 rounded-lg p-4 mt-3">
+          <div className="bg-vintage-primary/10 rounded-lg p-4 mt-3">
             <p className="text-gray-900">
               <strong>E-Mail:</strong> <a href="mailto:support@vintagefindr.com" className="text-vintage-primary hover:underline">support@vintagefindr.com</a>
             </p>

@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { ImageUpload } from '@/components/ImageUpload'
 import { SearchableSelect } from '@/components/ui/SearchableSelect'
+import { useClearableErrors } from '@/hooks/useClearableErrors'
 import type { ProductFormNavigationItem, DirectusBrand, DirectusSize } from '@/lib/directus'
 import { createProduct, type CreateProductState } from '@/app/vendor/products/new/actions'
 
@@ -90,7 +91,8 @@ export function VendorProductNewForm({ navigationItems, sizes, brands }: VendorP
     const formData = new FormData(event.currentTarget)
     startTransition(() => formAction(formData))
   }, [formAction])
-  const hasFieldErrors = !!state.errors && Object.keys(state.errors).some((key) => key !== 'general')
+  const { errors: fieldErrors, clearError, onInput } = useClearableErrors(state.errors)
+  const hasFieldErrors = !!fieldErrors && Object.keys(fieldErrors).some((key) => key !== 'general')
 
   const [imageUrls, setImageUrls] = useState({ image1: '', image2: '', image3: '' })
   const [selectedCategory, setSelectedCategory] = useState('')
@@ -100,7 +102,8 @@ export function VendorProductNewForm({ navigationItems, sizes, brands }: VendorP
 
   const handleImageChange = useCallback((field: 'image1' | 'image2' | 'image3', url: string) => {
     setImageUrls(prev => ({ ...prev, [field]: url }))
-  }, [])
+    clearError(field.replace('image', 'imageUrl'))
+  }, [clearError])
 
   const handleSuggestion = useCallback(async (type: 'brand' | 'category' | 'size', value: string) => {
     try {
@@ -217,7 +220,7 @@ export function VendorProductNewForm({ navigationItems, sizes, brands }: VendorP
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form onSubmit={handleSubmit} onInput={onInput} className="space-y-8">
             <div className="space-y-6">
               <h3 className="text-lg font-medium text-gray-900">Grundinformationen</h3>
 
@@ -225,7 +228,7 @@ export function VendorProductNewForm({ navigationItems, sizes, brands }: VendorP
                 name="title"
                 label="Titel *"
                 placeholder="z.B. Vintage Sommerkleid 70er Jahre"
-                error={state.errors?.title}
+                error={fieldErrors?.title}
                 required
               />
 
@@ -240,8 +243,8 @@ export function VendorProductNewForm({ navigationItems, sizes, brands }: VendorP
                   placeholder="Detaillierte Beschreibung des Produkts..."
                   required
                 />
-                {state.errors?.description && (
-                  <p className="text-xs text-red-600 mt-1">{state.errors.description}</p>
+                {fieldErrors?.description && (
+                  <p className="text-xs text-red-600 mt-1">{fieldErrors.description}</p>
                 )}
               </div>
 
@@ -250,10 +253,10 @@ export function VendorProductNewForm({ navigationItems, sizes, brands }: VendorP
                 label="Marke"
                 options={brandOptions}
                 value={selectedBrand}
-                onChange={setSelectedBrand}
+                onChange={(value) => { setSelectedBrand(value); clearError('brand') }}
                 placeholder="Marke suchen... (z.B. Adidas, Nike, Levi's)"
                 required
-                error={state.errors?.brand}
+                error={fieldErrors?.brand}
                 onSuggest={(value) => handleSuggestion('brand', value)}
                 suggestType="brand"
               />
@@ -269,7 +272,7 @@ export function VendorProductNewForm({ navigationItems, sizes, brands }: VendorP
                   step="0.01"
                   label="Preis (in Euro)*"
                   placeholder="45.00"
-                  error={state.errors?.price}
+                  error={fieldErrors?.price}
                   hint="Preis ohne Währungszeichen"
                   required
                 />
@@ -397,10 +400,10 @@ export function VendorProductNewForm({ navigationItems, sizes, brands }: VendorP
                 label="Kategorie"
                 options={finalCategoryOptions}
                 value={selectedCategory}
-                onChange={setSelectedCategory}
+                onChange={(value) => { setSelectedCategory(value); clearError('category') }}
                 placeholder="Kategorie suchen... (z.B. hosen, jacken, shirts)"
                 required
-                error={state.errors?.category}
+                error={fieldErrors?.category}
                 onSuggest={(value) => handleSuggestion('category', value)}
                 suggestType="category"
               />
@@ -448,10 +451,10 @@ export function VendorProductNewForm({ navigationItems, sizes, brands }: VendorP
                 label="Größe"
                 options={finalSizeOptions}
                 value={selectedSize}
-                onChange={setSelectedSize}
+                onChange={(value) => { setSelectedSize(value); clearError('size') }}
                 placeholder="Größe suchen... (z.B. 42, M, L)"
                 required
-                error={state.errors?.size}
+                error={fieldErrors?.size}
                 onSuggest={(value) => handleSuggestion('size', value)}
                 suggestType="size"
               />
@@ -468,7 +471,7 @@ export function VendorProductNewForm({ navigationItems, sizes, brands }: VendorP
                   onChange={(url) => handleImageChange('image1', url)}
                   hint="Das Hauptbild Ihres Produkts (wird in Suchergebnissen angezeigt)"
                   required
-                  error={state.errors?.imageUrl1}
+                  error={fieldErrors?.imageUrl1}
                 />
 
                 <ImageUpload
@@ -512,7 +515,7 @@ export function VendorProductNewForm({ navigationItems, sizes, brands }: VendorP
                 name="productUrl"
                 label="Produkt-URL *"
                 placeholder="https://ihr-shop.com/produkt/123"
-                error={state.errors?.productUrl}
+                error={fieldErrors?.productUrl}
                 hint="Link zur Produktseite in Ihrem Shop"
                 required
               />
@@ -530,7 +533,7 @@ export function VendorProductNewForm({ navigationItems, sizes, brands }: VendorP
                 name="externalProductId"
                 label="Externe Produkt-ID"
                 placeholder="z.B. PROD-001"
-                error={state.errors?.externalProductId}
+                error={fieldErrors?.externalProductId}
                 hint="Ihre interne Produkt-ID (optional)"
               />
             </div>
@@ -538,7 +541,7 @@ export function VendorProductNewForm({ navigationItems, sizes, brands }: VendorP
             {hasFieldErrors && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                 <p className="text-red-700 text-sm">
-                  Bitte prüfe die markierten Pflichtfelder: {Object.entries(state.errors ?? {})
+                  Bitte prüfe die markierten Pflichtfelder: {Object.entries(fieldErrors ?? {})
                     .filter(([key]) => key !== 'general')
                     .map(([, message]) => message)
                     .join(', ')}
@@ -546,9 +549,9 @@ export function VendorProductNewForm({ navigationItems, sizes, brands }: VendorP
               </div>
             )}
 
-            {state.errors?.general && (
+            {fieldErrors?.general && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <p className="text-red-700 text-sm">{state.errors.general}</p>
+                <p className="text-red-700 text-sm">{fieldErrors.general}</p>
               </div>
             )}
 

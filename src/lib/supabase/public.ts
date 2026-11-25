@@ -137,6 +137,63 @@ export async function getLatestProducts(limit = 12): Promise<LatestProduct[]> {
   }
 }
 
+export type SupabaseSliderField = 'BRAND' | 'NEWEST' | 'CATEGORY' | 'VENDOR'
+
+export interface SupabaseSliderProduct {
+  id: string
+  title: string
+  brand?: string
+  category?: string
+  price: number
+  currency: string
+  condition?: string
+  vintage_styles?: string
+  image_url_1?: string
+  vendor_store_name?: string
+  vendor_id?: string
+  product_url?: string
+  checkout_url?: string | null
+  tags?: string | null
+  shipping_cost?: number | null
+  free_shipping_threshold?: number | null
+  delivery_time_min_days?: number | null
+  delivery_time_max_days?: number | null
+  tax_included?: boolean | null
+  tax_rate?: number | null
+}
+
+/**
+ * Algolia-free product fetch for ProductSliderBlock's "Supabase" data
+ * source — same `active_vendor_products` view as `getLatestProducts`, with
+ * an optional substring filter on brand/category/vendor name. `NEWEST`
+ * applies no filter, just the existing created_at-desc ordering.
+ */
+export async function getSupabaseSliderProducts(
+  field: SupabaseSliderField,
+  query: string | null,
+  limit = 12
+): Promise<SupabaseSliderProduct[]> {
+  if (!supabasePublic) return []
+
+  try {
+    let q = supabasePublic
+      .from('active_vendor_products')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(limit)
+
+    if (field === 'BRAND' && query) q = q.ilike('brand', `%${query}%`)
+    else if (field === 'CATEGORY' && query) q = q.ilike('category', `%${query}%`)
+    else if (field === 'VENDOR' && query) q = q.ilike('vendor_store_name', `%${query}%`)
+
+    const { data } = await q
+    return data ?? []
+  } catch (error) {
+    console.error('Supabase slider products error:', error)
+    return []
+  }
+}
+
 /**
  * Ported from the inline `platform_settings` query in
  * `_info.partner-werden.tsx`'s loader (vendor_starter_clicks).

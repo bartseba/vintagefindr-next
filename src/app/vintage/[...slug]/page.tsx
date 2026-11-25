@@ -134,6 +134,7 @@ export default async function VintageCategoryPage({ params }: PageProps) {
   const sidebarItems = await getSidebarNavigationItems()
   const popularBrands = await getPopularBrands()
   const defaultSortIndex = fullPath.includes('neuester-drop') ? 'products_new' : undefined
+  const showCategoryFilter = fullPath.includes('neuester-drop')
   const seoFooterData = categoryPage.seo_footer ?? categoryPage.seo_brand_footer
   const breadcrumb = buildBreadcrumb(fullPath)
 
@@ -191,6 +192,7 @@ export default async function VintageCategoryPage({ params }: PageProps) {
               breadcrumb={breadcrumb}
               popularBrands={popularBrands}
               categoryFilter={categoryFilter}
+              showCategoryFilter={showCategoryFilter}
             />
           </div>
         </div>

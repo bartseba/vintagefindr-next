@@ -3,13 +3,9 @@ import type { Metadata } from 'next'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import Hero from '@/components/HeroSection'
-import SectionHeader from '@/components/SectionHeader'
 import { HomeCollectionsGrid } from '@/components/HomeCollectionsGrid'
 import { HomeSearchOverlay } from '@/components/HomeSearchOverlay'
 import RatgeberHeroSection from '@/components/RatgeberHeroSection'
-import { ProductCard } from '@/components/ProductCard'
-import { HorizontalCarousel } from '@/components/HorizontalCarousel'
-import { EmptyState } from '@/components/ui/EmptyState'
 import { SearchProvider } from '@/components/algolia/SearchProvider'
 import ProductFilterSlider from '@/components/algolia/ProductFilterSlider'
 import HighlightCategories from '@/components/HighlightCategory'
@@ -25,7 +21,7 @@ import {
   type HomepageSectionType,
   type HomepageSectionItem,
 } from '@/lib/directus'
-import { getCollectionById, getLatestProducts, type LatestProduct } from '@/lib/supabase/public'
+import { getCollectionById } from '@/lib/supabase/public'
 import { routes, siteUrl, companyName } from '@/constant/routes'
 
 /**
@@ -40,46 +36,6 @@ const CONTAINERIZED_TYPES: HomepageSectionType[] = [
   'popular_products',
   'product_slider',
 ]
-
-function ProductCarousel({ title, subtitle, products }: { title: string; subtitle: string; products: LatestProduct[] }) {
-  return (
-    <>
-      <SectionHeader showAll={routes.newDrop} title={title} subtitle={subtitle} />
-      {products.length >= 1 ? (
-        <HorizontalCarousel title="">
-          {products.map((product, index) => (
-            <div key={product.id} className="">
-              <ProductCard
-                id={product.id}
-                vendorId={product.vendorId}
-                title={product.title}
-                brand={product.brand}
-                category={product.category}
-                price={product.price}
-                currency={product.currency}
-                era={product.vintage_styles}
-                imageUrl={product.imageUrl}
-                vendorName={product.vendorName}
-                productUrl={product.productUrl}
-                checkoutUrl={product.checkoutUrl}
-                tags={product.tags}
-                index={index}
-              />
-            </div>
-          ))}
-        </HorizontalCarousel>
-      ) : (
-        <EmptyState
-          onResetFilters={() => {/* URL-Filter löschen */ }}
-          onCreateAlert={() => {/* Saved Search / E-Mail-Alert öffnen */ }}
-          linkHref="/ratgeber"
-          linkText="Zum Ratgeber"
-          title={`Keine Vintage Drops aktuell verfügbar`}
-        />
-      )}
-    </>
-  )
-}
 
 const title = `Finde Vintage Mode & Second Hand Kleidung | ${companyName}`
 const description =
@@ -104,14 +60,13 @@ function renderHomepageSection(
   data: {
     highlightSection: Awaited<ReturnType<typeof getHighlightSectionBySlug>>
     productHighlightSlider: Awaited<ReturnType<typeof getProductHighlightSlider>>
-    products: LatestProduct[]
     adidasCollection: Awaited<ReturnType<typeof getCollectionById>>
     nikeCollection: Awaited<ReturnType<typeof getCollectionById>>
     oberteilCollection: Awaited<ReturnType<typeof getCollectionById>>
     highlightCategories: Awaited<ReturnType<typeof getHighlightCategories>>
   }
 ) {
-  
+
   switch (section.type) {
     case 'collections_grid':
       return <HomeCollectionsGrid adidas={data.adidasCollection} nike={data.nikeCollection} oberteile={data.oberteilCollection} />
@@ -123,9 +78,32 @@ function renderHomepageSection(
         />
       ) : null
     case 'latest_products':
-      return <ProductCarousel title="Neueste Vintage Kleidung" subtitle="Neusten Produkte aus verschiedenen Vintage Shops" products={data.products} />
+      return (
+        <ProductSliderBlock
+          title={section.title ?? 'Neueste Vintage Kleidung'}
+          query={section.query}
+          titleTag={section.titleTag}
+          variant={section.variant}
+          tabs={section.tabs}
+          showAllHref={section.showAllHref ?? routes.newDrop}
+          indexName="products_new"
+          source={section.source}
+          supabaseField={section.supabaseField}
+        />
+      )
     case 'popular_products':
-      return <ProductCarousel title="Beliebte Vintage Kleidung" subtitle="Beliebte Produkte aus verschiedenen Vintage Shops" products={data.products} />
+      return (
+        <ProductSliderBlock
+          title={section.title ?? 'Beliebte Vintage Kleidung'}
+          query={section.query}
+          titleTag={section.titleTag}
+          variant={section.variant}
+          tabs={section.tabs}
+          showAllHref={section.showAllHref ?? routes.newDrop}
+          source={section.source}
+          supabaseField={section.supabaseField}
+        />
+      )
     case 'algolia_filter_slider':
       return data.productHighlightSlider ? (
         <SearchProvider>
@@ -144,17 +122,27 @@ function renderHomepageSection(
     case 'brands':
       return <BrandLogoSection />
     case 'product_slider':
-      return <ProductSliderBlock title={section.title} query={section.query} titleTag={section.titleTag} variant={section.variant} />
+      return (
+        <ProductSliderBlock
+          title={section.title}
+          query={section.query}
+          titleTag={section.titleTag}
+          variant={section.variant}
+          tabs={section.tabs}
+          showAllHref={section.showAllHref ?? undefined}
+          source={section.source}
+          supabaseField={section.supabaseField}
+        />
+      )
     default:
       return null
   }
 }
 
 export default async function HomePage() {
-  const [highlightSection, productHighlightSlider, products, adidasCollection, nikeCollection, oberteilCollection, highlightCategories, homepageSections] = await Promise.all([
+  const [highlightSection, productHighlightSlider, adidasCollection, nikeCollection, oberteilCollection, highlightCategories, homepageSections] = await Promise.all([
     getHighlightSectionBySlug('ratgeber'),
     getProductHighlightSlider(),
-    getLatestProducts(),
     getCollectionById('adidas'),
     getCollectionById('vintage-nike'),
     getCollectionById('vintage-oberteile'),
@@ -162,7 +150,7 @@ export default async function HomePage() {
     getHomepageSections(),
   ])
 
-  const sectionData = { highlightSection, productHighlightSlider, products, adidasCollection, nikeCollection, oberteilCollection, highlightCategories }
+  const sectionData = { highlightSection, productHighlightSlider, adidasCollection, nikeCollection, oberteilCollection, highlightCategories }
 
   return (
     <div className="min-h-screen bg-white">
@@ -179,7 +167,7 @@ export default async function HomePage() {
             if (!content) return null
 
             return (
-              <div key={section.id} className={` mt-12  mb-12 py-4 ${section.hasBackground ? 'bg-vintage-silverGray border-t border-b border-gray-50' : 'bg-white'}`}>
+              <div key={section.id} className={`  mb-12 py-12 ${section.hasBackground ? 'bg-vintage-silverGray border-t border-b border-gray-50' : 'bg-white'}`}>
                 {CONTAINERIZED_TYPES.includes(section.type) ? (
                   <div className="xl:container mx-auto px-4 lg:py-0">{content}</div>
                 ) : (

@@ -57,7 +57,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             text nodes for <font> elements, and React's insertBefore against
             the original node then throws NotFoundError and takes the whole
             page down ("This page couldn't load" - Shopify review 2.1.1). */}
-        <span>{children}</span>
+        <span className="flex items-center">{children}</span>
       </button>
     )
   }

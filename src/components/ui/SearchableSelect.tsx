@@ -49,6 +49,13 @@ export function SearchableSelect({
 
   const selectedOption = options.find(opt => opt.value.toLocaleUpperCase() === selectedValue.toLocaleUpperCase())
   const selectedLabel = selectedOption?.label || ''
+  // For required fields only a value that matches an option counts as
+  // selected. A stored value outside the option list (e.g. a Shopify-synced
+  // category) renders as "Bitte wählen", so it must not be submitted
+  // silently either - otherwise the field looks empty but passes the
+  // server's required check. Optional fields keep the stored value so
+  // saving never wipes data the vendor didn't touch.
+  const effectiveValue = selectedOption?.value ?? (required ? '' : selectedValue)
 
   const filteredOptions = useMemo(() => {
     if (!searchQuery.trim()) return options
@@ -164,7 +171,7 @@ export function SearchableSelect({
         {label} {required && '*'}
       </label>
 
-      <input type="hidden" name={name} value={selectedValue} required={required} />
+      <input type="hidden" name={name} value={effectiveValue} required={required} />
 
       <div
         className={`input-field cursor-pointer flex items-center justify-between ${
@@ -177,11 +184,11 @@ export function SearchableSelect({
         aria-expanded={isOpen}
         aria-haspopup="listbox"
       >
-        <span className={selectedValue ? 'text-gray-900' : 'text-gray-400'}>
+        <span className={effectiveValue ? 'text-gray-900' : 'text-gray-400'}>
           {selectedLabel || 'Bitte wählen'}
         </span>
         <div className="flex items-center gap-2">
-          {selectedValue && (
+          {effectiveValue && (
             <button
               type="button"
               onClick={handleClear}

@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { ImageUpload } from '@/components/ImageUpload'
 import { SearchableSelect } from '@/components/ui/SearchableSelect'
+import { useClearableErrors } from '@/hooks/useClearableErrors'
 import type { NavigationSection, DirectusBrand, DirectusSize } from '@/lib/directus'
 import { updateProduct, type UpdateProductState } from '@/app/vendor/products/[id]/edit/actions'
 
@@ -85,7 +86,8 @@ export function VendorProductEditForm({ product, navigationSections, sizes, bran
     const formData = new FormData(event.currentTarget)
     startTransition(() => formAction(formData))
   }, [formAction])
-  const hasFieldErrors = !!state.errors && Object.keys(state.errors).some((key) => key !== 'general')
+  const { errors: fieldErrors, clearError, onInput } = useClearableErrors(state.errors)
+  const hasFieldErrors = !!fieldErrors && Object.keys(fieldErrors).some((key) => key !== 'general')
 
   const [imageUrls, setImageUrls] = useState({
     image1: product.image_url_1 || '',
@@ -98,7 +100,8 @@ export function VendorProductEditForm({ product, navigationSections, sizes, bran
 
   const handleImageChange = useCallback((field: 'image1' | 'image2' | 'image3', url: string) => {
     setImageUrls(prev => ({ ...prev, [field]: url }))
-  }, [])
+    clearError(field.replace('image', 'imageUrl'))
+  }, [clearError])
 
   const categoryOptions = useMemo(() => {
     if (navigationSections && navigationSections.length > 0) {
@@ -171,7 +174,7 @@ export function VendorProductEditForm({ product, navigationSections, sizes, bran
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-8">
+            <form onSubmit={handleSubmit} onInput={onInput} className="space-y-8">
               <div className="space-y-6">
                 <h3 className="text-lg font-medium text-gray-900">Grundinformationen</h3>
 
@@ -180,7 +183,7 @@ export function VendorProductEditForm({ product, navigationSections, sizes, bran
                   label="Titel"
                   placeholder="z.B. Vintage Sommerkleid 70er Jahre"
                   defaultValue={product.title}
-                  error={state.errors?.title}
+                  error={fieldErrors?.title}
                   required
                 />
 
@@ -196,8 +199,8 @@ export function VendorProductEditForm({ product, navigationSections, sizes, bran
                     defaultValue={product.description || ''}
                     required
                   />
-                  {state.errors?.description && (
-                    <p className="text-xs text-red-600 mt-1">{state.errors.description}</p>
+                  {fieldErrors?.description && (
+                    <p className="text-xs text-red-600 mt-1">{fieldErrors.description}</p>
                   )}
                 </div>
 
@@ -206,9 +209,9 @@ export function VendorProductEditForm({ product, navigationSections, sizes, bran
                   label="Marke"
                   options={brandOptions}
                   value={selectedBrand}
-                  onChange={setSelectedBrand}
+                  onChange={(value) => { setSelectedBrand(value); clearError('brand') }}
                   placeholder="Marke suchen... (z.B. Adidas, Nike, Levi's)"
-                  error={state.errors?.brand}
+                  error={fieldErrors?.brand}
                   required
                 />
               </div>
@@ -224,7 +227,7 @@ export function VendorProductEditForm({ product, navigationSections, sizes, bran
                     label="Preis (in Euro)"
                     placeholder="45.00"
                     defaultValue={product.price?.toString() || ''}
-                    error={state.errors?.price}
+                    error={fieldErrors?.price}
                     hint="Preis ohne Währungszeichen"
                     required
                   />
@@ -368,9 +371,9 @@ export function VendorProductEditForm({ product, navigationSections, sizes, bran
                   label="Kategorie"
                   options={categoryOptions}
                   value={selectedCategory}
-                  onChange={setSelectedCategory}
+                  onChange={(value) => { setSelectedCategory(value); clearError('category') }}
                   placeholder="Kategorie suchen..."
-                  error={state.errors?.category}
+                  error={fieldErrors?.category}
                   required
                 />
 
@@ -417,7 +420,7 @@ export function VendorProductEditForm({ product, navigationSections, sizes, bran
                   label="Größe"
                   options={sizeOptions}
                   value={selectedSize}
-                  onChange={setSelectedSize}
+                  onChange={(value) => { setSelectedSize(value); clearError('size') }}
                   placeholder="Größe suchen..."
                 />
               </div>
@@ -460,7 +463,7 @@ export function VendorProductEditForm({ product, navigationSections, sizes, bran
                     label="Produkt-URL"
                     placeholder="https://ihr-shop.com/produkt/123"
                     defaultValue={product.product_url || ''}
-                    error={state.errors?.productUrl}
+                    error={fieldErrors?.productUrl}
                     hint="Link zur Produktseite in Ihrem Shop"
                     required
                   />
@@ -489,7 +492,7 @@ export function VendorProductEditForm({ product, navigationSections, sizes, bran
                   label="Externe Produkt-ID"
                   placeholder="z.B. PROD-001"
                   defaultValue={product.external_product_id || ''}
-                  error={state.errors?.externalProductId}
+                  error={fieldErrors?.externalProductId}
                   hint="Ihre interne Produkt-ID (optional)"
                 />
               </div>
@@ -497,7 +500,7 @@ export function VendorProductEditForm({ product, navigationSections, sizes, bran
               {hasFieldErrors && (
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                   <p className="text-red-700 text-sm">
-                    Bitte prüfe die markierten Pflichtfelder: {Object.entries(state.errors ?? {})
+                    Bitte prüfe die markierten Pflichtfelder: {Object.entries(fieldErrors ?? {})
                       .filter(([key]) => key !== 'general')
                       .map(([, message]) => message)
                       .join(', ')}
@@ -505,9 +508,9 @@ export function VendorProductEditForm({ product, navigationSections, sizes, bran
                 </div>
               )}
 
-              {state.errors?.general && (
+              {fieldErrors?.general && (
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                  <p className="text-red-700 text-sm">{state.errors.general}</p>
+                  <p className="text-red-700 text-sm">{fieldErrors.general}</p>
                 </div>
               )}
 

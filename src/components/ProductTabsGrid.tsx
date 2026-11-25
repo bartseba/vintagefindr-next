@@ -29,7 +29,7 @@ export function ProductTabsGrid({ tabs, showAllHref }: { tabs: TabWithHits[]; sh
 
   return (
     <div>
-      <div role="tablist" aria-label="Produktfilter" className="flex gap-2 overflow-x-auto pb-4 -mx-1 px-1 mt-2">
+      <div role="tablist" aria-label="Produktfilter" className="flex gap-2 overflow-x-auto pb-4 -mx-1 px-1 my-2">
         {tabs.map((tab) => (
           <button
             key={tab.id}

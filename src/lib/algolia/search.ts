@@ -56,16 +56,15 @@ export interface ProductHit {
  * better fit for the App Router than mounting the InstantSearch machinery
  * just to render a static list.
  */
-export async function searchProducts(filters: string, hitsPerPage = 12): Promise<ProductHit[]> {
-  if (!filters) return []
+export async function searchProducts(filters: string, hitsPerPage = 12, indexName = 'products'): Promise<ProductHit[]> {
   const client = getSearchClient()
   if (!client) return []
   try {
     const { results } = await client.searchForHits<ProductHit>({
       requests: [
         {
-          indexName: 'products',
-          filters,
+          indexName,
+          filters: filters || undefined,
           hitsPerPage,
         },
       ],

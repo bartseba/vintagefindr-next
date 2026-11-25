@@ -249,7 +249,13 @@ export interface ProductSliderBlockItem {
   /** Pill filter tabs (Directus `ProductSliderBlockTab`, o2m via `tabs`).
    * Only meaningful for SECONDARY: when non-empty, ProductSliderBlock.tsx
    * renders the pill-tab grid instead of the single-query grid fallback. */
-  tabs: Array<{ id: number; label: string; query: string }>
+  tabs: Array<{ id: number; label: string; query: string; supabaseField: 'BRAND' | 'NEWEST' | 'CATEGORY' | 'VENDOR' | null }>
+  /** Data source for the main slider/grid. Falls back to ALGOLIA when
+   * absent/empty. When SUPABASE, tabs also query Supabase (per-tab
+   * `supabaseField`) instead of Algolia. */
+  source: 'ALGOLIA' | 'SUPABASE' | null
+  /** Only meaningful when source is SUPABASE - which column `query` filters on. */
+  supabaseField: 'BRAND' | 'NEWEST' | 'CATEGORY' | 'VENDOR' | null
 }
 
 export interface HubContentPage {
@@ -329,7 +335,7 @@ interface RawHubContentPage {
   image_alt: string | null
   CategoryTeaserBlock?: Array<{ HubContent_id: RawHubContentItem }>
   content_block?: Array<{ IntroSection_id: HubContentPage['content_block'][number] }>
-  productSliderBlock?: Array<{ ProductSliderBlock_id: { id: number; title: string | null; query: string | null; isPublic: boolean | null; titleTag: string | null; variant: string | null; tabs: Array<{ id: number; label: string | null; query: string | null }> | null } }>
+  productSliderBlock?: Array<{ ProductSliderBlock_id: { id: number; title: string | null; query: string | null; isPublic: boolean | null; titleTag: string | null; variant: string | null; source: string | null; supabaseField: string | null; tabs: Array<{ id: number; label: string | null; query: string | null; supabaseField: string | null }> | null } }>
   faq_block: RawFaqBlock | null
 }
 
@@ -358,7 +364,7 @@ export async function getHubContentPageById(id: number): Promise<HubContentPage 
               { IntroSection_id: ['id', 'Headline', 'IntroText', 'intro_image', 'button_text', { button_href: ['id', 'href'] }] }
             ],
             productSliderBlock: [
-              { ProductSliderBlock_id: ['id', 'title', 'query', 'isPublic', 'titleTag', 'variant', { tabs: ['id', 'label', 'query'] }] }
+              { ProductSliderBlock_id: ['id', 'title', 'query', 'isPublic', 'titleTag', 'variant', 'source', 'supabaseField', { tabs: ['id', 'label', 'query', 'supabaseField'] }] }
             ]
           },
           { faq_block: FAQ_BLOCK_FIELDS },
@@ -407,8 +413,11 @@ export async function getHubContentPageById(id: number): Promise<HubContentPage 
         isPublic: junction.ProductSliderBlock_id.isPublic ?? false,
         titleTag: (junction.ProductSliderBlock_id.titleTag ?? null) as ProductSliderBlockItem['titleTag'],
         variant: (junction.ProductSliderBlock_id.variant ?? 'PRIMARY') as ProductSliderBlockItem['variant'],
+        source: (junction.ProductSliderBlock_id.source ?? 'ALGOLIA') as ProductSliderBlockItem['source'],
+        supabaseField: (junction.ProductSliderBlock_id.supabaseField ?? null) as ProductSliderBlockItem['supabaseField'],
         tabs: (junction.ProductSliderBlock_id.tabs ?? [])
-          .filter((tab): tab is { id: number; label: string; query: string } => !!tab.label && !!tab.query),
+          .filter((tab): tab is { id: number; label: string; query: string; supabaseField: string | null } => !!tab.label && !!tab.query)
+          .map((tab) => ({ ...tab, supabaseField: (tab.supabaseField ?? null) as ProductSliderBlockItem['tabs'][number]['supabaseField'] })),
       })),
       faqBlock: raw.faq_block ? {
         id: raw.faq_block.id,
@@ -1104,14 +1113,26 @@ export interface HomepageSectionItem {
   titleTag: 'h1' | 'h2' | 'h3' | 'p' | null
   /** Only meaningful for type: 'product_slider' - see ProductSliderBlockItem. */
   variant: 'PRIMARY' | 'SECONDARY' | null
+  /** Pill filter tabs (Directus `HomepageSectionTab`, o2m `tabs`). Only
+   * meaningful when variant is SECONDARY, mirrors ProductSliderBlockItem.tabs. */
+  tabs: Array<{ id: number; label: string; query: string; supabaseField: 'BRAND' | 'NEWEST' | 'CATEGORY' | 'VENDOR' | null }>
+  /** "Alle ansehen" CTA target, editable per section. */
+  showAllHref: string | null
+  /** Data source for the main slider/grid. Falls back to ALGOLIA when
+   * absent/empty. When SUPABASE, tabs also query Supabase (per-tab
+   * `supabaseField`) instead of Algolia. */
+  source: 'ALGOLIA' | 'SUPABASE' | null
+  /** Only meaningful when source is SUPABASE - which column `query` filters on. */
+  supabaseField: 'BRAND' | 'NEWEST' | 'CATEGORY' | 'VENDOR' | null
 }
 
 /**
  * Sortierbare Liste der Startseiten-Sections (außer Hero/Footer) —
  * steuert Sichtbarkeit, Reihenfolge und Hintergrund-Band pro Section aus
- * Directus. `product_slider` ist der einzige frei konfigurierbare Typ
- * (Titel + Algolia-Query), alle anderen Typen schalten bestehende, fest
- * codierte JSX-Blöcke in `page.tsx` an/aus.
+ * Directus. `product_slider`/`latest_products`/`popular_products` rendern
+ * alle über `ProductSliderBlock` (Titel, Algolia-Query, Variante, Tabs,
+ * CTA-Link frei konfigurierbar), alle anderen Typen schalten bestehende,
+ * fest codierte JSX-Blöcke in `page.tsx` an/aus.
  */
 export async function getHomepageSections(): Promise<HomepageSectionItem[]> {
   if (!directusUrl) return []
@@ -1119,15 +1140,26 @@ export async function getHomepageSections(): Promise<HomepageSectionItem[]> {
   try {
     const sections = await client.request<HomepageSectionItem[]>(
       readItems('HomepageSection', {
-        fields: ['id', 'type', 'title', 'query', 'hasBackground', 'titleTag', 'variant'],
+        fields: [
+          'id', 'type', 'title', 'query', 'hasBackground', 'titleTag', 'variant', 'showAllHref', 'source', 'supabaseField',
+          { tabs: ['id', 'label', 'query', 'supabaseField'] },
+        ],
         filter: { isPublic: { _eq: true } },
         sort: ['sort'],
+        deep: { tabs: { _sort: ['sort'] } } as unknown as Record<string, unknown>,
         limit: -1,
       })
     )
-    // Defaults to PRIMARY when the field is absent/empty, same as
+    // Defaults to PRIMARY/ALGOLIA when absent/empty, same as
     // ProductSliderBlockItem's mapping in getHubContentPageById.
-    return sections.map((section) => ({ ...section, variant: section.variant ?? 'PRIMARY' }))
+    return sections.map((section) => ({
+      ...section,
+      variant: section.variant ?? 'PRIMARY',
+      source: section.source ?? 'ALGOLIA',
+      tabs: (section.tabs ?? [])
+        .filter((tab): tab is { id: number; label: string; query: string; supabaseField: 'BRAND' | 'NEWEST' | 'CATEGORY' | 'VENDOR' | null } => !!tab.label && !!tab.query)
+        .map((tab) => ({ ...tab, supabaseField: tab.supabaseField ?? null })),
+    }))
   } catch (error) {
     console.error('Failed to fetch homepage sections:', error)
     return []
