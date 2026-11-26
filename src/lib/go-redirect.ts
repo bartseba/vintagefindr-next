@@ -1,6 +1,7 @@
 import { headers } from 'next/headers'
 import { createHash } from 'crypto'
 import { supabasePublic } from '@/lib/supabase/public'
+import { withUtm } from '@/lib/utm'
 
 /**
  * Shared by the full-page `/go/[productId]` route and the intercepted
@@ -110,7 +111,7 @@ export async function getGoRedirectData(productId: string): Promise<GoRedirectDa
     }
 
     return {
-      targetUrl: product.product_url,
+      targetUrl: withUtm(product.product_url),
       productTitle: product.title,
       vendorName: product.vendors?.store_name || 'Shop',
     }
@@ -172,7 +173,7 @@ export async function getGoRedirectData(productId: string): Promise<GoRedirectDa
   }
 
   return {
-    targetUrl: product.product_url,
+    targetUrl: withUtm(product.product_url),
     productTitle: product.title,
     vendorName: product.vendors?.store_name || 'Shop',
   }

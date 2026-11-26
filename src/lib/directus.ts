@@ -415,9 +415,7 @@ export async function getHubContentPageById(id: number): Promise<HubContentPage 
         variant: (junction.ProductSliderBlock_id.variant ?? 'PRIMARY') as ProductSliderBlockItem['variant'],
         source: (junction.ProductSliderBlock_id.source ?? 'ALGOLIA') as ProductSliderBlockItem['source'],
         supabaseField: (junction.ProductSliderBlock_id.supabaseField ?? null) as ProductSliderBlockItem['supabaseField'],
-        tabs: (junction.ProductSliderBlock_id.tabs ?? [])
-          .filter((tab): tab is { id: number; label: string; query: string; supabaseField: string | null } => !!tab.label && !!tab.query)
-          .map((tab) => ({ ...tab, supabaseField: (tab.supabaseField ?? null) as ProductSliderBlockItem['tabs'][number]['supabaseField'] })),
+        tabs: mapSliderTabs(junction.ProductSliderBlock_id.tabs),
       })),
       faqBlock: raw.faq_block ? {
         id: raw.faq_block.id,
@@ -1094,6 +1092,28 @@ export async function getHighlightCategories(): Promise<HighlightCategoryItem[]>
   }
 }
 
+type SliderTabField = 'BRAND' | 'NEWEST' | 'CATEGORY' | 'VENDOR'
+type SliderTab = { id: number; label: string; query: string; supabaseField: SliderTabField | null }
+
+/**
+ * Normalises Directus slider tabs (`ProductSliderBlockTab` and
+ * `HomepageSectionTab`). A tab needs a label and a query - except NEWEST,
+ * which ignores the query and just lists the latest products, so an empty
+ * query is valid there (e.g. a "Featured"/"Neu" tab).
+ */
+function mapSliderTabs(
+  tabs: Array<{ id: number; label: string | null; query: string | null; supabaseField: string | null }> | null | undefined
+): SliderTab[] {
+  return (tabs ?? [])
+    .filter((tab) => !!tab.label && (!!tab.query || tab.supabaseField === 'NEWEST'))
+    .map((tab) => ({
+      id: tab.id,
+      label: tab.label as string,
+      query: tab.query ?? '',
+      supabaseField: (tab.supabaseField ?? null) as SliderTabField | null,
+    }))
+}
+
 export type HomepageSectionType =
   | 'collections_grid'
   | 'ratgeber_highlight'
@@ -1156,9 +1176,7 @@ export async function getHomepageSections(): Promise<HomepageSectionItem[]> {
       ...section,
       variant: section.variant ?? 'PRIMARY',
       source: section.source ?? 'ALGOLIA',
-      tabs: (section.tabs ?? [])
-        .filter((tab): tab is { id: number; label: string; query: string; supabaseField: 'BRAND' | 'NEWEST' | 'CATEGORY' | 'VENDOR' | null } => !!tab.label && !!tab.query)
-        .map((tab) => ({ ...tab, supabaseField: tab.supabaseField ?? null })),
+      tabs: mapSliderTabs(section.tabs),
     }))
   } catch (error) {
     console.error('Failed to fetch homepage sections:', error)
