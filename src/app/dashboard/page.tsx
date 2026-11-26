@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/Button'
 import { ProductCard } from '@/components/ProductCard'
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader'
 import { FavoritesStoreSync } from '@/components/FavoritesStoreSync'
+import { SavedSearchesList } from '@/components/dashboard/SavedSearchesList'
 import { requireAuthUser } from '@/lib/auth/session'
 import { browse } from '@/constant/routes'
 import type { FavoriteProduct } from '@/hooks/useFavoritesQuery'
@@ -214,6 +215,7 @@ export default async function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
+            <SavedSearchesList />
             {/* Favorite Products */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <div className="flex items-center justify-between mb-6">

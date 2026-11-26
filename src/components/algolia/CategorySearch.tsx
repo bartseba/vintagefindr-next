@@ -21,6 +21,7 @@ import { SortByDropdown } from "./SortByDropdown";
 import { RefinementListAccordion } from "./RefinementListAccordion";
 import { PriceRangeAccordion } from "./PriceRangeAccordion";
 import { PaginationWrapper } from "./PaginationWrapper";
+import { SaveSearchButton } from "./SaveSearchButton";
 import { Button } from "../ui/Button";
 import { PILL_SMALL } from "../ui/Pill";
 import { BreadcrumbSegment } from "@/lib/breadcrumb";
@@ -260,6 +261,8 @@ export function CategorySearch({
         searchQuery={searchQuery}
         popularBrands={popularBrands}
         showCategoryFilter={showCategoryFilter}
+        categoryFilter={categoryFilter}
+        baseFacetFilters={cfg}
       />
     </InstantSearchNext>
   );
@@ -283,6 +286,8 @@ interface CategorySearchBodyProps {
   searchQuery: string;
   popularBrands?: PopularBrand[];
   showCategoryFilter?: boolean;
+  categoryFilter?: string;
+  baseFacetFilters?: string[][];
 }
 
 /**
@@ -310,6 +315,8 @@ function CategorySearchBody({
   searchQuery,
   popularBrands,
   showCategoryFilter,
+  categoryFilter,
+  baseFacetFilters,
 }: CategorySearchBodyProps) {
   const { isEmptyCategory, isFilteredToZero } = useEmptyCategoryFilterState();
   const { refine: clearRefinements } = useClearRefinements();
@@ -526,6 +533,9 @@ function CategorySearchBody({
                 Filter zurücksetzen
               </button>
             </div>
+          )}
+          {!isEmptyCategory && (
+            <SaveSearchButton baseFilters={categoryFilter} baseFacetFilters={baseFacetFilters} pageLabel={h1} />
           )}
           <CustomHits
             brand={brand}

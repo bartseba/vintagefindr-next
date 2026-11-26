@@ -77,6 +77,32 @@ export async function searchProducts(filters: string, hitsPerPage = 12, indexNam
 }
 
 /**
+ * Newest-first search for saved-search alerts (`products_new` replica).
+ * Unlike `searchProducts` this throws on failure, so the alert cron can
+ * skip a search instead of treating an outage as "no new items".
+ */
+export async function searchNewestForAlert(
+  params: { query: string; facetFilters?: string[][]; numericFilters?: string[]; filters?: string },
+  hitsPerPage = 30
+): Promise<ProductHit[]> {
+  const client = getSearchClient()
+  if (!client) throw new Error('Algolia is not configured')
+  const { results } = await client.searchForHits<ProductHit>({
+    requests: [
+      {
+        indexName: 'products_new',
+        query: params.query,
+        facetFilters: params.facetFilters,
+        numericFilters: params.numericFilters,
+        filters: params.filters,
+        hitsPerPage,
+      },
+    ],
+  })
+  return results[0]?.hits ?? []
+}
+
+/**
  * Total hit count for a filter expression, without fetching hit payloads
  * (`hitsPerPage: 0`) — used for "X+ Produkte" style counts (e.g. `BrandCard`)
  * where only the number matters.
