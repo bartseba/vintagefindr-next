@@ -804,6 +804,7 @@ export default function Datenschutz() {
             <li>Kontaktformular-Anfragen (Weiterleitung von Nachrichten, die über unser Kontaktformular versendet werden)</li>
             <li>Transaktionale E-Mails (z. B. Passwort-Reset, E-Mail-Verifizierung, Registrierungsbestätigung)</li>
             <li>Benachrichtigungen an Vendor-Partner (z. B. Account-Freischaltung, neue Klicks, Shop-Informationen)</li>
+            <li>Such-Alerts für registrierte Nutzer (tägliche E-Mail mit neuen Treffern zu gespeicherten Suchen, siehe Abschnitt 6a)</li>
           </ul>
 
           <h3 className="text-xl font-semibold text-gray-900 mb-3">Verarbeitete Daten</h3>
@@ -845,6 +846,7 @@ export default function Datenschutz() {
             <li><strong>Kontaktformular-Anfragen:</strong> Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an zuverlässigem E-Mail-Versand und Bearbeitung von Kontaktanfragen)</li>
             <li><strong>Transaktionale E-Mails:</strong> Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung) - notwendig zur Bereitstellung unserer Dienste</li>
             <li><strong>Benachrichtigungen an Vendors:</strong> Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung mit Partnern)</li>
+            <li><strong>Such-Alerts:</strong> Art. 6 Abs. 1 lit. b DSGVO (Bereitstellung der von Ihnen angeforderten Funktion, siehe Abschnitt 6a)</li>
           </ul>
 
           <p className="mb-2">
@@ -852,6 +854,42 @@ export default function Datenschutz() {
             <a href="https://resend.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-vintage-primary hover:underline">
               https://resend.com/legal/privacy-policy
             </a>
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-4">6a. Such-Alerts per E-Mail</h2>
+
+          <h3 className="text-xl font-semibold text-gray-900 mb-3">Zweck</h3>
+          <p className="mb-4">
+            Als registrierter Nutzer können Sie eine Suche als Such-Alert speichern. Wir prüfen dann einmal täglich, ob seit der letzten Benachrichtigung neue passende Produkte bei unseren Partner-Shops eingetroffen sind, und schicken Ihnen in diesem Fall eine E-Mail mit den neuen Treffern. Gibt es keine neuen Treffer, erhalten Sie keine E-Mail. Mehrere Such-Alerts werden in einer E-Mail zusammengefasst. Pro Nutzer sind bis zu 10 Such-Alerts möglich.
+          </p>
+
+          <h3 className="text-xl font-semibold text-gray-900 mb-3">Verarbeitete Daten</h3>
+          <ul className="list-disc list-inside space-y-2 mb-4">
+            <li><strong>E-Mail-Adresse:</strong> die E-Mail-Adresse Ihres Nutzerkontos als Empfänger-Adresse</li>
+            <li><strong>Suchkriterien:</strong> Suchbegriff, gewählte Filter (z. B. Marke, Größe, Geschlecht, Zustand, Shop, Preisspanne) und die Seite, auf der Sie die Suche gespeichert haben</li>
+            <li><strong>Verwaltungsdaten:</strong> Benutzer-ID, Zeitpunkt der Anlage, Zeitpunkt der letzten Benachrichtigung, Status (aktiv/abbestellt) sowie ein zufälliger Abmelde-Schlüssel für den Abmelde-Link</li>
+          </ul>
+
+          <h3 className="text-xl font-semibold text-gray-900 mb-3">Empfänger und Speicherort</h3>
+          <p className="mb-4">
+            Die Such-Alerts werden in unserer Supabase-Datenbank gespeichert (siehe Abschnitt 3.3). Für die tägliche Prüfung übermittelt unser Server die Suchkriterien an Algolia (siehe Abschnitt 3.4); dabei werden weder Ihre E-Mail-Adresse noch Ihre IP-Adresse an Algolia übertragen. Der Versand der E-Mails erfolgt über Resend (siehe Abschnitt 6). Die tägliche Ausführung wird über unseren Hoster Railway angestoßen (siehe Abschnitt 3.1).
+          </p>
+
+          <h3 className="text-xl font-semibold text-gray-900 mb-3">Klicks in der E-Mail</h3>
+          <p className="mb-4">
+            Die Links zu den Produkten in der E-Mail führen über unsere Weiterleitung zum jeweiligen Shop. Ein Klick wird dabei wie jeder andere Klick auf ein Produkt erfasst (siehe Abschnitt 5). Die Links enthalten zusätzlich den Hinweis, dass der Besuch aus einer Such-Alert-E-Mail stammt (sog. UTM-Parameter, ohne Bezug zu Ihrer Person). Ihre Suchkriterien werden nicht für Werbung, Profilbildung oder andere Zwecke verwendet.
+          </p>
+
+          <h3 className="text-xl font-semibold text-gray-900 mb-3">Rechtsgrundlage</h3>
+          <p className="mb-4">
+            Art. 6 Abs. 1 lit. b DSGVO. Die Verarbeitung ist erforderlich, um Ihnen die von Ihnen ausdrücklich angeforderte Funktion bereitzustellen.
+          </p>
+
+          <h3 className="text-xl font-semibold text-gray-900 mb-3">Abbestellen und Speicherdauer</h3>
+          <p className="mb-4">
+            Jede E-Mail enthält einen Link, mit dem Sie den jeweiligen Such-Alert ohne Anmeldung abbestellen können; die Abmeldung ist auch über die Abmeldefunktion Ihres E-Mail-Programms möglich. In Ihrem Dashboard unter „Meine Such-Alerts“ können Sie Such-Alerts jederzeit löschen. Gespeicherte Such-Alerts bleiben bestehen, bis Sie sie löschen oder Ihr Nutzerkonto gelöscht wird; abbestellte Such-Alerts werden nicht mehr versendet, aber erst mit dem Löschen im Dashboard oder dem Löschen Ihres Kontos entfernt. Mit der Löschung Ihres Nutzerkontos werden alle Ihre Such-Alerts automatisch gelöscht.
           </p>
         </section>
 

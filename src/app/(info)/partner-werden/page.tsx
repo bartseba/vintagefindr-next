@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default async function PartnerWerdenPage() {
   const setting = await getPlatformSetting('vendor_starter_clicks')
-  const starterClicks = setting ? parseInt(setting) || 30 : 30
+  const starterClicks = setting ? parseInt(setting) || 150 : 150
 
   return (
     <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">

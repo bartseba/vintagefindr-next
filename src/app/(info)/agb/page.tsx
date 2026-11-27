@@ -194,7 +194,7 @@ export default function AGB() {
             (1) Die Kontoführung ist grundsätzlich kostenfrei. Die Nutzung der Sichtbarkeit erfordert den Erwerb von Klickpaketen.
           </p>
           <p className="mb-2">
-            (1a) <strong>Einmaliges Startguthaben:</strong> Neue Händler erhalten bei erfolgreicher Registrierung und Freischaltung ihres Kontos einmalig ein kostenloses Startguthaben. Dieses Startguthaben umfasst derzeit 30 Klicks und ist <strong>12 Monate (365 Tage) ab Registrierung</strong> gültig. Das Startguthaben ist <strong>einmalig, nicht übertragbar und nicht auszahlbar</strong>. Nach Ablauf der Gültigkeitsdauer oder Verbrauch des Startguthabens ist der Erwerb kostenpflichtiger Klickpakete erforderlich, um die Sichtbarkeit der Produktlistings aufrechtzuerhalten (siehe § 7 Abs. 4, No-Credit-Sperre). Ein Anspruch auf erneute Gewährung eines Startguthabens besteht nicht.
+            (1a) <strong>Einmaliges Startguthaben:</strong> Neue Händler erhalten bei erfolgreicher Registrierung und Freischaltung ihres Kontos einmalig ein kostenloses Startguthaben. Dieses Startguthaben umfasst derzeit 150 Klicks und ist <strong>12 Monate (365 Tage) ab Registrierung</strong> gültig. Das Startguthaben ist <strong>einmalig, nicht übertragbar und nicht auszahlbar</strong>. Nach Ablauf der Gültigkeitsdauer oder Verbrauch des Startguthabens ist der Erwerb kostenpflichtiger Klickpakete erforderlich, um die Sichtbarkeit der Produktlistings aufrechtzuerhalten (siehe § 7 Abs. 4, No-Credit-Sperre). Ein Anspruch auf erneute Gewährung eines Startguthabens besteht nicht.
           </p>
           <p className="mb-2">
             (2) Der Kaufpreis für ein Prepaid-Klickpaket ist unmittelbar mit Kauf fällig.

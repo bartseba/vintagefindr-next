@@ -3,7 +3,7 @@ import { VendorRegisterForm } from '@/components/auth/VendorRegisterForm'
 
 export default async function VendorRegisterPage() {
   const setting = await getPlatformSetting('vendor_starter_clicks')
-  let starterClicks = 30
+  let starterClicks = 150
   if (setting) {
     const parsed = parseInt(setting)
     if (!Number.isNaN(parsed)) {
