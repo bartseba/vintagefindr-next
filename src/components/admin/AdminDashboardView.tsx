@@ -23,6 +23,7 @@ import { KPICard } from '@/components/KPICard'
 import { Button } from '@/components/ui/Button'
 import { companyName } from '@/constant/routes'
 import { logoutAdmin, approveVendor, rejectVendor } from '@/app/admin/dashboard/actions'
+import { formatPrice } from '@/lib/formatPrice'
 
 export interface AdminDashboardData {
   stats: {
@@ -375,7 +376,7 @@ export function AdminDashboardView({ dashboardData }: AdminDashboardViewProps) {
                         {product.title}
                       </h3>
                       <p className="text-sm text-gray-600">
-                        {product.vendorName} • €{product.price}
+                        {product.vendorName} • {formatPrice(product.price)}
                       </p>
                     </div>
                   </div>

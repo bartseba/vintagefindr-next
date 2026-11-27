@@ -28,6 +28,7 @@ import { ExtensionRequestButton } from '@/components/vendor/ExtensionRequestButt
 import { companyName } from '@/constant/routes'
 import type { VendorPackageInfo } from '@/types/vendor-packages'
 import { logoutVendor } from './actions'
+import { formatPrice } from '@/lib/formatPrice'
 
 interface DashboardProductRow {
   id: string
@@ -730,7 +731,7 @@ export default async function VendorDashboardPage() {
                         {product.name}
                       </h3>
                       <p className="text-sm text-gray-600">
-                        €{product.price} • {product.condition}
+                        {formatPrice(product.price)} • {product.condition}
                       </p>
                     </div>
 

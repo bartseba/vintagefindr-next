@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { VendorInfoModal } from './VendorInfoModal'
+import { formatPrice } from '@/lib/formatPrice'
 
 interface PriceDisplayProps {
   price: number
@@ -29,9 +30,7 @@ export function PriceDisplay({
 }: PriceDisplayProps) {
   const [isVendorInfoOpen, setIsVendorInfoOpen] = useState(false)
 
-  // Format price
-  const formattedPrice = typeof price === 'number' ? price.toLocaleString('de-DE') : '0'
-  const currencySymbol = currency === 'EUR' ? '€' : currency
+  const formattedPrice = formatPrice(price, currency)
 
   // Determine shipping info
   const hasShippingCost = shipping_cost !== null && shipping_cost !== undefined
@@ -57,19 +56,19 @@ export function PriceDisplay({
         <div className={`text-sm ${className}`}>
           <div className="flex items-baseline gap-1 flex-wrap">
             <span className="font-semibold text-gray-900 text-sm">
-              {formattedPrice} {currencySymbol}*
+              {formattedPrice}*
             </span>
 
             {hasShippingCost && (
               <span className="text-xs text-gray-600">
-                zzgl. {currencySymbol} {shipping_cost!.toLocaleString('de-DE')} Versand
+                zzgl. {formatPrice(shipping_cost, currency)} Versand
               </span>
             )
             }
           </div>
           {hasFreeShippingThreshold && (
             <div className="text-xs text-green-700 mt-0.5">
-              Versandkostenfrei ab {currencySymbol} {free_shipping_threshold!.toLocaleString('de-DE')}
+              Versandkostenfrei ab {formatPrice(free_shipping_threshold, currency)}
             </div>
           )}
         </div>
@@ -89,7 +88,7 @@ export function PriceDisplay({
         {/* Main price */}
         <div className="flex items-baseline gap-2">
           <span className="text-sm font-bold text-gray-900">
-            {formattedPrice} {currencySymbol}*
+            {formattedPrice}*
           </span>
         </div>
 
@@ -97,13 +96,13 @@ export function PriceDisplay({
         <div className="space-y-1">
           {hasShippingCost && (
             <div className="text-sm text-gray-700">
-              zzgl. <span className="font-medium">{currencySymbol} {shipping_cost!.toLocaleString('de-DE')}</span> Versandkosten
+              zzgl. <span className="font-medium">{formatPrice(shipping_cost, currency)}</span> Versandkosten
             </div>
           )
           }
           {hasFreeShippingThreshold && (
             <div className="text-sm text-green-700 font-medium">
-              Versandkostenfrei ab {currencySymbol} {free_shipping_threshold!.toLocaleString('de-DE')}
+              Versandkostenfrei ab {formatPrice(free_shipping_threshold, currency)}
             </div>
           )}
         </div>
